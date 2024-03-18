@@ -146,7 +146,7 @@ from .method_switch import MethodSwitch
 from ..utils.utils import get_c_method
 
 
-method_switches = set()
+method_switches = dict()
 
 
 def create_patch(module, class_: str, method_name, replacement_method):
@@ -193,8 +193,14 @@ def create_patch(module, class_: str, method_name, replacement_method):
         class_to_patch = None  # TODO add class
 
     global method_switches
-    method_switches.add(
-        MethodSwitch(
+
+    method_identification = (module, class_to_patch, method_name)
+    if method_identification in method_switches:
+        method_switches[method_identification].set_replacement_method(
+            replacement_method
+        )
+    else:
+        method_switches[(module, class_to_patch, method_name)] = MethodSwitch(
             patching_method,
             module,
             class_to_patch,
@@ -202,15 +208,13 @@ def create_patch(module, class_: str, method_name, replacement_method):
             original_method,
             replacement_method,
         )
-    )
 
 
 def apply():
-    for m in method_switches:
-        # print(m.module, m.class_, m.method_name, m.get_replacement_method())
-        m.overwrite(m.module, m.class_, m.method_name, m.get_replacement_method())
+    for (module_name, class_name, method_name), ms in method_switches.items():
+        ms.overwrite(module_name, class_name, method_name, ms.get_replacement_method())
 
 
 def revert():
-    for m in method_switches:
-        m.overwrite(m.module, m.class_, m.method_name, m.get_original_method())
+    for (module_name, class_name, method_name), ms in method_switches.items():
+        ms.overwrite(module_name, class_name, method_name, ms.get_original_method())
