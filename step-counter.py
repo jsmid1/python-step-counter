@@ -1,6 +1,6 @@
 import argparse
 
-from src.step_counting.setup_recording import setup_recording
+from src.step_counting.setup_recording import setup_recording, recording_activated
 
 import os
 import importlib
@@ -66,14 +66,11 @@ def main():
         sys.path.insert(0, module_dir)
 
     eval_module = import_from_path(input_file)
-
     recorder, imports = setup_recording(eval_module)
 
-    eval_module = import_from_path(input_file)
-    recorder.clear_data()
-
-    # eval_module = import_from_path(input_file)
-    eval_module.testing_func()
+    with recording_activated():
+        eval_module = import_from_path(input_file)
+        eval_module.testing_func()
 
     for import_ in imports:
         print(

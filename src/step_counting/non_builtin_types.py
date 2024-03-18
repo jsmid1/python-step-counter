@@ -11,10 +11,10 @@ class EmptyClass:
 
 
 class_type = type(EmptyClass)
-generator_type = type(make_generator())
 dict_keys_type = type({}.keys())
 dict_items_type = type({}.items())
 dict_values_type = type({}.values())
+generator_type = type(make_generator())
 
 non_builtin_types = {
     'class': class_type,

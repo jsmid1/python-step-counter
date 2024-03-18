@@ -1,9 +1,18 @@
+import builtins
+
 from .non_builtin_types import (
     generator_type,
     dict_keys_type,
     dict_values_type,
     dict_items_type,
 )
+
+_import = builtins.__import__
+_setattr = setattr
+_getattr = getattr
+_hasattr = hasattr
+_isinstance = isinstance
+_type = type
 
 str_encode = str.encode
 str_replace = str.replace

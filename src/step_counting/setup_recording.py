@@ -1,19 +1,21 @@
+import builtins
+import ctypes
+import math
 import inspect
 
+from .decorator import decorators
+from .non_builtin_types import (
+    dict_items_type,
+    dict_keys_type,
+    dict_values_type,
+    generator_type,
+)
+from .patch import patch_imports
+from .patch import py_object as pyo
 from .patch.patching import create_patch, apply, revert
+from .original_methods import dict_items
 
-from .patch import py_object as pyo
-
-import builtins
-
-from .original_methods import dict_keys, dict_items
-
-functions_to_override = {}
-
-allowed_imports = []
-
-from .patch import py_object as pyo
-import ctypes
+from .utils.utils import get_module_imports, is_user_defined_module
 
 
 # TODO: Error handling!
@@ -23,7 +25,6 @@ def get_c_method(class_, method_name):
 
     tp_name, c_method_name, type_ = method_mapping_info
     tp_as_ptr = getattr(tyobj, tp_name)
-
     if c_method_name is None:
         c_method = tp_as_ptr
     else:
@@ -45,8 +46,6 @@ def decorate_all_py_method_def_mehods(decorator):
                 decorator(getattr(class_, method_name), class_.__name__, method_name),
             )
 
-
-from .non_builtin_types import *
 
 py_object_method = {
     int: {
@@ -215,8 +214,8 @@ py_object_method = {
     generator_type: {
         '__iter__',
     },  #'tp_iternext'
-    dict_keys_type: {'__contains__', '__iter__', '__len__', 'comparison'},
-    dict_values_type: {'__contains__', '__iter__', '__len__'},
+    dict_keys_type: {'__contains__', '__iter__', '__len__', '__and__', 'comparison'},
+    dict_values_type: {'__iter__', '__len__'},
     dict_items_type: {'__contains__', '__iter__', '__len__', 'comparison'},
     # class_type: {'__init__'},
 }
@@ -269,28 +268,9 @@ def decorate_standard_lib_module(module, decorator):
     create_patch(module, None, 'acos', decorator(module.acos, 'math', 'acos'))
 
 
-from .patch import patch_imports
-
-
 def wrap_import(decorator):
-    import_wrapper = patch_imports.wrap_it(
-        builtins, '__import__', patch_imports.wrap_import
-    )
+    import_wrapper = patch_imports.wrap_it('__import__', patch_imports.wrap_import)
     setattr(builtins, '__import__', decorator(import_wrapper, 'builtins', '__import__'))
-
-
-tuple_contains = tuple.__contains__
-from .decorator import decorators
-from .utils.utils import get_module_imports, is_user_defined_module
-
-import math
-
-
-def wrap_import_x():
-    import_wrapper = patch_imports.wrap_it(
-        builtins, '__import__', patch_imports.wrap_import
-    )
-    setattr(builtins, '__import__', import_wrapper)
 
 
 def ib111_setup():
@@ -320,7 +300,12 @@ def setup_recording(module):
 
     decorate_all_py_object_methods(decorator)
 
-    apply()
-    # revert()
-
     return recorder, user_defined_import
+
+
+class recording_activated:
+    def __enter__(self):
+        apply()
+
+    def __exit__(self, type, value, traceback):
+        revert()

@@ -9,8 +9,6 @@ from . import py_object as pyo
 from ..non_builtin_types import non_builtin_types
 from .bin import patchdictionary, patchint, patchlist, patchtuple
 
-# from ..original_methods import dict_iter
-
 
 tp_as_dict = {}
 tp_func_dict = {}
@@ -136,9 +134,8 @@ def patch_with_module(class_: str, method_name: str, replacement_method):
 
 def set_import_replacement_method(module, class_, method_name, patched_func):
     patch_imports.replacement_import_methods.setdefault(module.__name__, dict())[
-        method_name
+        (class_, method_name)
     ] = patched_func
-    #     (method_name, replacement_method)
 
 
 replaced_methods = dict()
@@ -166,6 +163,9 @@ def create_patch(module, class_: str, method_name, replacement_method):
             if class_to_patch is None:
                 raise Exception('Given class is not defined in builtins!')
 
+            # if method_name not in dir(class_to_patch) + ["comparison"]:
+            #     raise Exception('Given class is not defined in builtins!')
+
             py_defined_methods = pyo.py_method_def_by_class.get(class_to_patch, None)
             if py_defined_methods is not None and method_name in py_defined_methods:
                 patching_method = patch_py_builtin_class_method
@@ -174,7 +174,6 @@ def create_patch(module, class_: str, method_name, replacement_method):
                 )
 
             else:
-                print(class_, method_name)
                 patching_method = patch_py_object_method
                 original_method = get_c_method(class_to_patch, method_name)
 
@@ -190,7 +189,7 @@ def create_patch(module, class_: str, method_name, replacement_method):
     else:
         original_method = None
         patching_method = set_import_replacement_method
-        class_to_patch = None  # TODO add class
+        class_to_patch = class_
 
     global method_switches
 

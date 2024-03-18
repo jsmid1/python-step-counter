@@ -132,7 +132,7 @@ static PyObject* patch_dictionary_getitem(PyObject* self, PyObject* args) {
     dictionary_getitem_patched_method = patched_method;
 
     PyDict_Type.tp_as_mapping->mp_subscript = patched_dictionary_getitem;
-    printf("\n\n\n\nXXXX\n\n\n");
+
     Py_RETURN_NONE;
 }
 

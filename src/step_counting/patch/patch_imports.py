@@ -1,11 +1,13 @@
-_setattr = setattr
-_getattr = getattr
-_hasattr = hasattr
-
-_isinstance = isinstance
-_tuple_iter = tuple.__iter__
-
-_type = type
+import builtins
+from ..original_methods import (
+    _getattr,
+    _setattr,
+    _hasattr,
+    _import,
+    _isinstance,
+    _type,
+    dict_get,
+)
 
 
 replacement_import_methods = {}
@@ -24,41 +26,41 @@ def make_proxy(module):
     if replacement_methods is None:
         return module
 
-    for method_name, replacement_method in replacement_methods.items():
+    for (class_name, method_name), replacement_method in replacement_methods.items():
+        if replacement_method is None:
+            continue
 
-        if not _hasattr(module, method_name):
+        if class_name is not None:
+            if not _hasattr(to_patch, method_name):
+                raise Exception(
+                    f'Module {module.__name__} does not contain method {method_name}'
+                )
+            to_patch = _getattr(module, class_name)
+        else:
+            to_patch = module
+
+        if not _hasattr(to_patch, method_name):
             raise Exception(
-                f'Module {module.__name__} does not contain method {method_name}'
+                f'Class {class_name} in module {module.__name__} does not contain method {method_name}'
             )
 
-        if replacement_method is not None:
-            _setattr(proxy, method_name, replacement_method)
+        _setattr(proxy, method_name, replacement_method)
 
     return proxy
 
 
-str.lower
-import builtins
-
-builtins_import = builtins.__import__
-
-
-def wrap_import(func_name, old, name, *args, **kwargs):
-
-    if name in replacement_import_methods:
-        return make_proxy(builtins_import(name, *args, **kwargs))
+def wrap_import(_, old, name, *args, **kwargs):
+    if dict_get(replacement_import_methods, name, None) is not None:
+        return make_proxy(_import(name, *args, **kwargs))
 
     return old(name, *args, **kwargs)
 
 
-import builtins
-
-
-def wrap_it(klass, attr, func):
+def wrap_it(attr, func):
     old = _getattr(builtins, attr)
 
     def with_patched(*args, **kwargs):
-        return func(attr, old, *_tuple_iter(args), **kwargs)
+        return func(attr, old, *tuple.__iter__(args), **kwargs)
 
     patched = func if _isinstance(func, _type) else with_patched
 
