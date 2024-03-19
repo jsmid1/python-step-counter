@@ -315,7 +315,7 @@ def get_function_mapping(class_name, method_name):
             return ('tp_as_mapping', 'mp_length', (c_ssize_t, c_pyobject_p))
 
         case '__getitem__':
-            if class_name in sequence_classes + ['dict']:
+            if class_name in sequence_classes:
                 return (
                     'tp_as_sequence',
                     'sq_item',
