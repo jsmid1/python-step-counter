@@ -1,6 +1,5 @@
 import builtins
 import ctypes
-import math
 import inspect
 
 from .decorator import decorators
@@ -15,7 +14,7 @@ from .patch import py_object as pyo
 from .patch.patching import create_patch, apply, revert
 from .original_methods import dict_items
 
-from .utils.utils import get_module_imports, is_user_defined_module
+from .utils.module import get_imports, is_user_defined_module, get_module_by_name
 
 
 # TODO: Error handling!
@@ -244,28 +243,22 @@ def decorate_all_py_object_methods(decorator):
     decorate_all_py_method_def_mehods(decorator)
 
 
-def decorate_all_user_module_defined_methods(module, decorator):
+def decorate_all_methods_in_module(module, decorator):
     for name, obj in inspect.getmembers(module):
-        if inspect.isfunction(obj):
+
+        # inspect.isfunction only works for user define functions
+        # therefore we use callable(obj)
+        if callable(obj):
             create_patch(module, None, name, decorator(obj, obj.__name__, name))
 
-        if inspect.isclass(obj):
+        if inspect.isclass(obj) and obj.__name__ != 'BuiltinImporter':
             for name, fn in inspect.getmembers(obj, predicate=inspect.isfunction):
                 create_patch(
-                    module, obj.__name__, name, decorator(fn, obj.__name__, name)
+                    module,
+                    obj.__name__,
+                    name,
+                    decorator(fn, obj.__name__, name),
                 )
-
-
-def decorate_user_defined_modules(user_modules, decorator):
-    for module in user_modules:
-        decorate_all_user_module_defined_methods(module, decorator)
-
-
-def decorate_standard_lib_module(module, decorator):
-    create_patch(
-        module, None, 'factorial', decorator(module.factorial, 'math', 'factorial')
-    )
-    create_patch(module, None, 'acos', decorator(module.acos, 'math', 'acos'))
 
 
 def wrap_import(decorator):
@@ -273,34 +266,39 @@ def wrap_import(decorator):
     setattr(builtins, '__import__', decorator(import_wrapper, 'builtins', '__import__'))
 
 
-def ib111_setup():
-    pass
+def patch_imported_methods(imported_methods, decorator):
+    for method in imported_methods:
+        create_patch(
+            get_module_by_name(method.__module__),
+            None,
+            method.__name__,
+            decorator(method, None, method.__name__),
+        )
 
 
-ignored_modules = ["default_ib111"]
-
-
-def setup_recording(module):
-    module_imports = get_module_imports(module.__name__)
-    user_defined_import = [
-        import_
-        for import_ in module_imports
-        if is_user_defined_module(import_) and import_.__name__ not in ignored_modules
+def setup_recording(module, ignored_modules):
+    module_imports, imported_methods = get_imports(module)
+    module_imports = [
+        import_ for import_ in module_imports if import_.__name__ not in ignored_modules
     ]
+    user_defined_modules = [
+        import_ for import_ in module_imports if is_user_defined_module(import_)
+    ] + [module]
 
     decorator, recorder = decorators.create_decorator_detail(
-        [module.__name__ for module in user_defined_import]
+        [module.__name__ for module in user_defined_modules]
     )
 
     wrap_import(decorator)
 
-    decorate_user_defined_modules(user_defined_import, decorator)
+    patch_imported_methods(imported_methods, decorator)
 
-    decorate_standard_lib_module(math, decorator)
+    for module in module_imports:
+        decorate_all_methods_in_module(module, decorator)
 
     decorate_all_py_object_methods(decorator)
 
-    return recorder, user_defined_import
+    return recorder, user_defined_modules
 
 
 class recording_activated:

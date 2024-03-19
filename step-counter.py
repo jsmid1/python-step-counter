@@ -66,7 +66,7 @@ def main():
         sys.path.insert(0, module_dir)
 
     eval_module = import_from_path(input_file)
-    recorder, imports = setup_recording(eval_module)
+    recorder, imports = setup_recording(eval_module, {'default_ib111'})
 
     with recording_activated():
         eval_module = import_from_path(input_file)

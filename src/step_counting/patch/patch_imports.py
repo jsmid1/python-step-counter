@@ -31,15 +31,15 @@ def make_proxy(module):
             continue
 
         if class_name is not None:
-            if not _hasattr(to_patch, method_name):
+            if not _hasattr(module, class_name):
                 raise Exception(
                     f'Module {module.__name__} does not contain method {method_name}'
                 )
-            to_patch = _getattr(module, class_name)
+            patch_object = _getattr(module, class_name)
         else:
-            to_patch = module
+            patch_object = module
 
-        if not _hasattr(to_patch, method_name):
+        if not _hasattr(patch_object, method_name):
             raise Exception(
                 f'Class {class_name} in module {module.__name__} does not contain method {method_name}'
             )
