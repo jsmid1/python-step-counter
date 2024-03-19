@@ -93,6 +93,7 @@ def patch_py_builtin_class_method(_, class_, method_name, patched_func):
         dikt[method_name] = patched_func
     except Exception:
         raise Exception(f"Unknown method {method_name} of class {class_.__name__}")
+
     ctypes.pythonapi.PyType_Modified(ctypes.py_object(class_))
 
 
@@ -117,7 +118,6 @@ special_patch_methods = {
     'tuple': {
         '__len__': patchtuple.patch_tuple_len,
         '__getitem__': patchtuple.patch_tuple_getitem,
-        '__contains__': patchtuple.patch_tuple_contains,  # probably not necessary
     },
     'dict': {
         '__getitem__': patchdictionary.patch_dictionary_getitem,
