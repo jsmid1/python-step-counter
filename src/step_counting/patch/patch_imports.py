@@ -35,16 +35,21 @@ def make_proxy(module):
                 raise Exception(
                     f'Module {module.__name__} does not contain method {method_name}'
                 )
-            patch_object = _getattr(module, class_name)
+
+            if _hasattr(proxy, class_name):
+                class_ = _getattr(proxy, class_name)
+            else:
+                class_ = _getattr(module, class_name)
+
+            _setattr(class_, method_name, replacement_method)
+            _setattr(proxy, class_name, class_)
         else:
-            patch_object = module
+            if not _hasattr(module, method_name):
+                raise Exception(
+                    f'Class {class_name} in module {module.__name__} does not contain method {method_name}'
+                )
 
-        if not _hasattr(patch_object, method_name):
-            raise Exception(
-                f'Class {class_name} in module {module.__name__} does not contain method {method_name}'
-            )
-
-        _setattr(proxy, method_name, replacement_method)
+            _setattr(proxy, method_name, replacement_method)
 
     return proxy
 
