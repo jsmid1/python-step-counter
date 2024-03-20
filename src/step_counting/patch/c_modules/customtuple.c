@@ -15,10 +15,8 @@ static Py_ssize_t patched_tuple_len(PyObject *self) {
 // Need to fix the result returning.
 // May be correct but do not know how to test yet. Getitem should always return PyObject*.
 // ^ https://hg.python.org/cpython/file/04f714765c13/Objects/abstract.c#l1498 Should be correct
-static PyObject *patched_tuple_getitem(PyObject *self, long elem) {
-    PyObject* result = PyObject_CallFunction(tuple_getitem_patched_method, "(Ol)", self, elem);
-
-    return result;
+static PyObject *patched_tuple_getitem(PyObject *self, PyObject * elem) {
+    return PyObject_CallFunction(tuple_getitem_patched_method, "(OO)", self, elem);
 }
 
 static PyObject* patch_tuple_len(PyObject* self, PyObject* args) {
@@ -53,10 +51,8 @@ static PyObject* patch_tuple_getitem(PyObject* self, PyObject* args) {
     Py_XINCREF(patched_method); // Increase reference count
 
     tuple_getitem_patched_method = patched_method;
-//
-    PyTuple_Type.tp_as_sequence->sq_item = patched_tuple_getitem;
 
-    //PyTuple_Type.tp_as_mapping->mp_subscript = patched_tuple_getitem;
+    PyTuple_Type.tp_as_mapping->mp_subscript = patched_tuple_getitem;
 
     Py_RETURN_NONE;
 }
