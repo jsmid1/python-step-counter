@@ -126,11 +126,13 @@ from ..patch import py_object as pyo
 
 def get_c_method(class_, method_name):
     tyobj = pyo.PyTypeObject.from_address(id(class_))
+
     method_mapping_info = pyo.get_function_mapping(class_, method_name)
+    if method_mapping_info is None:
+        return None
 
     tp_name, c_method_name, type_ = method_mapping_info
     tp_as_ptr = getattr(tyobj, tp_name)
-
     if c_method_name is None:
         c_method = tp_as_ptr
     else:

@@ -16,7 +16,7 @@ from .non_builtin_types import (
 from .ignor import get_ignored_methods
 from .patch import patch_imports
 from .patch import py_object as pyo
-from .patch.default_classes import py_method_def_by_class
+from .patch.default_classes.default_classes import py_method_def_by_class
 from .patch.patching import create_patch, apply, revert
 from .original_methods import dict_items
 
@@ -64,7 +64,7 @@ py_objects = {
 }
 
 
-def decorate_all_py_object_methods(decorator):
+def decorate_defaults(decorator):
     ignored_methods = get_ignored_methods()
     for module, classes in py_objects.items():
         for class_ in classes:
@@ -93,25 +93,6 @@ def decorate_all_py_object_methods(decorator):
                         n,
                         decorator(c_method, class_.__name__, n),
                     )
-
-    # for class_, method_list in py_object_method.items():
-    #     for method_name in method_list:
-    #         try:
-    #             original_method = get_c_method(class_, method_name)
-    #             replacement_method = decorator(
-    #                 original_method, class_.__name__, method_name
-    #             )
-    #             create_patch(
-    #                 builtins,
-    #                 class_.__name__,
-    #                 method_name,
-    #                 replacement_method,
-    #             )
-    #         except Exception:
-    #             raise Exception(
-    #                 f'Failed while patching method {method_name} of class {class_.__name__}!',
-    #                 Exception,
-    #             )
 
     decorate_all_py_method_def_mehods(decorator)
 
@@ -187,7 +168,7 @@ def setup_recording(module, ignored_modules: set):
     for module in module_imports:
         decorate_all_methods_in_module(module, decorator)
 
-    decorate_all_py_object_methods(decorator)
+    decorate_defaults(decorator)
 
     return recorder, user_defined_modules
 

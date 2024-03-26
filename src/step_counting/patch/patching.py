@@ -7,6 +7,7 @@ from . import patch_imports, method_switch
 
 from . import py_object as pyo
 from ..non_builtin_types import non_builtin_types
+from .default_classes.default_classes import py_method_def_by_class
 from .bin import patchdictionary, patchint, patchlist, patchtuple
 
 
@@ -46,7 +47,6 @@ def patch_py_object_method_with_type(
             )
 
         tp_func_dict[(class_, tp_name)] = cfunc
-
         # override function call
         setattr(tyobj, tp_name, cfunc)
 
@@ -119,6 +119,12 @@ special_patch_methods = {
         '__len__': patchtuple.patch_tuple_len,
         '__getitem__': patchtuple.patch_tuple_getitem,
     },
+    'tuple_iterator': {
+        '__next__': patchtuple.patch_tuple_iterator_next,
+    },
+    'list_iterator': {
+        '__next__': patchlist.patch_list_iterator_next,
+    },
     'dict': {
         '__getitem__': patchdictionary.patch_dictionary_getitem,
         '__setitem__': patchdictionary.patch_dictionary_setitem,
@@ -150,10 +156,10 @@ def create_patch(module, class_: str, method_name, replacement_method):
     if not callable(replacement_method):
         raise Exception('Given function is not callable!')
 
-    if module.__name__ == 'builtins':
+    if module.__name__ in ['builtins']:
         if class_ is None:
             patching_method = patch_py_builtin_method
-            original_method = getattr(builtins, method_name)
+            original_method = getattr(module, method_name)
             class_to_patch = class_
         else:
             class_to_patch = non_builtin_types.get(class_, None)
@@ -163,19 +169,27 @@ def create_patch(module, class_: str, method_name, replacement_method):
             if class_to_patch is None:
                 raise Exception('Given class is not defined in builtins!')
 
-            # if method_name not in dir(class_to_patch) + ["comparison"]:
-            #     raise Exception('Given class is not defined in builtins!')
-
-            py_defined_methods = pyo.py_method_def_by_class.get(class_to_patch, None)
-            if py_defined_methods is not None and method_name in py_defined_methods:
+            if pyo.get_function_mapping(class_to_patch, method_name) is not None:
+                patching_method = patch_py_object_method
+                original_method = get_c_method(class_to_patch, method_name)
+            elif py_method_def_by_class.get(class_to_patch, None):
                 patching_method = patch_py_builtin_class_method
                 original_method = get_py_builtin_class_method(
                     class_to_patch, method_name
                 )
-
             else:
-                patching_method = patch_py_object_method
-                original_method = get_c_method(class_to_patch, method_name)
+                raise Exception(
+                    f'Unknown method: {method_name} of class {class_} in {module.__name__}'
+                )
+
+    elif module.__name__ in ['collections']:
+        class_to_patch = getattr(module, class_)
+        if pyo.get_function_mapping(class_to_patch, method_name) is not None:
+            patching_method = patch_py_object_method
+            original_method = get_c_method(class_to_patch, method_name)
+        else:
+            patching_method = patch_py_builtin_class_method
+            original_method = get_py_builtin_class_method(class_to_patch, method_name)
 
     elif utils.is_user_defined_module(module):
         if class_ == None:
