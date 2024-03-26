@@ -7,7 +7,7 @@ from . import patch_imports, method_switch
 
 from . import py_object as pyo
 from ..non_builtin_types import non_builtin_types
-from .default_classes.default_classes import py_method_def_by_class
+from .default_classes.default_classes import py_method_defs, is_py_method_def
 from .bin import patchdictionary, patchint, patchlist, patchtuple
 
 
@@ -172,7 +172,7 @@ def create_patch(module, class_: str, method_name, replacement_method):
             if pyo.get_function_mapping(class_to_patch, method_name) is not None:
                 patching_method = patch_py_object_method
                 original_method = get_c_method(class_to_patch, method_name)
-            elif py_method_def_by_class.get(class_to_patch, None):
+            elif is_py_method_def(module, class_to_patch, method_name):
                 patching_method = patch_py_builtin_class_method
                 original_method = get_py_builtin_class_method(
                     class_to_patch, method_name

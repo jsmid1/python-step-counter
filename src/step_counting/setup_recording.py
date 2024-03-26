@@ -16,25 +16,13 @@ from .non_builtin_types import (
 from .ignor import get_ignored_methods
 from .patch import patch_imports
 from .patch import py_object as pyo
-from .patch.default_classes.default_classes import py_method_def_by_class
+from .patch.default_classes.default_classes import get_py_method_defs, is_py_method_def
 from .patch.patching import create_patch, apply, revert
 from .original_methods import dict_items
 
 from .utils.module import get_imports, is_user_defined_module, get_module_by_name
 
 from .utils.utils import get_c_method
-
-
-def decorate_all_py_method_def_mehods(decorator):
-    for class_, methods in dict_items(py_method_def_by_class):
-        for method_name in methods:
-            create_patch(
-                builtins,
-                class_.__name__,
-                method_name,
-                decorator(getattr(class_, method_name), class_.__name__, method_name),
-            )
-
 
 py_objects = {
     builtins: {
@@ -69,32 +57,29 @@ def decorate_defaults(decorator):
     for module, classes in py_objects.items():
         for class_ in classes:
             for n in dir(class_) + ['comparison']:
-                if n in [
-                    elem
-                    for sublist in py_method_def_by_class.values()
-                    for elem in sublist
-                ]:
-                    continue
-
                 if (class_, n) == (dict, '__iter__'):
                     continue
 
-                if not n.startswith('__') and n != 'comparison' or n in ignored_methods:
+                if n in ignored_methods:
                     continue
 
-                c_method = get_c_method(class_, n)
-                if c_method is None:
+                if is_py_method_def(module, class_, n):
+                    orig_method = getattr(class_, n)
+                else:
+                    orig_method = get_c_method(class_, n)
 
+                if orig_method is None:
                     continue
-                if callable(c_method):
-                    create_patch(
-                        module,
-                        class_.__name__,
-                        n,
-                        decorator(c_method, class_.__name__, n),
+                    raise Exception(
+                        f'Unknwn method {n} of class {class_.__name__} in module {module.__name__}'
                     )
 
-    decorate_all_py_method_def_mehods(decorator)
+                create_patch(
+                    module,
+                    class_.__name__,
+                    n,
+                    decorator(orig_method, class_.__name__, n),
+                )
 
 
 def decorate_all_methods_in_module(module, decorator):
