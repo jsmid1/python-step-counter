@@ -1,6 +1,6 @@
 import argparse
 
-from src.step_counting.setup_recording import setup_recording, recording_activated
+from step_counting.setup_recording import setup_recording, recording_activated
 
 import os
 import importlib
