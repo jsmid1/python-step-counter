@@ -1,5 +1,3 @@
-from ..original_methods import dict_get, list_append
-
 from .builtins_evaluations import builtins_complexities
 from .bytes_evaluations import bytes_complexities
 from .complex_evaluations import complex_complexities
@@ -30,9 +28,7 @@ evaluation_method = {
 
 
 def get_evaluation_method(cls_name, func_name):
-    return dict_get(
-        dict_get(evaluation_method, cls_name, {}), func_name, default_evaluation
-    )
+    return evaluation_method.get(cls_name, {}).get(func_name, default_evaluation)
 
 
 def evaluate_record(cls, func_name, args):
@@ -40,6 +36,6 @@ def evaluate_record(cls, func_name, args):
         return 1
     py_args = []
     for arg in tuple.__iter__(args):
-        list_append(py_args, arg)
+        py_args.append(arg)
 
     return get_evaluation_method(cls, func_name)(args)

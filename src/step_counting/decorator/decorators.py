@@ -13,7 +13,7 @@ list_contains = list.__contains__
 _print = print
 
 import sys
-from ..records import record_classes
+from .records import record_classes
 from ..utils import utils
 
 str_eq = str.__eq__
