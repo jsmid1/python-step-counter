@@ -142,9 +142,7 @@ def setup_recording(module, ignored_modules: set):
         import_ for import_ in module_imports if is_user_defined_module(import_)
     ] + [module]
 
-    decorator, recorder = decorators.create_decorator_detail(
-        [module.__name__ for module in user_defined_modules]
-    )
+    decorator, recorder = decorators.create_decorator_detail(user_defined_modules)
 
     wrap_import(decorator)
 

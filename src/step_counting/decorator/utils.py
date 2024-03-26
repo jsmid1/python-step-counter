@@ -1,6 +1,22 @@
 import sys
+from ..original_methods import list_iter, int_eq, dict_get
 
-dict_get = dict.get
+
+# TODO make something better. this is abomination
+def obj_in_list(string, lst):
+    # keys_dict = {str(item): True for item in list_iter(lst)}
+    # try:
+    #     return dict_getitem(keys_dict, str(string))
+    # except KeyError:
+    #     return False
+
+    # TODO check, possible hash collisions
+    # theoratically incorect
+    for item in list_iter(lst):
+        # print(hash(item), hash(string))
+        if int_eq(hash(item.__name__), hash(string)):
+            return True
+    return False
 
 
 def get_caller_module_info():

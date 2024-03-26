@@ -72,13 +72,14 @@ def main():
         eval_module = import_from_path(input_file)
         eval_module.testing_func()
 
-    for import_ in imports:
-        print(
-            create_profile(
-                import_.__file__, recorder.get_data().get(import_.__name__, {})
-            )
-        )
+    # for import_ in imports:
+    #     print(
+    #         create_profile(
+    #             import_.__file__, recorder.get_data().get(import_.__name__, {})
+    #         )
+    #     )
 
+    print(recorder.get_data())
     print('SCORE:', recorder.evaluate_data())
 
 

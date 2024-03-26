@@ -9,10 +9,6 @@ from .set_evaluations import set_complexities
 from .str_evaluations import str_complexities
 
 
-def default_evaluation(_):
-    return 1
-
-
 # TODO fill in complexities for other types
 evaluation_method = {
     'builtins': builtins_complexities,
@@ -25,6 +21,10 @@ evaluation_method = {
     'set': set_complexities,
     'str': str_complexities,
 }
+
+
+def default_evaluation(_):
+    return 1
 
 
 def get_evaluation_method(cls_name, func_name):
