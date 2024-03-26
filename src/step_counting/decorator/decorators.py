@@ -14,7 +14,7 @@ _print = print
 
 import sys
 from .records import record_classes
-from ..utils import utils
+from .utils import get_caller_module_info
 
 str_eq = str.__eq__
 list_iter = list.__iter__
@@ -53,7 +53,7 @@ def create_decorator_default(tracked_modules):
 
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            module_name, _ = utils.get_caller_module_info()
+            module_name, _ = get_caller_module_info()
             # if list_contains(tracked_modules, module_name):
             records.add_record(klass, func_name, args)
             return func(*args, **kwargs)
@@ -84,7 +84,7 @@ def create_decorator_detail(tracked_modules):
 
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            module_name, line_number = utils.get_caller_module_info()
+            module_name, line_number = get_caller_module_info()
             if str_in_list(module_name, tracked_modules):
 
                 recorder.add_record(module_name, line_number, klass, func_name, args)

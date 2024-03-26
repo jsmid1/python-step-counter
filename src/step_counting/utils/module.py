@@ -40,6 +40,7 @@ def get_imports(mod):
     imported_functions = set()
     for name, obj in vars(mod).items():
         if isinstance(obj, types.ModuleType):
+            # if inspect.ismodule(obj) or type(obj).__name__ == 'module_proxy':
             imported_modules.add(obj)
         elif (
             callable(obj)

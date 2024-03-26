@@ -3,7 +3,7 @@ import argparse
 from step_counting.setup_recording import setup_recording, recording_activated
 
 import os
-import importlib
+from importlib.util import spec_from_file_location, module_from_spec
 
 
 def create_profile(module_file, module_data):
@@ -43,9 +43,9 @@ def import_from_path(file_path):
     path = Path(file_path).resolve()  # Ensure the path is absolute
     module_name = path.stem  # Use the file's stem as the module name
 
-    spec = importlib.util.spec_from_file_location(module_name, str(path))
+    spec = spec_from_file_location(module_name, str(path))
     if spec and spec.loader:
-        module = importlib.util.module_from_spec(spec)
+        module = module_from_spec(spec)
         sys.modules[module_name] = module
         spec.loader.exec_module(module)
         return module

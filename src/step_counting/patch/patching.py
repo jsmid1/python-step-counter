@@ -3,6 +3,7 @@ import ctypes
 import gc
 
 from ..utils import utils
+from ..utils.module import is_user_defined_module
 from . import patch_imports, method_switch
 
 from . import py_object as pyo
@@ -191,7 +192,7 @@ def create_patch(module, class_: str, method_name, replacement_method):
             patching_method = patch_py_builtin_class_method
             original_method = get_py_builtin_class_method(class_to_patch, method_name)
 
-    elif utils.is_user_defined_module(module):
+    elif is_user_defined_module(module):
         if class_ == None:
             original_method = getattr(module, method_name)
         else:
