@@ -1,11 +1,9 @@
 import ctypes
 
 from ..non_builtin_types import (
-    class_type,
     dict_items_type,
     dict_keys_type,
     dict_values_type,
-    generator_type,
 )
 
 
@@ -44,7 +42,7 @@ index_f = (c_pyobject_p, c_pyobject_p, c_ssize_t)
 iassign_f = (c_int, c_pyobject_p, c_ssize_t, c_pyobject_p)
 init_f = (c_int, c_pyobject_p, c_pyobject_p, c_void_p)
 
-int_ternary = (c_ssize_t, c_pyobject_p, c_pyobject_p, c_pyobject_p)
+int_ternary = (c_int, c_pyobject_p, c_pyobject_p, c_pyobject_p)
 
 c_int_ternary = c_functype(*int_ternary)
 c_unary = c_functype(*unary)
@@ -175,12 +173,16 @@ py_type_object_structs = {
 }
 
 method_mapping = {
-    '__del__': ('tp_dealloc', None),
+    '__del__': ('tp_dealloc', None, (None, c_pyobject_p)),
     '__repr__': ('tp_repr', None, unary),
     '__call__': ('tp_call', None),
     '__str__': ('tp_str', None, unary),
-    '__getattribute__': ('tp_getattro', None),
-    '__setattr__': ('tp_setattro', None),
+    '__getattribute__': ('tp_getattro', None, binary),
+    '__setattr__': (
+        'tp_setattro',
+        None,
+        (c_ssize_t, c_pyobject_p, c_pyobject_p, c_pyobject_p),
+    ),
     '__init__': (
         'tp_init',
         None,
@@ -192,7 +194,7 @@ method_mapping = {
         (c_pyobject_p, PyTypeObject, c_pyobject_p, c_pyobject_p),
     ),
     '__iter__': ('tp_iter', None, unary),
-    '__next__': ('tp_iternext', None),
+    '__next__': ('tp_iternext', None, unary),
     # TODO decide how to handle this
     # probably one method for all comparisons to match the structure
     'comparison': (
@@ -264,26 +266,16 @@ method_mapping = {
         'sq_inplace_repeat',
         (c_pyobject_p, c_pyobject_p, c_ssize_t),
     ),
-    # Deprecated in Python 3
-    # '__setitem__': (
-    #     'tp_as_sequence',
-    #     'sq_ass_slice',
-    #     'ssizessizeobjargproc',
-    # ),
     '__delslice__': (
         'tp_as_sequence',
         'sq_ass_slice',
         'ssizessizeobjargproc',
-    ),  # Deprecated in Python 3
-    # Mapping operations mappings
-    # '__delitem__': (
-    #     'tp_as_mapping',
-    #     'mp_ass_subscript',
-    #     (c_ssize_t, c_pyobject_p, c_pyobject_p, c_pyobject_p),
-    # ),
+    ),
 }
 
-numeric_classes = [int, float, complex]
+import collections
+
+numeric_classes = [bool, int, float, complex]
 sequence_classes = [str, list, tuple, range]
 
 
@@ -310,12 +302,13 @@ def get_function_mapping(class_name, method_name):
                 dict_items_type,
                 dict_keys_type,
                 dict_values_type,
+                collections.deque,
             ]:
                 return ('tp_as_sequence', 'sq_length', (c_ssize_t, c_pyobject_p))
             return ('tp_as_mapping', 'mp_length', (c_ssize_t, c_pyobject_p))
 
         case '__getitem__':
-            if class_name in sequence_classes:
+            if class_name in [collections.deque]:
                 return (
                     'tp_as_sequence',
                     'sq_item',
@@ -324,7 +317,7 @@ def get_function_mapping(class_name, method_name):
             return ('tp_as_mapping', 'mp_subscript', binary)
 
         case '__setitem__':
-            if class_name in sequence_classes:
+            if class_name in [collections.deque]:
                 return (
                     'tp_as_sequence',
                     'sq_ass_item',
@@ -333,291 +326,12 @@ def get_function_mapping(class_name, method_name):
             return (
                 'tp_as_mapping',
                 'mp_ass_subscript',
-                (c_ssize_t, c_pyobject_p, c_pyobject_p, c_pyobject_p),
+                int_ternary,
             )
-
-        # deprecated in python3
-        # case '__delitem__':
-        #     if class_name in sequence_classes:
-        #         return ('tp_as_sequence', 'sq_ass_item', (c_ssize_t, c_pyobject_p, c_pyobject_p, c_pyobject_p))
-        #     return ('tp_as_mapping', 'mp_ass_subscript', (c_ssize_t, c_pyobject_p, c_pyobject_p, c_pyobject_p))
 
         case _:
             return method_mapping.get(method_name, None)
 
-
-py_method_def_by_class = {
-    str: [
-        'encode',
-        'replace',
-        'split',
-        'rsplit',
-        'join',
-        'capitalize',
-        'casefold',
-        'title',
-        'center',
-        'count',
-        'expandtabs',
-        'find',
-        'partition',
-        'index',
-        'ljust',
-        'lower',
-        'lstrip',
-        'rfind',
-        'rindex',
-        'rjust',
-        'rstrip',
-        'rpartition',
-        'splitlines',
-        'strip',
-        'swapcase',
-        'translate',
-        'upper',
-        'startswith',
-        'endswith',
-        'removeprefix',
-        'removesuffix',
-        'isascii',
-        'islower',
-        'isupper',
-        'istitle',
-        'isspace',
-        'isdecimal',
-        'isdigit',
-        'isnumeric',
-        'isalpha',
-        'isalnum',
-        'isidentifier',
-        'isprintable',
-        'zfill',
-        'format',
-        'format_map',
-        '__format__',
-        'maketrans',
-        '__sizeof__',
-        '__getnewargs__',
-    ],
-    list: [
-        '__getitem__',
-        '__reversed__',
-        '__sizeof__',
-        'clear',
-        'copy',
-        'append',
-        'insert',
-        'extend',
-        'pop',
-        'remove',
-        'index',
-        'count',
-        'reverse',
-        'sort',
-        '__class_getitem__',
-    ],
-    dict: [
-        '__sizeof__',
-        'get',
-        'setdefault',
-        'pop',
-        'popitem',
-        'keys',
-        'items',
-        'values',
-        'update',
-        'fromkeys',
-        'clear',
-        'copy',
-        '__reversed__',
-        '__class_getitem__',
-    ],
-    set: [
-        'add',
-        'clear',
-        '__contains__',
-        'copy',
-        'discard',
-        'difference',
-        'difference_update',
-        'intersection',
-        'intersection_update',
-        'isdisjoint',
-        'issubset',
-        'issuperset',
-        'pop',
-        '__reduce__',
-        'remove',
-        '__sizeof__',
-        'symmetric_difference',
-        'symmetric_difference_update',
-        'union',
-        'update',
-        '__class_getitem__',
-    ],
-    tuple: [
-        '__getnewargs__',
-        'index',
-        'count',
-        '__class_getitem__',
-    ],
-    int: [
-        'conjugate',
-        'bit_length',
-        'bit_count',
-        'to_bytes',
-        'from_bytes',
-        'as_integer_ratio',
-        '__trunc__',
-        '__floor__',
-        '__ceil__',
-        '__round__',
-        '__getnewargs__',
-        '__format__',
-        '__sizeof__',
-        #'is_integer',
-    ],
-    float: [
-        'conjugate',
-        '__trunc__',
-        '__floor__',
-        '__ceil__',
-        '__round__',
-        'as_integer_ratio',
-        'fromhex',
-        'hex',
-        'is_integer',
-        '__getnewargs__',
-        '__getformat__',
-        '__format__',
-    ],
-    bytes: [
-        '__getnewargs__',
-        'capitalize',
-        'center',
-        'count',
-        'decode',
-        'endswith',
-        'expandtabs',
-        'find',
-        'fromhex',
-        'hex',
-        'index',
-        'isalnum',
-        'isalpha',
-        'isascii',
-        'isdigit',
-        'islower',
-        'isspace',
-        'istitle',
-        'isupper',
-        'join',
-        'ljust',
-        'lower',
-        'lstrip',
-        'maketrans',
-        'partition',
-        'replace',
-        'removeprefix',
-        'removesuffix',
-        'rfind',
-        'rindex',
-        'rjust',
-        'rpartition',
-        'rsplit',
-        'rstrip',
-        'split',
-        'splitlines',
-        'startswith',
-        'strip',
-        'swapcase',
-        'title',
-        'translate',
-        'upper',
-        'zfill',
-    ],
-    bytearray: [
-        '__alloc__',
-        # 'reduce',
-        # 'reduce_ex',
-        '__sizeof__',
-        'append',
-        'capitalize',
-        'center',
-        'clear',
-        'copy',
-        'count',
-        'decode',
-        'endswith',
-        'expandtabs',
-        'extend',
-        'find',
-        'fromhex',
-        'hex',
-        'index',
-        'insert',
-        'isalnum',
-        'isalpha',
-        'isascii',
-        'isdigit',
-        'islower',
-        'isspace',
-        'istitle',
-        'isupper',
-        'join',
-        'ljust',
-        'lower',
-        'lstrip',
-        'maketrans',
-        'partition',
-        'pop',
-        'remove',
-        'replace',
-        'removeprefix',
-        'removesuffix',
-        'reverse',
-        'rfind',
-        'rindex',
-        'rjust',
-        'rpartition',
-        'rsplit',
-        'rstrip',
-        'split',
-        'splitlines',
-        'startswith',
-        'strip',
-        'swapcase',
-        'title',
-        'translate',
-        'upper',
-        'zfill',
-    ],
-    complex: ['conjugate', 'imag', 'real'],
-    range: [
-        '__reversed__',
-        '__reduce__',
-        'count',
-        'index',
-    ],
-    enumerate: ['__reduce__', '__class_getitem__'],
-    generator_type: [
-        'send',
-        'throw',
-        'close',
-        '__sizeof__',
-    ],
-    dict_keys_type: [
-        'isdisjoint',
-        '__reversed__',
-    ],
-    dict_values_type: [
-        '__reversed__',
-    ],
-    dict_items_type: [
-        'isdisjoint',
-        '__reversed__',
-    ],
-}
 
 PyObject._fields_ = [
     ('ob_refcnt', c_ssize_t),
