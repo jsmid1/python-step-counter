@@ -122,9 +122,6 @@ special_patch_methods = {
     'tuple_iterator': {
         '__next__': patchtuple.patch_tuple_iterator_next,
     },
-    'list_iterator': {
-        '__next__': patchlist.patch_list_iterator_next,
-    },
     'dict': {
         '__getitem__': patchdictionary.patch_dictionary_getitem,
         '__setitem__': patchdictionary.patch_dictionary_setitem,

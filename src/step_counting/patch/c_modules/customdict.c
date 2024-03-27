@@ -6,11 +6,12 @@ PyObject* dictionary_len_patched_method;
 PyObject* dictionary_delitem_patched_method;
 PyObject* dictionary_getitem_patched_method;
 PyObject* dictionary_setitem_patched_method;
+PyObject* dictionary_iter_patched_method;
+
 
 static int patched_dictionary_contains(PyObject *self, PyObject* key) {
     PyObject* result = PyObject_CallFunction(dictionary_contains_patched_method, "(OO)", self, key);
 
-    // TODO: Error checking
     return Py_IsTrue(result);
 }
 
@@ -20,32 +21,16 @@ static long patched_dictionary_len(PyObject *self) {
     return PyLong_AsLong(result);
 }
 
-// dict.__delitem__ internaly only calls dict.__setitem__ with value NULL. 
-// Therefore it cannot be patched separately from dict.__setitem__.
-// So to patch __delitem__ method we need to change setitem
-// and change the behaviour in case value is NULL.
-// static int patched_dictionary_delitem(PyObject *self, PyObject *key, PyObject* value) {
-//     PyObject* result = PyObject_CallFunctionObjArgs(dictionary_delitem_patched_method, self, key, value);
-//     //PyObject_CallFunction(dictionary_delitem_patched_method, "(OO)", self, key, NULL);
-
-//         if (!result) {
-//         // If result is NULL, an error occurred. You should set an appropriate error.
-//         PyErr_SetString(PyExc_RuntimeError, "Error calling patched __setitem__ method");
-//         return -1; // Indicate failure
-//     }
-
-//     Py_DECREF(result); // Clean up reference to result
-
-//     return 0;
-// }
-
 static int patched_dictionary_setitem(PyObject *self, PyObject *key, PyObject *value) {
+    // NULL value means delitem
+    assert(value != NULL);
+
     PyObject* result = PyObject_CallFunction(dictionary_setitem_patched_method, "(OOO)", self, key, value);
 
-        if (!result) {
+    if (!result) {
         // If result is NULL, an error occurred. You should set an appropriate error.
         PyErr_SetString(PyExc_RuntimeError, "Error calling patched __setitem__ method");
-        return -1; // Indicate failure
+        return -1;
     }
 
     Py_DECREF(result); // Clean up reference to result
@@ -54,10 +39,13 @@ static int patched_dictionary_setitem(PyObject *self, PyObject *key, PyObject *v
 }
 
 static PyObject *patched_dictionary_getitem(PyObject *self, PyObject* key) {
-    PyObject* result = PyObject_CallFunction(dictionary_getitem_patched_method, "(OO)", self, key);
-
-    return result;
+    return PyObject_CallFunction(dictionary_getitem_patched_method, "(OO)", self, key);
 }
+
+static PyObject* patched_dictionary_iter(PyObject *self) {
+    return PyObject_CallFunction(dictionary_iter_patched_method, "(O)", self);
+}
+
 
 static PyObject* patch_dictionary_len(PyObject* self, PyObject* args) {
     PyObject* patched_method;
@@ -98,25 +86,6 @@ static PyObject* patch_dictionary_contains(PyObject* self, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-// static PyObject* patch_dictionary_delitem(PyObject* self, PyObject* args) {
-//     PyObject* patched_method;
-//     if (!PyArg_ParseTuple(args, "O", &patched_method)) {
-//         return NULL;
-//     }
-//     if (!PyCallable_Check(patched_method)) {
-//         PyErr_SetString(PyExc_TypeError, "parameter must be callable");
-//         return NULL;
-//     }
-
-//     Py_XINCREF(patched_method); // Increase reference count
-
-//     dictionary_delitem_patched_method = patched_method;
-
-//     PyDict_Type.tp_as_mapping->mp_ass_subscript = patched_dictionary_delitem;
-
-//     Py_RETURN_NONE;
-// }
-
 static PyObject* patch_dictionary_getitem(PyObject* self, PyObject* args) {
     PyObject* patched_method;
     if (!PyArg_ParseTuple(args, "O", &patched_method)) {
@@ -155,17 +124,6 @@ static PyObject* patch_dictionary_setitem(PyObject* self, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-
-PyObject* dict_iter_patched_method;
-
-static PyObject* patched_dict_iter(PyObject *self) {
-    PyObject* result = PyObject_CallFunction(dict_iter_patched_method, "(O)", self);
-
-    // TODO: Error checking
-    return result;
-}
-
-
 static PyObject* patch_dictionary_iter(PyObject* self, PyObject* args) {
     PyObject* patched_method;
     if (!PyArg_ParseTuple(args, "O", &patched_method)) {
@@ -179,9 +137,9 @@ static PyObject* patch_dictionary_iter(PyObject* self, PyObject* args) {
 
     Py_XINCREF(patched_method); // Increase reference count
 
-    dict_iter_patched_method = patched_method;
+    dictionary_iter_patched_method = patched_method;
 
-    PyDict_Type.tp_iter = patched_dict_iter;
+    PyDict_Type.tp_iter = patched_dictionary_iter;
 
     Py_RETURN_NONE;
 }

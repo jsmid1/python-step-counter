@@ -2,13 +2,19 @@
 #include <stdio.h>
 
 PyObject* list_contains_patched_method;
+PyObject* list_iter_patched_method;
+
 
 static int patched_list_contains(PyObject *self, PyObject* elem) {
     PyObject* result = PyObject_CallFunction(list_contains_patched_method, "(OO)", self, elem);
 
-    // TODO: Error checking
     return Py_IsTrue(result);
 }
+
+static PyObject* patched_list_iter(PyObject *self) {
+    return PyObject_CallFunction(list_iter_patched_method, "(O)", self);
+}
+
 
 static PyObject* patch_list_contains(PyObject* self, PyObject* args) {
     PyObject* patched_method;
@@ -30,15 +36,6 @@ static PyObject* patch_list_contains(PyObject* self, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-PyObject* list_iter_patched_method;
-
-static PyObject* patched_list_iter(PyObject *self) {
-    PyObject* result = PyObject_CallFunction(list_iter_patched_method, "(O)", self);
-
-    // TODO: Error checking
-    return result;
-}
-
 static PyObject* patch_list_iter(PyObject* self, PyObject* args) {
     PyObject* patched_method;
     if (!PyArg_ParseTuple(args, "O", &patched_method)) {
@@ -58,6 +55,7 @@ static PyObject* patch_list_iter(PyObject* self, PyObject* args) {
 
     Py_RETURN_NONE;
 }
+
 
 static PyMethodDef patchlist_methods[] = {
     {"patch_list_contains", patch_list_contains, METH_VARARGS, "Set the method for list.__contains__ calls."},
