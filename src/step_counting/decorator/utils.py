@@ -1,6 +1,8 @@
 import sys
 from ..original_methods import list_iter, int_eq, dict_get
 
+_hash = hash
+
 
 # TODO make something better. this is abomination
 def obj_in_list(string, lst):
@@ -14,7 +16,7 @@ def obj_in_list(string, lst):
     # theoratically incorect
     for item in list_iter(lst):
         # print(hash(item), hash(string))
-        if int_eq(hash(item.__name__), hash(string)):
+        if int_eq(_hash(item.__name__), _hash(string)):
             return True
     return False
 

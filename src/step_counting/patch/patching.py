@@ -18,7 +18,6 @@ tp_func_dict = {}
 
 def substitute_py_methods_structure(_, class_, tyobj, tp_name, struct_ty):
     tp_as_obj = struct_ty()
-    # tp_as_dict[(class_, tp_name)] = tp_as_obj
     tp_as_new_ptr = ctypes.cast(ctypes.addressof(tp_as_obj), ctypes.POINTER(struct_ty))
 
     setattr(tyobj, tp_name, tp_as_new_ptr)
@@ -71,8 +70,8 @@ def patch_py_object_method(_, class_, method_name, replacement_method):
     )
 
 
-def patch_py_builtin_method(_, method_name, replacement_method):
-    _setattr(builtins, method_name, replacement_method)
+def patch_py_builtin_method(module, _, method_name, replacement_method):
+    setattr(builtins, method_name, replacement_method)
 
 
 def patchable_builtin(class_):

@@ -21,7 +21,6 @@ from .patch.patching import create_patch, apply, revert
 from .original_methods import dict_items
 
 from .utils.module import get_imports, is_user_defined_module, get_module_by_name
-
 from .utils.utils import get_c_method
 
 py_objects = {
@@ -50,6 +49,83 @@ py_objects = {
         collections.deque,
     },
 }
+
+builtin_methods = [
+    'print',
+    'AssertionError',
+    #'AttributeError',
+    #'hasattr',
+    'sum',
+    'enumerate',
+    '__build_class__',
+    # 'isinstance',
+    'open',
+    #
+    'print',
+    '__build_class__',
+    '__debug__',
+    '__doc__',
+    '__loader__',
+    '__name__',
+    '__package__',
+    '__spec__',
+    'aiter',
+    'all',
+    'anext',
+    'any',
+    'ascii',
+    'bin',
+    'bool',
+    'breakpoint',
+    'callable',
+    'chr',
+    'classmethod',
+    'compile',
+    'copyright',
+    'credits',
+    'delattr',
+    'dir',
+    'eval',
+    #'exec',
+    'exit',
+    'filter',
+    'format',
+    'globals',
+    #'hasattr',
+    'hash',
+    'help',
+    'hex',
+    #'id',
+    'input',
+    #'isinstance',
+    'issubclass',
+    'license',
+    'locals',
+    #'map',
+    #'max',
+    'min',
+    'next',
+    'oct',
+    'open',
+    'ord',
+    'print',
+    'property',
+    'quit',
+    'staticmethod',
+    'sum',
+    'super',
+    # 'type',
+    'vars',
+    'zip',
+]
+
+
+def decorate_builtins(decorator):
+    for obj_name in builtin_methods:
+        obj = getattr(builtins, obj_name)
+
+        if callable(obj):
+            create_patch(builtins, None, obj_name, decorator(obj, 'builtins', obj_name))
 
 
 def decorate_defaults(decorator):
@@ -152,6 +228,8 @@ def setup_recording(module, ignored_modules: set):
         decorate_all_methods_in_module(module, decorator)
 
     decorate_defaults(decorator)
+
+    decorate_builtins(decorator)
 
     return recorder, user_defined_modules
 
