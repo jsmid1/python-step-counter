@@ -14,14 +14,9 @@ static PyObject * patched_tuple_iterator_next(PyObject *self) {
 static Py_ssize_t patched_tuple_len(PyObject *self) {
     PyObject* result = PyObject_CallFunction(tuple_len_patched_method, "(O)", self);
 
-    // TODO: Error checking
     return PyLong_AsLong(result);
 }
 
-// This function is not being used. Possibly due to optimization by the interpreter.
-// Need to fix the result returning.
-// May be correct but do not know how to test yet. Getitem should always return PyObject*.
-// ^ https://hg.python.org/cpython/file/04f714765c13/Objects/abstract.c#l1498 Should be correct
 static PyObject *patched_tuple_getitem(PyObject *self, PyObject * elem) {
     return PyObject_CallFunction(tuple_getitem_patched_method, "(OO)", self, elem);
 }
