@@ -16,9 +16,8 @@ from .non_builtin_types import (
 from .ignor import get_ignored_methods
 from .patch import patch_imports
 from .patch import py_object as pyo
-from .patch.default_classes.default_classes import get_py_method_defs, is_py_method_def
+from .patch.default_classes.default_classes import is_py_method_def
 from .patch.patching import create_patch, apply, revert
-from .original_methods import dict_items
 
 from .utils.module import get_imports, is_user_defined_module, get_module_by_name
 from .utils.utils import get_c_method
@@ -145,9 +144,8 @@ def decorate_defaults(decorator):
                     orig_method = get_c_method(class_, n)
 
                 if orig_method is None:
-                    continue
                     raise Exception(
-                        f'Unknwn method {n} of class {class_.__name__} in module {module.__name__}'
+                        f'Unknown method {n} of class {class_.__name__} in module {module.__name__}'
                     )
 
                 create_patch(
