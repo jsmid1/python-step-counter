@@ -36,7 +36,7 @@ class simple_call_recorder:
         self.counter = counter()
 
     def add_record(self, cls, func_name, arguments):
-        self.counter.increase(record_eval)
+        self.counter.increase(evaluate_record(cls, func_name, arguments))
 
     def get_data(self):
         return self.counter

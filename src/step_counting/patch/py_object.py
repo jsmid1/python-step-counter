@@ -175,7 +175,7 @@ py_type_object_structs = {
 method_mapping = {
     '__del__': ('tp_dealloc', None, (None, c_pyobject_p)),
     '__repr__': ('tp_repr', None, unary),
-    '__call__': ('tp_call', None),
+    '__call__': ('tp_call', None, unary),  # TODO recheck type
     '__str__': ('tp_str', None, unary),
     '__getattribute__': ('tp_getattro', None, binary),
     '__setattr__': (
@@ -273,10 +273,10 @@ method_mapping = {
     ),
 }
 
-import collections
+from collections import deque
 
 numeric_classes = [bool, int, float, complex]
-sequence_classes = [str, list, tuple, range]
+sequence_classes = [str, list, tuple, range, memoryview]
 
 
 def get_function_mapping(class_name, method_name):
@@ -302,13 +302,13 @@ def get_function_mapping(class_name, method_name):
                 dict_items_type,
                 dict_keys_type,
                 dict_values_type,
-                collections.deque,
+                deque,
             ]:
                 return ('tp_as_sequence', 'sq_length', (c_ssize_t, c_pyobject_p))
             return ('tp_as_mapping', 'mp_length', (c_ssize_t, c_pyobject_p))
 
         case '__getitem__':
-            if class_name in [collections.deque]:
+            if class_name in [deque]:
                 return (
                     'tp_as_sequence',
                     'sq_item',
@@ -317,7 +317,7 @@ def get_function_mapping(class_name, method_name):
             return ('tp_as_mapping', 'mp_subscript', binary)
 
         case '__setitem__':
-            if class_name in [collections.deque]:
+            if class_name in [deque]:
                 return (
                     'tp_as_sequence',
                     'sq_ass_item',

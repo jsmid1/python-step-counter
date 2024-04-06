@@ -2,9 +2,10 @@ from .complexities import *
 
 
 def set_or_complexity(args):
-    sequence = args[0]
-    multiplier = args[1]
-    return multiplier * len(sequence)
+    sequence_one = args[0]
+    sequence_two = args[1]
+
+    return len(sequence_one) + len(sequence_two)
 
 
 def min_len_complexity(args):

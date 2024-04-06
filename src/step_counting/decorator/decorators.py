@@ -5,7 +5,7 @@ from .records.record_classes import (
     sequence_call_recorder,
     detail_call_recorder,
 )
-from .utils import get_caller_module_info, obj_in_list
+from .utils import get_caller_module_info, obj_in_list, determine_method
 
 
 def create_decorator_default(tracked_modules):
@@ -16,7 +16,7 @@ def create_decorator_default(tracked_modules):
         def wrapper(*args, **kwargs):
             module_name, _ = get_caller_module_info()
             if obj_in_list(module_name, tracked_modules):
-                recorder.add_record(class_, func_name, args)
+                recorder.add_record(class_, determine_method(func_name, args), args)
             return func(*args, **kwargs)
 
         return wrapper
@@ -32,7 +32,9 @@ def create_decorator_sequence(tracked_modules):
         def wrapper(*args, **kwargs):
             module_name, _ = get_caller_module_info()
             if obj_in_list(module_name, tracked_modules):
-                recorder.add_record(module_name, class_, func_name)
+                recorder.add_record(
+                    module_name, class_, determine_method(func_name, args)
+                )
             return func(*args, **kwargs)
 
         return wrapper
@@ -48,7 +50,13 @@ def create_decorator_detail(tracked_modules):
         def wrapper(*args, **kwargs):
             module_name, line_number = get_caller_module_info()
             if obj_in_list(module_name, tracked_modules):
-                recorder.add_record(module_name, line_number, class_, func_name, args)
+                recorder.add_record(
+                    module_name,
+                    line_number,
+                    class_,
+                    determine_method(func_name, args),
+                    args,
+                )
 
             return func(*args, **kwargs)
 

@@ -21,6 +21,24 @@ def obj_in_list(string, lst):
     return False
 
 
+Py_LT, Py_LE, Py_EQ, Py_NE, Py_GT, Py_GE = range(6)
+comparison_methods = {
+    Py_LT: '__lt__',
+    Py_LE: '__le__',
+    Py_EQ: '__eq__',
+    Py_NE: '__ne__',
+    Py_GT: '__gt__',
+    Py_GE: '__ge__',
+}
+
+
+def determine_method(method_name, args):
+    if str.__eq__(method_name, 'comparison'):
+        return dict.__getitem__(comparison_methods, tuple.__getitem__(args, 2))
+
+    return method_name
+
+
 def get_caller_module_info():
     try:
         caller_frame = sys._getframe(2)

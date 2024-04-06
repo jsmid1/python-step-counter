@@ -1,72 +1,50 @@
-import builtins
-from ..original_methods import (
-    _getattr,
-    _setattr,
-    _hasattr,
-    _import,
-    _isinstance,
-    _type,
-    dict_get,
-)
+import inspect
 
-
-replacement_import_methods = {}
+from ..utils.module import is_user_defined_module
+from ..original_methods import _setattr, _import, _callable
 
 
 class module_proxy:
     pass
 
 
-def make_proxy(module):
+class class_proxy:
+    pass
+
+
+def make_proxy(module, decorator):
     proxy = module_proxy()
     proxy.__name__ = module.__name__
 
-    replacement_methods = replacement_import_methods.get(module.__name__, None)
+    for name, obj in module.__dict__.items():
+        if inspect.isclass(obj):
+            class_ = class_proxy()
+            for attr_name in dir(obj):
+                if attr_name == '__class__':
+                    continue
 
-    if replacement_methods is None:
-        return module
-
-    for (class_name, method_name), replacement_method in replacement_methods.items():
-        if replacement_method is None:
-            continue
-
-        if class_name is not None:
-            if not _hasattr(module, class_name):
-                raise Exception(
-                    f'Module {module.__name__} does not contain method {method_name}'
-                )
-
-            if _hasattr(proxy, class_name):
-                class_ = _getattr(proxy, class_name)
-            else:
-                class_ = _getattr(module, class_name)
-
-            _setattr(class_, method_name, replacement_method)
-            _setattr(proxy, class_name, class_)
-        else:
-            if not _hasattr(module, method_name):
-                raise Exception(
-                    f'Class {class_name} in module {module.__name__} does not contain method {method_name}'
-                )
-
-            _setattr(proxy, method_name, replacement_method)
+                attr = getattr(obj, attr_name)
+                if _callable(attr):
+                    _setattr(class_, attr_name, decorator(attr, name, attr_name))
+            _setattr(proxy, name, class_)
+        elif _callable(obj):
+            _setattr(proxy, name, decorator(obj, module.__name__, obj.__name__))
 
     return proxy
 
 
-def wrap_import(_, old, name, *args, **kwargs):
-    if dict_get(replacement_import_methods, name, None) is not None:
-        return make_proxy(_import(name, *args, **kwargs))
+def import_proxy(decorator, user_defined_modules, name, *args, **kwargs):
+    module = _import(name, *args, **kwargs)
+    if is_user_defined_module(module):
+        user_defined_modules.append(module)
+        return make_proxy(module, decorator)
+    return module
 
-    return old(name, *args, **kwargs)
 
+def import_decorator(decorator, user_defined_modules):
+    def wrapped_import(*args, **kwargs):
+        return import_proxy(
+            decorator, user_defined_modules, *tuple.__iter__(args), **kwargs
+        )
 
-def wrap_it(attr, func):
-    old = _getattr(builtins, attr)
-
-    def with_patched(*args, **kwargs):
-        return func(attr, old, *tuple.__iter__(args), **kwargs)
-
-    patched = func if _isinstance(func, _type) else with_patched
-
-    return patched
+    return wrapped_import

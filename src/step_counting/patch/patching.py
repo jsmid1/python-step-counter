@@ -1,16 +1,17 @@
-import builtins
 import ctypes
 import gc
+import inspect
+from sys import stdlib_module_names
 
 from ..utils import utils
 from ..utils.module import is_user_defined_module
-from . import patch_imports, method_switch
-
+from . import patch_imports
 from . import py_object as pyo
 from ..non_builtin_types import non_builtin_types
-from .default_classes.default_classes import py_method_defs, is_py_method_def
-from .bin import patchdictionary, patchint, patchlist, patchtuple
-
+from .default_classes.default_classes import is_py_method_def
+from .bin import patchdictionary, patchint, patchtuple
+from .method_switch import MethodSwitch
+from ..utils.utils import get_c_method
 
 tp_as_dict = {}
 tp_func_dict = {}
@@ -28,7 +29,10 @@ def patch_py_object_method_with_type(
 ):
     tyobj = pyo.PyTypeObject.from_address(id(class_))
 
-    cfunc = method_type(replacement_method)
+    if inspect.isfunction(replacement_method):
+        cfunc = method_type(replacement_method)
+    else:
+        cfunc = ctypes.cast(replacement_method, method_type)
 
     if tp_name in dict.__iter__(pyo.py_type_object_structs):
         struct_ty = pyo.py_type_object_structs[tp_name]
@@ -47,6 +51,7 @@ def patch_py_object_method_with_type(
             )
 
         tp_func_dict[(class_, tp_name)] = cfunc
+
         # override function call
         setattr(tyobj, tp_name, cfunc)
 
@@ -71,7 +76,7 @@ def patch_py_object_method(_, class_, method_name, replacement_method):
 
 
 def patch_py_builtin_method(module, _, method_name, replacement_method):
-    setattr(builtins, method_name, replacement_method)
+    setattr(module, method_name, replacement_method)
 
 
 def patchable_builtin(class_):
@@ -124,7 +129,7 @@ special_patch_methods = {
     },
     'dict': {
         '__getitem__': patchdictionary.patch_dictionary_getitem,
-        '__setitem__': patchdictionary.patch_dictionary_setitem,
+        #'__setitem__': patchdictionary.patch_dictionary_setitem,
         '__contains__': patchdictionary.patch_dictionary_contains,
         '__iter__': patchdictionary.patch_dictionary_iter,
     },
@@ -141,11 +146,6 @@ def set_import_replacement_method(module, class_, method_name, patched_func):
     ] = patched_func
 
 
-replaced_methods = dict()
-from .method_switch import MethodSwitch
-from ..utils.utils import get_c_method
-
-
 method_switches = dict()
 
 
@@ -153,7 +153,7 @@ def create_patch(module, class_: str, method_name, replacement_method):
     if not callable(replacement_method):
         raise Exception('Given function is not callable!')
 
-    if module.__name__ in ['builtins']:
+    if module.__name__ in stdlib_module_names:
         if class_ is None:
             patching_method = patch_py_builtin_method
             original_method = getattr(module, method_name)
@@ -163,6 +163,7 @@ def create_patch(module, class_: str, method_name, replacement_method):
 
             if class_to_patch is None:
                 class_to_patch = getattr(module, class_)
+
             if class_to_patch is None:
                 raise Exception('Given class is not defined in builtins!')
 
@@ -179,15 +180,6 @@ def create_patch(module, class_: str, method_name, replacement_method):
                     f'Unknown method: {method_name} of class {class_} in {module.__name__}'
                 )
 
-    elif module.__name__ in ['collections']:
-        class_to_patch = getattr(module, class_)
-        if pyo.get_function_mapping(class_to_patch, method_name) is not None:
-            patching_method = patch_py_object_method
-            original_method = get_c_method(class_to_patch, method_name)
-        else:
-            patching_method = patch_py_builtin_class_method
-            original_method = get_py_builtin_class_method(class_to_patch, method_name)
-
     elif is_user_defined_module(module):
         if class_ == None:
             original_method = getattr(module, method_name)
@@ -198,9 +190,9 @@ def create_patch(module, class_: str, method_name, replacement_method):
         class_to_patch = class_
 
     else:
-        original_method = None
-        patching_method = set_import_replacement_method
-        class_to_patch = class_
+        raise Exception(
+            f'Unsuported method {method_name} of class {class_} in module {module.__name__}'
+        )
 
     global method_switches
 
@@ -218,6 +210,16 @@ def create_patch(module, class_: str, method_name, replacement_method):
             original_method,
             replacement_method,
         )
+
+
+def apply_one(module_name, class_name, method_name):
+    ms = method_switches.get((module_name, class_name, method_name))
+    ms.overwrite(module_name, class_name, method_name, ms.get_replacement_method())
+
+
+def revert_one(module_name, class_name, method_name):
+    ms = method_switches.get((module_name, class_name, method_name))
+    ms.overwrite(module_name, class_name, method_name, ms.get_original_method())
 
 
 def apply():

@@ -60,3 +60,33 @@ def get_imports(mod):
     imported_modules.update(subimports)
 
     return imported_modules, imported_functions
+
+
+def get_module_imports(mod, ignored_modules):
+    if mod in ignored_modules:
+        return {}, {}
+
+    imported_modules = set()
+    imported_functions = set()
+    for name, obj in vars(mod).items():
+        if isinstance(obj, types.ModuleType):
+            # if inspect.ismodule(obj) or type(obj).__name__ == 'module_proxy':
+            imported_modules.add(obj)
+        elif (
+            callable(obj)
+            and hasattr(obj, '__module__')
+            and obj.__module__ != mod.__name__
+        ):
+            if callable(obj):
+                imported_functions.add(obj)
+
+    subimports = set()
+    for module in imported_modules:
+        if is_user_defined_module(module):
+            imps, funcs = get_module_imports(module, ignored_modules)
+            subimports.update(imps)
+            imported_functions.update(funcs)
+
+    imported_modules.update(subimports)
+
+    return imported_modules, imported_functions

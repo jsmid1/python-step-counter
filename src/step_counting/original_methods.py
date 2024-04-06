@@ -13,6 +13,7 @@ _getattr = getattr
 _hasattr = hasattr
 _isinstance = isinstance
 _type = type
+_callable = callable
 
 list_append = list.append
 list_getitem = list.__getitem__

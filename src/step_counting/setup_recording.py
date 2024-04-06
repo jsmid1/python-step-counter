@@ -13,14 +13,31 @@ from .non_builtin_types import (
     tuple_iter_type,
 )
 
-from .ignor import get_ignored_methods
-from .patch import patch_imports
+from .ignor import ignored_methods
+from .patch.patch_imports import import_decorator
 from .patch import py_object as pyo
 from .patch.default_classes.default_classes import is_py_method_def
-from .patch.patching import create_patch, apply, revert
+from .patch.patching import (
+    create_patch,
+    apply,
+    revert,
+)
 
-from .utils.module import get_imports, is_user_defined_module, get_module_by_name
+from .utils.module import (
+    get_module_imports,
+    get_imports,
+    get_module_imports,
+    is_user_defined_module,
+    get_module_by_name,
+)
 from .utils.utils import get_c_method
+
+from .ignor import (
+    get_def_ignored_modules,
+    ignored_specifics,
+    ignored_classes,
+    ignored_class_methods,
+)
 
 py_objects = {
     builtins: {
@@ -35,7 +52,6 @@ py_objects = {
         frozenset,
         bytes,
         bytearray,
-        str,
         memoryview,
         tuple,
         slice,
@@ -74,7 +90,7 @@ builtin_methods = [
     'any',
     'ascii',
     'bin',
-    'bool',
+    # 'bool',
     'breakpoint',
     'callable',
     'chr',
@@ -128,14 +144,10 @@ def decorate_builtins(decorator):
 
 
 def decorate_defaults(decorator):
-    ignored_methods = get_ignored_methods()
     for module, classes in py_objects.items():
         for class_ in classes:
             for n in dir(class_) + ['comparison']:
-                if (class_, n) == (dict, '__iter__'):
-                    continue
-
-                if n in ignored_methods:
+                if n in ignored_methods or (class_, n) in ignored_specifics:
                     continue
 
                 if is_py_method_def(module, class_, n):
@@ -158,26 +170,33 @@ def decorate_defaults(decorator):
 
 def decorate_all_methods_in_module(module, decorator):
     for name, obj in inspect.getmembers(module):
+        if inspect.isclass(obj):
+            if obj.__name__ in ignored_classes:
+                continue
 
-        # inspect.isfunction only works for user define functions
-        # therefore we use callable(obj)
-        if callable(obj):
-            create_patch(module, None, name, decorator(obj, obj.__name__, name))
-
-        if inspect.isclass(obj) and obj.__name__ != 'BuiltinImporter':
             for name, fn in inspect.getmembers(obj, predicate=inspect.isfunction):
-                if name != '__class_getitem__':
+                if name not in ignored_class_methods:
                     create_patch(
                         module,
                         obj.__name__,
                         name,
                         decorator(fn, obj.__name__, name),
                     )
+        # inspect.isfunction only works for user define functions
+        # therefore we use callable(obj)
+        elif callable(obj):
+            create_patch(module, None, name, decorator(obj, module.__name__, name))
 
 
-def wrap_import(decorator):
-    import_wrapper = patch_imports.wrap_it('__import__', patch_imports.wrap_import)
-    setattr(builtins, '__import__', decorator(import_wrapper, 'builtins', '__import__'))
+def wrap_import(decorator, user_defined_modules):
+    import_wrapper = import_decorator(decorator, user_defined_modules)
+
+    create_patch(
+        builtins,
+        None,
+        '__import__',
+        decorator(import_wrapper, 'builtins', '__import__'),
+    )
 
 
 def patch_imported_methods(imported_callables, decorator):
@@ -203,14 +222,18 @@ def patch_imported_methods(imported_callables, decorator):
 
 
 def setup_recording(module, ignored_modules: set):
-    ignored_modules.add('collections')
-    module_imports, imported_callables = get_imports(module)
+    setup_modules, setup_callables = get_def_ignored_modules()
+    ignored_modules.update(setup_modules)
+    module_imports, imported_callables = get_module_imports(module, ignored_modules)
 
     imported_callables = [
-        cal for cal in imported_callables if cal.__module__ not in ignored_modules
+        cal
+        for cal in imported_callables
+        if get_module_by_name(cal.__module__) not in ignored_modules
+        and cal not in setup_callables
     ]
     module_imports = [
-        import_ for import_ in module_imports if import_.__name__ not in ignored_modules
+        import_ for import_ in module_imports if import_ not in ignored_modules
     ]
     user_defined_modules = [
         import_ for import_ in module_imports if is_user_defined_module(import_)
@@ -218,7 +241,7 @@ def setup_recording(module, ignored_modules: set):
 
     decorator, recorder = decorators.create_decorator_detail(user_defined_modules)
 
-    wrap_import(decorator)
+    wrap_import(decorator, user_defined_modules)
 
     patch_imported_methods(imported_callables, decorator)
 
