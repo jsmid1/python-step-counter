@@ -1,0 +1,150 @@
+import sys
+import unittest
+
+from src.step_counting import setup_recording as sr
+from src.step_counting.setup_recording import setup_recording, recording_activated
+
+from ..utils import is_recorded
+
+
+class TestFrozensetMethods(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.module = sys.modules[__name__]
+        self.recorder, _ = setup_recording(self.module, {sys, unittest, sr})
+
+    @classmethod
+    def tearDownClass(self):
+        pass
+
+    def tearDown(self):
+        self.recorder.clear_data()
+
+    def test_frozenset_and(self):
+        with recording_activated():
+            x = frozenset([1, 2])
+            y = x & frozenset([2, 3])
+        self.assertTrue(is_recorded(self.recorder, frozenset, '__and__'))
+
+    # Uses set method
+    def test_frozenset_contains(self):
+        with recording_activated():
+            x = frozenset([1, 2, 3])
+            result = 1 in x
+        self.assertTrue(is_recorded(self.recorder, set, '__contains__'))
+
+    def test_frozenset_eq(self):
+        with recording_activated():
+            x = frozenset([1, 2, 3])
+            result = x == frozenset([1, 2, 3])
+        self.assertTrue(is_recorded(self.recorder, frozenset, '__eq__'))
+
+    def test_frozenset_ge(self):
+        with recording_activated():
+            x = frozenset([1, 2, 3])
+            result = x >= frozenset([1, 2])
+        self.assertTrue(is_recorded(self.recorder, frozenset, '__ge__'))
+
+    def test_frozenset_gt(self):
+        with recording_activated():
+            x = frozenset([1, 2, 3])
+            result = x > frozenset([1, 2])
+        self.assertTrue(is_recorded(self.recorder, frozenset, '__gt__'))
+
+    def test_frozenset_iter(self):
+        with recording_activated():
+            x = frozenset([1, 2, 3])
+            iter(x)
+        self.assertTrue(is_recorded(self.recorder, frozenset, '__iter__'))
+
+    def test_frozenset_le(self):
+        with recording_activated():
+            x = frozenset([1, 2])
+            result = x <= frozenset([1, 2, 3])
+        self.assertTrue(is_recorded(self.recorder, frozenset, '__le__'))
+
+    # Uses set method
+    def test_frozenset_len(self):
+        with recording_activated():
+            x = frozenset([1, 2, 3])
+            len(x)
+        self.assertTrue(is_recorded(self.recorder, set, '__len__'))
+
+    def test_frozenset_lt(self):
+        with recording_activated():
+            x = frozenset([1, 2])
+            result = x < frozenset([1, 2, 3])
+        self.assertTrue(is_recorded(self.recorder, frozenset, '__lt__'))
+
+    def test_frozenset_ne(self):
+        with recording_activated():
+            x = frozenset([1, 2, 3])
+            result = x != frozenset([1, 2])
+        self.assertTrue(is_recorded(self.recorder, frozenset, '__ne__'))
+
+    def test_frozenset_or(self):
+        with recording_activated():
+            x = frozenset([1, 2])
+            y = x | frozenset([3, 4])
+        self.assertTrue(is_recorded(self.recorder, frozenset, '__or__'))
+
+    def test_frozenset_sub(self):
+        with recording_activated():
+            x = frozenset([1, 2, 3])
+            y = x - frozenset([2])
+        self.assertTrue(is_recorded(self.recorder, frozenset, '__sub__'))
+
+    def test_frozenset_xor(self):
+        with recording_activated():
+            x = frozenset([1, 2])
+            y = x ^ frozenset([2, 3])
+        self.assertTrue(is_recorded(self.recorder, frozenset, '__xor__'))
+
+    # Non-dunder methods
+    def test_frozenset_copy(self):
+        with recording_activated():
+            x = frozenset([1, 2, 3])
+            y = x.copy()
+        self.assertTrue(is_recorded(self.recorder, frozenset, 'copy'))
+
+    def test_frozenset_difference(self):
+        with recording_activated():
+            x = frozenset([1, 2, 3])
+            y = x.difference(frozenset([2]))
+        self.assertTrue(is_recorded(self.recorder, frozenset, 'difference'))
+
+    def test_frozenset_intersection(self):
+        with recording_activated():
+            x = frozenset([1, 2, 3])
+            y = x.intersection(frozenset([2, 3, 4]))
+        self.assertTrue(is_recorded(self.recorder, frozenset, 'intersection'))
+
+    def test_frozenset_isdisjoint(self):
+        with recording_activated():
+            x = frozenset([1, 2])
+            result = x.isdisjoint(frozenset([3, 4]))
+        self.assertTrue(is_recorded(self.recorder, frozenset, 'isdisjoint'))
+
+    def test_frozenset_issubset(self):
+        with recording_activated():
+            x = frozenset([1, 2])
+            result = x.issubset(frozenset([1, 2, 3]))
+        self.assertTrue(is_recorded(self.recorder, frozenset, 'issubset'))
+
+    def test_frozenset_issuperset(self):
+        with recording_activated():
+            x = frozenset([1, 2, 3])
+            result = x.issuperset(frozenset([1, 2]))
+        self.assertTrue(is_recorded(self.recorder, frozenset, 'issuperset'))
+
+    def test_frozenset_symmetric_difference(self):
+        with recording_activated():
+            x = frozenset([1, 2])
+            y = x.symmetric_difference(frozenset([2, 3]))
+        self.assertTrue(is_recorded(self.recorder, frozenset, 'symmetric_difference'))
+
+    def test_frozenset_union(self):
+        with recording_activated():
+            x = frozenset([1, 2])
+            y = x.union(frozenset([3, 4]))
+        self.assertTrue(is_recorded(self.recorder, frozenset, 'union'))

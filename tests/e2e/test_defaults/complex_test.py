@@ -1,0 +1,177 @@
+import sys
+import unittest
+
+from src.step_counting import setup_recording as sr
+from src.step_counting.setup_recording import setup_recording, recording_activated
+
+from ..utils import is_recorded
+
+
+class TestComplexMethods(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.module = sys.modules[__name__]
+        self.recorder, _ = setup_recording(self.module, {sys, unittest, sr})
+
+    @classmethod
+    def tearDownClass(self):
+        pass
+
+    def tearDown(self):
+        self.recorder.clear_data()
+
+    def test_complex_abs(self):
+        with recording_activated():
+            x = complex(-1, 1)
+            abs(x)
+        self.assertTrue(is_recorded(self.recorder, complex, '__abs__'))
+
+    def test_complex_add(self):
+        with recording_activated():
+            x = complex(1, 1)
+            x + complex(1, -1)
+        self.assertTrue(is_recorded(self.recorder, complex, '__add__'))
+
+    def test_complex_bool(self):
+        with recording_activated():
+            x = complex(0, 0)
+            bool(x)
+        self.assertTrue(is_recorded(self.recorder, complex, '__bool__'))
+
+    def test_complex_eq(self):
+        with recording_activated():
+            x = complex(1, 1)
+            x == complex(1, 1)
+        self.assertTrue(is_recorded(self.recorder, complex, '__eq__'))
+
+    def test_complex_ge(self):
+        with recording_activated():
+            try:
+                x = complex(1, 1)
+                x >= complex(1, 0)
+            except TypeError:
+                pass
+        self.assertTrue(
+            is_recorded(self.recorder, complex, '__ge__'),
+            "Complex does not support ordering",
+        )
+
+    def test_complex_gt(self):
+        with recording_activated():
+            try:
+                x = complex(1, 1)
+                x > complex(0, 1)
+            except TypeError:
+                pass
+        self.assertTrue(
+            is_recorded(self.recorder, complex, '__gt__'),
+            "Complex does not support ordering",
+        )
+
+    def test_complex_le(self):
+        with recording_activated():
+            try:
+                x = complex(1, 1)
+                x <= complex(1, 0)
+            except TypeError:
+                pass
+        self.assertTrue(
+            is_recorded(self.recorder, complex, '__le__'),
+            "Complex does not support ordering",
+        )
+
+    def test_complex_lt(self):
+        with recording_activated():
+            try:
+                x = complex(1, 1)
+                x < complex(2, 1)
+            except TypeError:
+                pass
+        self.assertTrue(
+            is_recorded(self.recorder, complex, '__lt__'),
+            "Complex does not support ordering",
+        )
+
+    def test_complex_mul(self):
+        with recording_activated():
+            x = complex(1, 1)
+            x * complex(1, -1)
+        self.assertTrue(is_recorded(self.recorder, complex, '__mul__'))
+
+    def test_complex_ne(self):
+        with recording_activated():
+            x = complex(1, 1)
+            x != complex(1, -1)
+        self.assertTrue(is_recorded(self.recorder, complex, '__ne__'))
+
+    def test_complex_neg(self):
+        with recording_activated():
+            x = complex(1, 1)
+            -x
+        self.assertTrue(is_recorded(self.recorder, complex, '__neg__'))
+
+    def test_complex_pos(self):
+        with recording_activated():
+            x = complex(1, 1)
+            +x
+        self.assertTrue(is_recorded(self.recorder, complex, '__pos__'))
+
+    def test_complex_pow(self):
+        with recording_activated():
+            x = complex(1, 1)
+            pow(x, 2)
+        self.assertTrue(is_recorded(self.recorder, complex, '__pow__'))
+
+    @unittest.skip
+    def test_complex_radd(self):
+        with recording_activated():
+            x = complex(1, 1)
+            1 + x
+        self.assertTrue(is_recorded(self.recorder, complex, '__radd__'))
+
+    @unittest.skip
+    def test_complex_rmul(self):
+        with recording_activated():
+            x = complex(1, 1)
+            2 * x
+        self.assertTrue(is_recorded(self.recorder, complex, '__rmul__'))
+
+    @unittest.skip
+    def test_complex_rpow(self):
+        with recording_activated():
+            x = complex(1, 1)
+            2**x
+        self.assertTrue(is_recorded(self.recorder, complex, '__rpow__'))
+
+    @unittest.skip
+    def test_complex_rsub(self):
+        with recording_activated():
+            x = complex(1, 1)
+            1 - x
+        self.assertTrue(is_recorded(self.recorder, complex, '__rsub__'))
+
+    @unittest.skip
+    def test_complex_rtruediv(self):
+        with recording_activated():
+            x = complex(1, 1)
+            1 / x
+        self.assertTrue(is_recorded(self.recorder, complex, '__rtruediv__'))
+
+    def test_complex_sub(self):
+        with recording_activated():
+            x = complex(1, 1)
+            x - complex(1, -1)
+        self.assertTrue(is_recorded(self.recorder, complex, '__sub__'))
+
+    def test_complex_truediv(self):
+        with recording_activated():
+            x = complex(1, 1)
+            x / complex(1, -1)
+        self.assertTrue(is_recorded(self.recorder, complex, '__truediv__'))
+
+    # Non-dunder methods
+    def test_complex_conjugate(self):
+        with recording_activated():
+            x = complex(1, -1)
+            x.conjugate()
+        self.assertTrue(is_recorded(self.recorder, complex, 'conjugate'))
