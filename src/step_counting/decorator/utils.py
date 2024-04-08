@@ -1,4 +1,6 @@
 import sys
+import types
+
 from ..original_methods import list_iter, int_eq, dict_get
 
 _hash = hash
@@ -30,6 +32,28 @@ comparison_methods = {
     Py_GT: '__gt__',
     Py_GE: '__ge__',
 }
+_isinstance = isinstance
+
+
+def get_method_type(cls, method_name):
+    if method_name == 'comparison':
+        return types.FunctionType
+
+    if hasattr(cls, '__dict__') and method_name in cls.__dict__:
+        method = cls.__dict__[method_name]
+        if _isinstance(method, staticmethod):
+            return staticmethod
+        elif _isinstance(method, classmethod):
+            return classmethod
+
+    method = getattr(cls, method_name, None)
+    if method:
+        if _isinstance(method, (types.BuiltinFunctionType, types.MethodType)):
+            return staticmethod
+        elif callable(method):
+            return types.FunctionType
+
+    raise ValueError(f'Method {method_name} not found in {cls}.')
 
 
 def determine_method(method_name, args):

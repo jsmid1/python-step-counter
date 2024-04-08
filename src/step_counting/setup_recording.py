@@ -2,6 +2,8 @@ import builtins
 import collections
 import inspect
 
+from .ib111_setup import setup_ib111_modules
+
 from .decorator import decorators
 from .non_builtin_types import (
     dict_items_type,
@@ -94,7 +96,7 @@ builtin_methods = [
     'breakpoint',
     'callable',
     'chr',
-    'classmethod',
+    #'classmethod',
     'compile',
     'copyright',
     'credits',
@@ -117,7 +119,7 @@ builtin_methods = [
     'license',
     'locals',
     #'map',
-    #'max',
+    'max',
     'min',
     'next',
     'oct',
@@ -126,9 +128,9 @@ builtin_methods = [
     'print',
     'property',
     'quit',
-    'staticmethod',
+    #'staticmethod',
     'sum',
-    'super',
+    #'super',
     # 'type',
     'vars',
     'zip',
@@ -140,7 +142,7 @@ def decorate_builtins(decorator):
         obj = getattr(builtins, obj_name)
 
         if callable(obj):
-            create_patch(builtins, None, obj_name, decorator(obj, 'builtins', obj_name))
+            create_patch(builtins, None, obj_name, decorator(obj, builtins, obj_name))
 
 
 def decorate_defaults(decorator):
@@ -160,12 +162,13 @@ def decorate_defaults(decorator):
                         f'Unknown method {n} of class {class_.__name__} in module {module.__name__}'
                     )
 
-                create_patch(
-                    module,
-                    class_.__name__,
-                    n,
-                    decorator(orig_method, class_.__name__, n),
-                )
+                if callable(orig_method):
+                    create_patch(
+                        module,
+                        class_.__name__,
+                        n,
+                        decorator(orig_method, class_, n),
+                    )
 
 
 def decorate_all_methods_in_module(module, decorator):
@@ -180,12 +183,12 @@ def decorate_all_methods_in_module(module, decorator):
                         module,
                         obj.__name__,
                         name,
-                        decorator(fn, obj.__name__, name),
+                        decorator(fn, obj, name),
                     )
         # inspect.isfunction only works for user define functions
         # therefore we use callable(obj)
         elif callable(obj):
-            create_patch(module, None, name, decorator(obj, module.__name__, name))
+            create_patch(module, None, name, decorator(obj, module, name))
 
 
 def wrap_import(decorator, user_defined_modules):
@@ -195,7 +198,7 @@ def wrap_import(decorator, user_defined_modules):
         builtins,
         None,
         '__import__',
-        decorator(import_wrapper, 'builtins', '__import__'),
+        decorator(import_wrapper, builtins, '__import__'),
     )
 
 
@@ -210,14 +213,14 @@ def patch_imported_methods(imported_callables, decorator):
                         get_module_by_name(call.__module__),
                         call.__name__,
                         method_name,
-                        decorator(method, call.__name__, method_name),
+                        decorator(method, call, method_name),
                     )
         else:
             create_patch(
                 get_module_by_name(call.__module__),
                 None,
                 call.__name__,
-                decorator(call, None, call.__name__),
+                decorator(call, get_module_by_name(call.__module__), call.__name__),
             )
 
 
@@ -245,12 +248,14 @@ def setup_recording(module, ignored_modules: set):
 
     patch_imported_methods(imported_callables, decorator)
 
-    for module in module_imports:
+    for module in user_defined_modules:
         decorate_all_methods_in_module(module, decorator)
 
     decorate_defaults(decorator)
 
     decorate_builtins(decorator)
+
+    setup_ib111_modules(decorator)
 
     return recorder, user_defined_modules
 

@@ -1,17 +1,15 @@
 import ctypes
 import gc
 import inspect
-from sys import stdlib_module_names
 
-from ..utils import utils
 from ..utils.module import is_user_defined_module
 from . import patch_imports
 from . import py_object as pyo
 from ..non_builtin_types import non_builtin_types
 from .default_classes.default_classes import is_py_method_def
-from .bin import patchdictionary, patchint, patchtuple
+from .bin import patchdictionary, patchint, patchtuple, patchstr, patchlist
 from .method_switch import MethodSwitch
-from ..utils.utils import get_c_method
+from ..utils.utils import get_c_method, get_class_methods, is_std_module
 
 tp_as_dict = {}
 tp_func_dict = {}
@@ -85,13 +83,13 @@ def patchable_builtin(class_):
     return refs[0]
 
 
-def get_py_builtin_class_method(class_, method_name):
+def get_py_std_class_method(class_, method_name):
     dikt = patchable_builtin(class_)
 
     return dikt.get(method_name, None)
 
 
-def patch_py_builtin_class_method(_, class_, method_name, patched_func):
+def patch_py_std_class_method(_, class_, method_name, patched_func):
     dikt = patchable_builtin(class_)
 
     try:
@@ -108,7 +106,7 @@ def patch_user_defined_method(module, class_: str, method_name, replacement_meth
     else:
         class_to_patch = getattr(module, class_)
 
-        if method_name not in utils.get_class_methods(class_to_patch):
+        if method_name not in get_class_methods(class_to_patch):
             raise Exception(
                 f'Class {class_} in module {module.__name__} does not contain method {method_name}!'
             )
@@ -130,8 +128,14 @@ special_patch_methods = {
     'dict': {
         '__getitem__': patchdictionary.patch_dictionary_getitem,
         #'__setitem__': patchdictionary.patch_dictionary_setitem,
-        '__contains__': patchdictionary.patch_dictionary_contains,
+        #'__contains__': patchdictionary.patch_dictionary_contains,
         '__iter__': patchdictionary.patch_dictionary_iter,
+    },
+    'list': {
+        '__getitem__': patchlist.patch_list_getitem,
+    },
+    'str': {
+        '__getitem__': patchstr.patch_str_getitem,
     },
 }
 
@@ -150,10 +154,7 @@ method_switches = dict()
 
 
 def create_patch(module, class_: str, method_name, replacement_method):
-    if not callable(replacement_method):
-        raise Exception('Given function is not callable!')
-
-    if module.__name__ in stdlib_module_names:
+    if is_std_module(module):
         if class_ is None:
             patching_method = patch_py_builtin_method
             original_method = getattr(module, method_name)
@@ -165,20 +166,17 @@ def create_patch(module, class_: str, method_name, replacement_method):
                 class_to_patch = getattr(module, class_)
 
             if class_to_patch is None:
-                raise Exception('Given class is not defined in builtins!')
+                raise Exception(f'Given class: {class_} is not defined in builtins!')
 
-            if pyo.get_function_mapping(class_to_patch, method_name) is not None:
+            if (
+                module.__name__ in {'builtins', 'collections'}
+                and pyo.get_function_mapping(class_to_patch, method_name) is not None
+            ):
                 patching_method = patch_py_object_method
                 original_method = get_c_method(class_to_patch, method_name)
-            elif is_py_method_def(module, class_to_patch, method_name):
-                patching_method = patch_py_builtin_class_method
-                original_method = get_py_builtin_class_method(
-                    class_to_patch, method_name
-                )
             else:
-                raise Exception(
-                    f'Unknown method: {method_name} of class {class_} in {module.__name__}'
-                )
+                patching_method = patch_py_std_class_method
+                original_method = get_py_std_class_method(class_to_patch, method_name)
 
     elif is_user_defined_module(module):
         if class_ == None:
@@ -191,7 +189,7 @@ def create_patch(module, class_: str, method_name, replacement_method):
 
     else:
         raise Exception(
-            f'Unsuported method {method_name} of class {class_} in module {module.__name__}'
+            f'Unknown method {method_name} of class {class_} in module {module.__name__}'
         )
 
     global method_switches

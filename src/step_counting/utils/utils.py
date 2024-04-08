@@ -1,18 +1,24 @@
 import inspect
 import ctypes
+from sys import stdlib_module_names
+
 from ..patch import py_object as pyo
 
 
+def is_std_module(module):
+    parent_module = module.__name__.split('.')[0]
+
+    return parent_module in stdlib_module_names
+
+
 def get_class_methods(cls):
-    method_names = []
-    for attr_name in dir(cls):
-        attr = None
-        if hasattr(cls, attr_name):
-            attr = getattr(cls, attr_name)
-        if callable(attr):
-            if inspect.ismethod(attr) or inspect.isfunction(attr):
-                method_names.append(attr_name)
-    return method_names
+    members = inspect.getmembers(cls)
+
+    methods = [
+        member for member in members if inspect.isroutine(getattr(cls, member[0]))
+    ]
+
+    return [method_name for (method_name, _) in methods]
 
 
 def get_c_method(class_, method_name):

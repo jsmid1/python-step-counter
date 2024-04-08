@@ -22,6 +22,11 @@ patch_modules = [
         sources=['./src/step_counting/patch/c_modules/customlist.c'],
         extra_compile_args=['-g', '-O0'],
     ),
+    Extension(
+        'patchstr',
+        sources=['./src/step_counting/patch/c_modules/customstr.c'],
+        extra_compile_args=['-g', '-O0'],
+    ),
 ]
 
 # Run the setup

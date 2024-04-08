@@ -25,10 +25,11 @@ def make_proxy(module, decorator):
 
                 attr = getattr(obj, attr_name)
                 if _callable(attr):
-                    _setattr(class_, attr_name, decorator(attr, name, attr_name))
+                    _setattr(class_, attr_name, decorator(attr, obj, attr_name))
             _setattr(proxy, name, class_)
         elif _callable(obj):
-            _setattr(proxy, name, decorator(obj, module.__name__, obj.__name__))
+            if hasattr(obj, '__module__') and obj.__module__ == module.__name__:
+                _setattr(proxy, name, decorator(obj, module, obj.__name__))
 
     return proxy
 

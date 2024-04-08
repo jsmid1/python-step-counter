@@ -19,6 +19,7 @@ ignored_object_methods = {
     '__delitem__',
     '__alloc__',
     '__setformat__',
+    '__setitem__',
 }
 
 comparison_operations = {'__eq__', '__ge__', '__gt__', '__le__', '__lt__', '__ne__'}
@@ -43,7 +44,11 @@ ignored_methods = set.union(
     ignored_object_methods, comparison_operations, ignored_r_methods
 )
 
-ignored_specifics = {(dict, '__iter__'), (dict, '__setitem__')}
+ignored_specifics = {
+    (dict, '__iter__'),
+    (dict, '__setitem__'),
+    (memoryview, 'itemsize'),
+}
 
 ignored_classes = {'BuiltinImporter'}
 
