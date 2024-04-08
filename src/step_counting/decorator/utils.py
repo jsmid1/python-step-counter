@@ -1,9 +1,7 @@
 import sys
 import types
 
-from ..original_methods import list_iter, int_eq, dict_get
-
-_hash = hash
+from ..original_methods import _hash, dict_get
 
 Py_LT, Py_LE, Py_EQ, Py_NE, Py_GT, Py_GE = range(6)
 comparison_methods = {
@@ -24,8 +22,8 @@ comparison_methods = {
 
 
 def module_in_list(module, lst):
-    for item in list_iter(lst):
-        if int_eq(_hash(module), _hash(item)):
+    for item in list.__iter__(lst):
+        if int.__eq__(_hash(module), _hash(item)):
             return True
     return False
 

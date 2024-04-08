@@ -1,11 +1,11 @@
 from ..evaluations.evaluations import evaluate_record
-from ...original_methods import (
-    int_add,
-    list_append,
-    dict_get,
-    dict_setitem,
-    dict_contains,
-)
+
+from ...original_methods import dict_get, list_append
+
+########################################################################################
+# These methods are used with patches applied. Even through it is not necessary
+# to use original methods, they are used for optimization.
+########################################################################################
 
 
 class counter:
@@ -14,8 +14,8 @@ class counter:
         self.evaluation_total = evaluation
 
     def increase(self, evaluation_total):
-        self.count_total = int_add(self.count_total, 1)
-        self.evaluation_total = int_add(self.evaluation_total, evaluation_total)
+        self.count_total = int.__add__(self.count_total, 1)
+        self.evaluation_total = int.__add__(self.evaluation_total, evaluation_total)
 
     def get_count_total(self):
         return self.count_total
@@ -74,7 +74,7 @@ class detail_call_recorder:
         module_records = dict_get(self.records, module_name, None)
 
         if module_records is None:
-            dict_setitem(
+            dict.__setitem__(
                 self.records,
                 module_name,
                 {line_number: {(cls, func_name): counter(1, record_eval)}},
@@ -83,7 +83,7 @@ class detail_call_recorder:
 
         line_records = dict_get(module_records, line_number, None)
         if line_records is None:
-            dict_setitem(
+            dict.__setitem__(
                 module_records,
                 line_number,
                 {(cls, func_name): counter(1, record_eval)},
@@ -95,7 +95,7 @@ class detail_call_recorder:
             method_counter = counter()
 
         method_counter.increase(record_eval)
-        dict_setitem(line_records, (cls, func_name), method_counter)
+        dict.__setitem__(line_records, (cls, func_name), method_counter)
 
     def get_data(self):
         return self.records.copy()

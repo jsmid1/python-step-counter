@@ -3,6 +3,11 @@ import inspect
 from ..utils.module import is_user_defined_module
 from ..original_methods import _setattr, _import, _callable
 
+########################################################################################
+# These methods are used with patches applied. Even though it is not necessary
+# to use original methods, they are used for optimalization.
+########################################################################################
+
 
 class module_proxy:
     pass
