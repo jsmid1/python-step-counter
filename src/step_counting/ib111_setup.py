@@ -1,7 +1,7 @@
 import inspect
 import turtle, typing, math, fractions, gzip, http.client, re, zipfile, io, glob, sys, csv, datetime, calendar, json, shutil, os, sqlite3, random
 
-from .utils.utils import get_class_methods
+from .utils.methods import get_class_methods
 
 from .patch.patching import create_patch
 

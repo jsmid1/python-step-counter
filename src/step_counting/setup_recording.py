@@ -24,15 +24,13 @@ from .patch.patching import (
     apply,
     revert,
 )
-
 from .utils.module import (
     get_module_imports,
-    get_imports,
     get_module_imports,
     is_user_defined_module,
     get_module_by_name,
 )
-from .utils.utils import get_c_method
+from .utils.methods import get_c_method
 
 from .ignor import (
     get_def_ignored_modules,

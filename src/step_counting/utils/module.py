@@ -8,7 +8,13 @@ def get_module_by_name(module_name):
     try:
         return sys.modules[module_name]
     except:
-        raise Exception(f'Unkown module: module_name')
+        raise Exception(f'Unkown module: {module_name}')
+
+
+def is_std_module(module):
+    parent_module = module.__name__.split('.')[0]
+
+    return parent_module in sys.stdlib_module_names
 
 
 def is_user_defined_module(module):
@@ -38,9 +44,8 @@ def is_user_defined_module(module):
 def get_imports(mod):
     imported_modules = set()
     imported_functions = set()
-    for name, obj in vars(mod).items():
+    for _, obj in vars(mod).items():
         if isinstance(obj, types.ModuleType):
-            # if inspect.ismodule(obj) or type(obj).__name__ == 'module_proxy':
             imported_modules.add(obj)
         elif (
             callable(obj)

@@ -9,7 +9,8 @@ from ..non_builtin_types import non_builtin_types
 from .default_classes.default_classes import is_py_method_def
 from .bin import patchdictionary, patchint, patchtuple, patchstr, patchlist
 from .method_switch import MethodSwitch
-from ..utils.utils import get_c_method, get_class_methods, is_std_module
+from ..utils.methods import get_c_method, get_class_methods
+from ..utils.module import is_std_module
 
 tp_as_dict = {}
 tp_func_dict = {}

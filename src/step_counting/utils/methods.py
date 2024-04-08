@@ -1,14 +1,7 @@
 import inspect
 import ctypes
-from sys import stdlib_module_names
 
 from ..patch import py_object as pyo
-
-
-def is_std_module(module):
-    parent_module = module.__name__.split('.')[0]
-
-    return parent_module in stdlib_module_names
 
 
 def get_class_methods(cls):
