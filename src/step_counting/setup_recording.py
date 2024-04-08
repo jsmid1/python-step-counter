@@ -185,9 +185,7 @@ def decorate_all_methods_in_module(module, decorator):
                         name,
                         decorator(fn, obj, name),
                     )
-        # inspect.isfunction only works for user define functions
-        # therefore we use callable(obj)
-        elif callable(obj):
+        elif inspect.isroutine(obj):
             create_patch(module, None, name, decorator(obj, module, name))
 
 

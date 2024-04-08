@@ -193,7 +193,6 @@ def create_patch(module, class_: str, method_name, replacement_method):
         )
 
     global method_switches
-
     method_identification = (module, class_to_patch, method_name)
     if method_identification in method_switches:
         method_switches[method_identification].set_replacement_method(
@@ -202,9 +201,6 @@ def create_patch(module, class_: str, method_name, replacement_method):
     else:
         method_switches[(module, class_to_patch, method_name)] = MethodSwitch(
             patching_method,
-            module,
-            class_to_patch,
-            method_name,
             original_method,
             replacement_method,
         )

@@ -117,7 +117,5 @@ def setup_ib111_modules(decorator):
                         method_name,
                         decorator(method, obj, method_name),
                     )
-            # inspect.isfunction only works for user define functions
-            # therefore we use callable(obj)
-            elif callable(obj):
+            elif inspect.isroutine(obj):
                 create_patch(module, None, obj_name, decorator(obj, module, obj_name))
