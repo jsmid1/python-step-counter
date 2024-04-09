@@ -1,5 +1,5 @@
 from typing import Any
-from .complexities import constant, linear_to_len
+from ..complexities import constant, linear_to_len
 
 
 def dict_update_complexity(args: tuple[dict[Any, Any], dict[Any, Any]]) -> int:

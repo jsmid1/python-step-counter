@@ -32,20 +32,20 @@ class TestTurtleMethods(unittest.TestCase):
         with recording_activated():
             with open('file.json', 'r') as f:
                 data = json.load(f)
-        self.assertTrue(is_recorded(self.recorder, json, 'load'))
+        self.assertTrue(is_recorded(self.recorder, json, None, 'load'))
 
     def test_json_loads(self):
         with recording_activated():
             data = json.loads('{"key": "value"}')
-        self.assertTrue(is_recorded(self.recorder, json, 'loads'))
+        self.assertTrue(is_recorded(self.recorder, json, None, 'loads'))
 
     def test_json_dump(self):
         with recording_activated():
             with open('file.json', 'w') as f:
                 json.dump({'key': 'value'}, f)
-        self.assertTrue(is_recorded(self.recorder, json, 'dump'))
+        self.assertTrue(is_recorded(self.recorder, json, None, 'dump'))
 
     def test_json_dumps(self):
         with recording_activated():
             jsonString = json.dumps({'key': 'value'})
-        self.assertTrue(is_recorded(self.recorder, json, 'dumps'))
+        self.assertTrue(is_recorded(self.recorder, json, None, 'dumps'))

@@ -28,50 +28,50 @@ class TestTurtleMethods(unittest.TestCase):
     def test_turtle_forward(self):
         with recording_activated():
             turtle.forward(100)
-        self.assertTrue(is_recorded(self.recorder, turtle, 'forward'))
+        self.assertTrue(is_recorded(self.recorder, turtle, None, 'forward'))
 
     def test_turtle_backward(self):
         with recording_activated():
             turtle.backward(100)
-        self.assertTrue(is_recorded(self.recorder, turtle, 'backward'))
+        self.assertTrue(is_recorded(self.recorder, turtle, None, 'backward'))
 
     def test_turtle_right(self):
         with recording_activated():
             turtle.right(90)
-        self.assertTrue(is_recorded(self.recorder, turtle, 'right'))
+        self.assertTrue(is_recorded(self.recorder, turtle, None, 'right'))
 
     def test_turtle_left(self):
         with recording_activated():
             turtle.left(90)
-        self.assertTrue(is_recorded(self.recorder, turtle, 'left'))
+        self.assertTrue(is_recorded(self.recorder, turtle, None, 'left'))
 
     def test_turtle_setheading(self):
         with recording_activated():
             turtle.setheading(180)
-        self.assertTrue(is_recorded(self.recorder, turtle, 'setheading'))
+        self.assertTrue(is_recorded(self.recorder, turtle, None, 'setheading'))
 
     def test_turtle_speed(self):
         with recording_activated():
             turtle.speed(1)
-        self.assertTrue(is_recorded(self.recorder, turtle, 'speed'))
+        self.assertTrue(is_recorded(self.recorder, turtle, None, 'speed'))
 
     def test_turtle_delay(self):
         with recording_activated():
             turtle.delay(1)
-        self.assertTrue(is_recorded(self.recorder, turtle, 'delay'))
+        self.assertTrue(is_recorded(self.recorder, turtle, None, 'delay'))
 
     def test_turtle_penup(self):
         with recording_activated():
             turtle.penup()
-        self.assertTrue(is_recorded(self.recorder, turtle, 'penup'))
+        self.assertTrue(is_recorded(self.recorder, turtle, None, 'penup'))
 
     def test_turtle_pendown(self):
         with recording_activated():
             turtle.pendown()
-        self.assertTrue(is_recorded(self.recorder, turtle, 'pendown'))
+        self.assertTrue(is_recorded(self.recorder, turtle, None, 'pendown'))
 
     @unittest.skip('Skip testing done as its stops the event loop')
     def test_turtle_done(self):
         with recording_activated():
             turtle.done()
-        self.assertTrue(is_recorded(self.recorder, turtle, 'done'))
+        self.assertTrue(is_recorded(self.recorder, turtle, None, 'done'))

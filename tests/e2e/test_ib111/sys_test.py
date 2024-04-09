@@ -27,16 +27,16 @@ class TestTurtleMethods(unittest.TestCase):
     def test_sys_stdin(self):
         with recording_activated():
             input = sys.stdin.readline()
-        self.assertTrue(is_recorded(self.recorder, sys, 'stdin'))
+        self.assertTrue(is_recorded(self.recorder, sys, None, 'stdin'))
 
     @unittest.skip('stdout')
     def test_sys_stdout(self):
         with recording_activated():
             sys.stdout.write('test')
-        self.assertTrue(is_recorded(self.recorder, sys, 'stdout'))
+        self.assertTrue(is_recorded(self.recorder, sys, None, 'stdout'))
 
     @unittest.skip('stderr')
     def test_sys_stderr(self):
         with recording_activated():
             sys.stderr.write('error')
-        self.assertTrue(is_recorded(self.recorder, sys, 'stderr'))
+        self.assertTrue(is_recorded(self.recorder, sys, None, 'stderr'))

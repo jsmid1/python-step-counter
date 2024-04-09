@@ -28,4 +28,4 @@ class TestIoMethods(unittest.TestCase):
     # def test_io_BytesIO(self):
     #     with recording_activated():
     #         io.BytesIO(b'test data')
-    #     self.assertTrue(is_recorded(self.recorder, io, 'BytesIO'))
+    #     self.assertTrue(is_recorded(self.recorder, io, None, 'BytesIO'))

@@ -28,4 +28,4 @@ class TestTurtleMethods(unittest.TestCase):
     def test_sqlite3_connect(self):
         with recording_activated():
             sqlite3.connect(':memory:')
-        self.assertTrue(is_recorded(self.recorder, sqlite3, 'connect'))
+        self.assertTrue(is_recorded(self.recorder, sqlite3, None, 'connect'))

@@ -32,11 +32,11 @@ def make_proxy(module: ModuleType, decorator: Callable[..., Any]) -> module_prox
 
                 attr = getattr(obj, attr_name)
                 if _callable(attr):
-                    _setattr(class_, attr_name, decorator(attr, obj, attr_name))
+                    _setattr(class_, attr_name, decorator(module, obj, attr, attr_name))
             _setattr(proxy, name, class_)
         elif _callable(obj):
             if hasattr(obj, '__module__') and obj.__module__ == module.__name__:
-                _setattr(proxy, name, decorator(obj, module, obj.__name__))
+                _setattr(proxy, name, decorator(module, None, obj, obj.__name__))
 
     return proxy
 

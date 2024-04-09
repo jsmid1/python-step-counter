@@ -54,22 +54,25 @@ def get_caller_module_info() -> tuple[Optional[ModuleType], int]:
 ########################################################################################
 
 
-def get_method_type(cls: type, method_name: str) -> Callable[..., Any]:
+def get_method_type(
+    orig_module: ModuleType, class_: type, method_name: str
+) -> Callable[..., Any]:
     if method_name == 'comparison':
         return FunctionType
 
-    if hasattr(cls, '__dict__') and method_name in cls.__dict__:
-        method = cls.__dict__[method_name]
+    parent = orig_module if class_ is None else class_
+    if hasattr(parent, '__dict__') and method_name in parent.__dict__:
+        method = parent.__dict__[method_name]
         if isinstance(method, staticmethod):
             return staticmethod
         elif isinstance(method, classmethod):
             return classmethod
 
-    method = getattr(cls, method_name, None)
+    method = getattr(parent, method_name, None)
     if method:
         if isinstance(method, (BuiltinFunctionType, MethodType)):
             return staticmethod
         elif callable(method):
             return FunctionType
 
-    raise ValueError(f'Method {method_name} not found in {cls}.')
+    raise ValueError(f'Method {method_name} not found in {parent}.')

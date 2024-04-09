@@ -1,5 +1,5 @@
 from typing import Any, Callable, Literal, Sequence
-from .complexities import (
+from ..complexities import (
     constant,
     logarithmic,
     linear,

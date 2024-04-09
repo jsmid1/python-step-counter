@@ -28,24 +28,24 @@ class TestTurtleMethods(unittest.TestCase):
     def test_re_findall(self):
         with recording_activated():
             result = re.findall('a', 'aardvark')
-        self.assertTrue(is_recorded(self.recorder, re, 'findall'))
+        self.assertTrue(is_recorded(self.recorder, re, None, 'findall'))
 
     def test_re_match(self):
         with recording_activated():
             result = re.match('a', 'apple')
-        self.assertTrue(is_recorded(self.recorder, re, 'match'))
+        self.assertTrue(is_recorded(self.recorder, re, None, 'match'))
 
     def test_re_compile(self):
         with recording_activated():
             pattern = re.compile('a')
-        self.assertTrue(is_recorded(self.recorder, re, 'compile'))
+        self.assertTrue(is_recorded(self.recorder, re, None, 'compile'))
 
     def test_re_sub(self):
         with recording_activated():
             result = re.sub('a', 'o', 'apple')
-        self.assertTrue(is_recorded(self.recorder, re, 'sub'))
+        self.assertTrue(is_recorded(self.recorder, re, None, 'sub'))
 
     def test_re_search(self):
         with recording_activated():
             result = re.search('a', 'apple')
-        self.assertTrue(is_recorded(self.recorder, re, 'search'))
+        self.assertTrue(is_recorded(self.recorder, re, None, 'search'))

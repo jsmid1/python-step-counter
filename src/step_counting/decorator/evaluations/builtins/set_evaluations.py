@@ -1,6 +1,6 @@
 from typing import Any
 
-from .complexities import *
+from ..complexities import *
 
 
 def set_or_complexity(args: tuple[Any, ...]) -> int:

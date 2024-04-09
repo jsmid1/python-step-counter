@@ -31,6 +31,12 @@ def logarithmic_to_len(args: tuple[Any, ...]) -> int:
     return logarithmic((n,))
 
 
+def logarithmic_to_min(args: tuple[int, int]) -> int:
+    n1 = args[0]
+    n2 = args[1]
+    return logarithmic((min(n1, n2),))
+
+
 def linear_to_len(args: tuple[Any, ...]) -> int:
     n = len(args[0])
     return linear((n,))

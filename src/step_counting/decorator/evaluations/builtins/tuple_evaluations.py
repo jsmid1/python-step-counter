@@ -1,4 +1,4 @@
-from .complexities import *
+from ..complexities import constant, linear_to_len
 
 
 tuple_complexities = {

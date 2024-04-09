@@ -7,6 +7,7 @@ from src.step_counting.setup_recording import setup_recording, recording_activat
 from ..utils import is_recorded
 import math
 import operator
+import builtins
 
 
 class TestIntMethods(unittest.TestCase):
@@ -26,32 +27,32 @@ class TestIntMethods(unittest.TestCase):
         with recording_activated():
             x = -1
             abs(x)
-        self.assertTrue(is_recorded(self.recorder, int, '__abs__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__abs__'))
 
     def test_int_add(self):
         with recording_activated():
             x = 1
             x + 1
-        self.assertTrue(is_recorded(self.recorder, int, '__add__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__add__'))
 
     def test_int_and(self):
         with recording_activated():
             x = 1
             x & 2
-        self.assertTrue(is_recorded(self.recorder, int, '__and__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__and__'))
 
     def test_int_bool(self):
         with recording_activated():
             x = 1
             bool(x)
-        self.assertTrue(is_recorded(self.recorder, int, '__bool__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__bool__'))
 
     @unittest.skip("Records as math module function")
     def test_int_ceil(self):
         with recording_activated():
             x = 1
             math.ceil(x)
-        self.assertTrue(is_recorded(self.recorder, int, '__ceil__'))
+        self.assertTrue(is_recorded(self.recorder, math, None, '__ceil__'))
 
     # Skipping methods like __class__, __delattr__, __dir__, __doc__ as they do not fit the operational testing pattern
 
@@ -59,52 +60,52 @@ class TestIntMethods(unittest.TestCase):
         with recording_activated():
             x = 1
             divmod(x, 2)
-        self.assertTrue(is_recorded(self.recorder, int, '__divmod__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__divmod__'))
 
     def test_int_eq(self):
         with recording_activated():
             x = 1
             x == 1
-        self.assertTrue(is_recorded(self.recorder, int, '__eq__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__eq__'))
 
     def test_int_float(self):
         with recording_activated():
             x = 1
             float(x)
-        self.assertTrue(is_recorded(self.recorder, int, '__float__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__float__'))
 
     @unittest.skip("Records as math module function")
     def test_int_floor(self):
         with recording_activated():
             x = 1
             math.floor(x)
-        self.assertTrue(is_recorded(self.recorder, int, '__floor__'))
+        self.assertTrue(is_recorded(self.recorder, math, None, '__floor__'))
 
     def test_int_floordiv(self):
         with recording_activated():
             x = 1
             x // 2
-        self.assertTrue(is_recorded(self.recorder, int, '__floordiv__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__floordiv__'))
 
     @unittest.skip
     def test_int_format(self):
         with recording_activated():
             x = 1
             format(x, "b")
-        self.assertTrue(is_recorded(self.recorder, int, '__format__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__format__'))
 
     def test_int_ge(self):
         with recording_activated():
             x = 1
             x >= 1
-        self.assertTrue(is_recorded(self.recorder, int, '__ge__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__ge__'))
 
     @unittest.skip
     def test_int_getattribute(self):
         with recording_activated():
             x = 1
             getattr(x, "__str__")  # Example use case
-        self.assertTrue(is_recorded(self.recorder, int, '__getattribute__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__getattribute__'))
 
     # __getnewargs__ is typically not invoked directly in operational testing
 
@@ -112,273 +113,275 @@ class TestIntMethods(unittest.TestCase):
         with recording_activated():
             x = 1
             x > 0
-        self.assertTrue(is_recorded(self.recorder, int, '__gt__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__gt__'))
 
     @unittest.skip('Not recorder')
     def test_int_hash(self):
         with recording_activated():
             x = 1
             hash(x)
-        self.assertTrue(is_recorded(self.recorder, int, '__hash__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__hash__'))
 
-    @unittest.skip('Import of operator is nor allowed')
+    @unittest.skip(
+        ' Would be recorded under operator module but import of operator is nor allowed'
+    )
     def test_int_index(self):
         with recording_activated():
             x = 1
             operator.index(x)
-        self.assertTrue(is_recorded(self.recorder, operator, 'index'))
+        self.assertTrue(is_recorded(self.recorder, operator, None, 'index'))
 
     @unittest.skip
     def test_int_int(self):
         with recording_activated():
             x = 1
             int(x)
-        self.assertTrue(is_recorded(self.recorder, int, '__int__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__int__'))
 
     def test_int_invert(self):
         with recording_activated():
             x = 1
             ~x
-        self.assertTrue(is_recorded(self.recorder, int, '__invert__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__invert__'))
 
     def test_int_le(self):
         with recording_activated():
             x = 1
             x <= 1
-        self.assertTrue(is_recorded(self.recorder, int, '__le__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__le__'))
 
     def test_int_lshift(self):
         with recording_activated():
             x = 1
             x << 2
-        self.assertTrue(is_recorded(self.recorder, int, '__lshift__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__lshift__'))
 
     def test_int_lt(self):
         with recording_activated():
             x = 1
             x < 2
-        self.assertTrue(is_recorded(self.recorder, int, '__lt__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__lt__'))
 
     def test_int_mod(self):
         with recording_activated():
             x = 1
             x % 2
-        self.assertTrue(is_recorded(self.recorder, int, '__mod__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__mod__'))
 
     def test_int_mul(self):
         with recording_activated():
             x = 1
             x * 2
-        self.assertTrue(is_recorded(self.recorder, int, '__mul__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__mul__'))
 
     def test_int_ne(self):
         with recording_activated():
             x = 1
             x != 2
-        self.assertTrue(is_recorded(self.recorder, int, '__ne__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__ne__'))
 
     def test_int_neg(self):
         with recording_activated():
             x = 1
             -x
-        self.assertTrue(is_recorded(self.recorder, int, '__neg__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__neg__'))
 
     def test_int_or(self):
         with recording_activated():
             x = 1
             x | 2
-        self.assertTrue(is_recorded(self.recorder, int, '__or__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__or__'))
 
     def test_int_pos(self):
         with recording_activated():
             x = 1
             +x
-        self.assertTrue(is_recorded(self.recorder, int, '__pos__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__pos__'))
 
     def test_int_pow(self):
         with recording_activated():
             x = 2
             pow(x, 2)
-        self.assertTrue(is_recorded(self.recorder, int, '__pow__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__pow__'))
 
     @unittest.skip
     def test_int_radd(self):
         with recording_activated():
             x = 1
             1 + x
-        self.assertTrue(is_recorded(self.recorder, int, '__radd__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__radd__'))
 
     @unittest.skip
     def test_int_rand(self):
         with recording_activated():
             x = 1
             1 & x
-        self.assertTrue(is_recorded(self.recorder, int, '__rand__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__rand__'))
 
     @unittest.skip
     def test_int_rdivmod(self):
         with recording_activated():
             x = 2
             divmod(4, x)
-        self.assertTrue(is_recorded(self.recorder, int, '__rdivmod__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__rdivmod__'))
 
     @unittest.skip
     def test_int_rfloordiv(self):
         with recording_activated():
             x = 2
             4 // x
-        self.assertTrue(is_recorded(self.recorder, int, '__rfloordiv__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__rfloordiv__'))
 
     @unittest.skip
     def test_int_rlshift(self):
         with recording_activated():
             x = 2
             1 << x
-        self.assertTrue(is_recorded(self.recorder, int, '__rlshift__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__rlshift__'))
 
     @unittest.skip
     def test_int_rmod(self):
         with recording_activated():
             x = 2
             4 % x
-        self.assertTrue(is_recorded(self.recorder, int, '__rmod__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__rmod__'))
 
     @unittest.skip
     def test_int_rmul(self):
         with recording_activated():
             x = 2
             2 * x
-        self.assertTrue(is_recorded(self.recorder, int, '__rmul__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__rmul__'))
 
     @unittest.skip
     def test_int_ror(self):
         with recording_activated():
             x = 1
             2 | x
-        self.assertTrue(is_recorded(self.recorder, int, '__ror__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__ror__'))
 
     @unittest.skip
     def test_int_rpow(self):
         with recording_activated():
             x = 2
             3**x
-        self.assertTrue(is_recorded(self.recorder, int, '__rpow__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__rpow__'))
 
     @unittest.skip
     def test_int_rrshift(self):
         with recording_activated():
             x = 1
             2 >> x
-        self.assertTrue(is_recorded(self.recorder, int, '__rrshift__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__rrshift__'))
 
     @unittest.skip
     def test_int_rshift(self):
         with recording_activated():
             x = 4
             x >> 1
-        self.assertTrue(is_recorded(self.recorder, int, '__rshift__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__rshift__'))
 
     @unittest.skip
     def test_int_rsub(self):
         with recording_activated():
             x = 1
             2 - x
-        self.assertTrue(is_recorded(self.recorder, int, '__rsub__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__rsub__'))
 
     @unittest.skip
     def test_int_rtruediv(self):
         with recording_activated():
             x = 2
             4 / x
-        self.assertTrue(is_recorded(self.recorder, int, '__rtruediv__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__rtruediv__'))
 
     @unittest.skip
     def test_int_rxor(self):
         with recording_activated():
             x = 1
             3 ^ x
-        self.assertTrue(is_recorded(self.recorder, int, '__rxor__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__rxor__'))
 
     @unittest.skip
     def test_int_setattr(self):
         with recording_activated():
             x = 1
             setattr(x, 'dummy_attribute', 100)
-        self.assertTrue(is_recorded(self.recorder, int, '__setattr__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__setattr__'))
 
     @unittest.skip
     def test_int_sizeof(self):
         with recording_activated():
             x = 1
             x.__sizeof__()
-        self.assertTrue(is_recorded(self.recorder, int, '__sizeof__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__sizeof__'))
 
     def test_int_str(self):
         with recording_activated():
             x = 1
             str(x)
-        self.assertTrue(is_recorded(self.recorder, int, '__str__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__str__'))
 
     def test_int_sub(self):
         with recording_activated():
             x = 1
             x - 2
-        self.assertTrue(is_recorded(self.recorder, int, '__sub__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__sub__'))
 
     def test_int_truediv(self):
         with recording_activated():
             x = 1
             x / 2
-        self.assertTrue(is_recorded(self.recorder, int, '__truediv__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__truediv__'))
 
     @unittest.skip("Records as math module function")
     def test_int_trunc(self):
         with recording_activated():
             x = 1
             math.trunc(x)
-        self.assertTrue(is_recorded(self.recorder, int, '__trunc__'))
+        self.assertTrue(is_recorded(self.recorder, math, None, '__trunc__'))
 
     def test_int_xor(self):
         with recording_activated():
             x = 1
             x ^ 2
-        self.assertTrue(is_recorded(self.recorder, int, '__xor__'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, '__xor__'))
 
     def test_int_as_integer_ratio(self):
         with recording_activated():
             x = 1
             x.as_integer_ratio()
-        self.assertTrue(is_recorded(self.recorder, int, 'as_integer_ratio'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, 'as_integer_ratio'))
 
     def test_int_bit_count(self):
         with recording_activated():
             x = 1
             x.bit_count()
-        self.assertTrue(is_recorded(self.recorder, int, 'bit_count'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, 'bit_count'))
 
     def test_int_bit_length(self):
         with recording_activated():
             x = 1
             x.bit_length()
-        self.assertTrue(is_recorded(self.recorder, int, 'bit_length'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, 'bit_length'))
 
     def test_int_conjugate(self):
         with recording_activated():
             x = 1
             x.conjugate()
-        self.assertTrue(is_recorded(self.recorder, int, 'conjugate'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, 'conjugate'))
 
     def test_int_from_bytes(self):
         with recording_activated():
             bytes_val = (1).to_bytes(1, byteorder='big')
             int.from_bytes(bytes_val, byteorder='big')
-        self.assertTrue(is_recorded(self.recorder, int, 'from_bytes'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, 'from_bytes'))
 
     def test_int_to_bytes(self):
         with recording_activated():
             x = 1
             x.to_bytes(1, byteorder='big')
-        self.assertTrue(is_recorded(self.recorder, int, 'to_bytes'))
+        self.assertTrue(is_recorded(self.recorder, builtins, int, 'to_bytes'))
 
 
 if __name__ == '__main__':

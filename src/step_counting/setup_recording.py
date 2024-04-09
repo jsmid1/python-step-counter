@@ -141,7 +141,9 @@ def decorate_builtins(decorator: Callable[..., Any]) -> None:
         obj = getattr(builtins, obj_name)
 
         if callable(obj):
-            create_patch(builtins, None, obj_name, decorator(obj, builtins, obj_name))
+            create_patch(
+                builtins, None, obj_name, decorator(builtins, None, obj, obj_name)
+            )
 
 
 def decorate_defaults(decorator: Callable[..., Any]) -> None:
@@ -166,7 +168,7 @@ def decorate_defaults(decorator: Callable[..., Any]) -> None:
                         module,
                         class_.__name__,
                         n,
-                        decorator(orig_method, class_, n),
+                        decorator(module, class_, orig_method, n),
                     )
 
 
@@ -184,10 +186,10 @@ def decorate_all_methods_in_module(
                         module,
                         obj.__name__,
                         name,
-                        decorator(fn, obj, name),
+                        decorator(module, obj, fn, name),
                     )
         elif inspect.isroutine(obj):
-            create_patch(module, None, name, decorator(obj, module, name))
+            create_patch(module, None, name, decorator(module, None, obj, name))
 
 
 def wrap_import(
@@ -199,7 +201,7 @@ def wrap_import(
         builtins,
         None,
         '__import__',
-        decorator(import_wrapper, builtins, '__import__'),
+        decorator(builtins, None, import_wrapper, '__import__'),
     )
 
 
@@ -207,23 +209,28 @@ def patch_imported_methods(
     imported_callables: set[Callable[..., Any]], decorator: Callable[..., Any]
 ) -> None:
     for call in imported_callables:
-
+        module = get_module_by_name(call.__module__)
         if inspect.isclass(call):
             for method_name in dir(call):
                 method = getattr(call, method_name, None)
                 if callable(method) and method_name != '__class__':
                     create_patch(
-                        get_module_by_name(call.__module__),
+                        module,
                         call.__name__,
                         method_name,
-                        decorator(method, call, method_name),
+                        decorator(
+                            module,
+                            call,
+                            method,
+                            method_name,
+                        ),
                     )
         else:
             create_patch(
-                get_module_by_name(call.__module__),
+                module,
                 None,
                 call.__name__,
-                decorator(call, get_module_by_name(call.__module__), call.__name__),
+                decorator(module, None, call, call.__name__),
             )
 
 

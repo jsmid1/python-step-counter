@@ -1,6 +1,6 @@
 from typing import Any
 
-from .complexities import *
+from ..complexities import *
 
 
 def list_del_complexity(args: tuple[list[Any], int]) -> int:

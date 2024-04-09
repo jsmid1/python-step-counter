@@ -15,9 +15,9 @@ def create_module_profile(
 
             lines.append((90 - len(str(line_number)) - len(line)) * ' ')
             for record, counter in module_data.get(line_number, {}).items():
-                class_, func = record
+                module, class_, func = record
                 lines.append(
-                    f' # {class_.__name__}.{func}: No of calls: {counter.get_count_total()}, Total eval: {counter.get_evaluation_total()}\n'
+                    f' # {module.__name__}.{class_.__name__ if class_ else None}.{func}: No of calls: {counter.get_count_total()}, Total eval: {counter.get_evaluation_total()}\n'
                 )
 
                 lines.append(91 * ' ')

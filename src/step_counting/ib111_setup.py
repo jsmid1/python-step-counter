@@ -98,11 +98,11 @@ def decorate_all_methods_in_module(
                     module,
                     obj.__name__,
                     name,
-                    decorator(fn, obj, name),
+                    decorator(module, obj, fn, name),
                 )
 
     for name, obj in inspect.getmembers(module, predicate=inspect.isroutine):  # type: ignore
-        create_patch(module, None, name, decorator(obj, module, name))
+        create_patch(module, None, name, decorator(module, None, obj, name))
 
 
 def setup_ib111_modules(decorator: Callable[..., Any]) -> None:
@@ -121,7 +121,9 @@ def setup_ib111_modules(decorator: Callable[..., Any]) -> None:
                         module,
                         obj_name,
                         method_name,
-                        decorator(method, obj, method_name),
+                        decorator(module, obj, method, method_name),
                     )
             elif inspect.isroutine(obj):
-                create_patch(module, None, obj_name, decorator(obj, module, obj_name))
+                create_patch(
+                    module, None, obj_name, decorator(module, None, obj, obj_name)
+                )

@@ -29,4 +29,6 @@ class TestFractionMethods(unittest.TestCase):
         fraction = fractions.Fraction(1, 2)
         with recording_activated():
             fraction.from_float(5.5)
-        self.assertTrue(is_recorded(self.recorder, fractions.Fraction, 'from_float'))
+        self.assertTrue(
+            is_recorded(self.recorder, fractions, fractions.Fraction, 'from_float')
+        )

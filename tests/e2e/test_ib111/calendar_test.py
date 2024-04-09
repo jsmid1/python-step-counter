@@ -28,4 +28,4 @@ class TestCalendarMethods(unittest.TestCase):
     def test_calendar_monthrange(self):
         with recording_activated():
             calendar.monthrange(2020, 2)
-        self.assertTrue(is_recorded(self.recorder, calendar, 'monthrange'))
+        self.assertTrue(is_recorded(self.recorder, calendar, None, 'monthrange'))

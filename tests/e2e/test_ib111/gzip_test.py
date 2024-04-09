@@ -32,4 +32,4 @@ class TestTurtleMethods(unittest.TestCase):
         with recording_activated():
             with gzip.open('test.gz', 'wt') as f:
                 f.write('test')
-        self.assertTrue(is_recorded(self.recorder, gzip, 'open'))
+        self.assertTrue(is_recorded(self.recorder, gzip, None, 'open'))

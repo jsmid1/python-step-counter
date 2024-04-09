@@ -1,5 +1,5 @@
 from typing import Any, Callable
-from .complexities import constant, logarithmic_to_sec
+from ..complexities import constant, logarithmic_to_sec
 
 
 float_complexities: dict[str, Callable[[tuple[Any, ...]], int]] = {

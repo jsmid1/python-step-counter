@@ -1,41 +1,40 @@
 from typing import Any
-from .complexities import (
-    constant,
-    linear_to_len,
-    sequence_mul_complexity,
-    sequence_join_complexity,
-    sequence_startswith_complexity,
-)
+from ..complexities import *
 
 
-def bytes_add_complexity(args: tuple[Any, ...]) -> int:
+def str_add_complexity(args: tuple[Any, ...]) -> int:
     list_one = args[0]
     list_two = args[1]
     return len(list_one) + len(list_two)
 
 
-bytes_complexities = {
+str_complexities = {
     '__len__': constant,
     '__contains__': linear_to_len,
     '__getitem__': constant,
-    '__add__': bytes_add_complexity,
+    '__add__': str_add_complexity,
     '__mul__': sequence_mul_complexity,
     '__iter__': constant,
     'capitalize': linear_to_len,
+    'casefold': linear_to_len,
     'center': linear_to_len,
     'count': linear_to_len,
-    'decode': linear_to_len,
+    'encode': linear_to_len,
     'endswith': linear_to_len,
     'expandtabs': linear_to_len,
     'find': linear_to_len,
-    'fromhex': linear_to_len,
-    'hex': linear_to_len,
+    'format': linear_to_len,
+    'format_map': linear_to_len,
     'index': linear_to_len,
     'isalnum': linear_to_len,
     'isalpha': linear_to_len,
     'isascii': linear_to_len,
+    'isdecimal': linear_to_len,
     'isdigit': linear_to_len,
+    'isidentifier': linear_to_len,
     'islower': linear_to_len,
+    'isnumeric': linear_to_len,
+    'isprintable': linear_to_len,
     'isspace': linear_to_len,
     'istitle': linear_to_len,
     'isupper': linear_to_len,

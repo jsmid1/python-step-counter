@@ -33,7 +33,7 @@ class TestTurtleMethods(unittest.TestCase):
         os.mkdir(testdir)
         with recording_activated():
             shutil.rmtree(testdir)
-        self.assertTrue(is_recorded(self.recorder, shutil, 'rmtree'))
+        self.assertTrue(is_recorded(self.recorder, shutil, None, 'rmtree'))
 
     def test_shutil_copyfile(self):
         test_file = 'test.txt'
@@ -46,4 +46,4 @@ class TestTurtleMethods(unittest.TestCase):
             pass
         with recording_activated():
             shutil.copyfile(test_file, cp_file)
-        self.assertTrue(is_recorded(self.recorder, shutil, 'copyfile'))
+        self.assertTrue(is_recorded(self.recorder, shutil, None, 'copyfile'))

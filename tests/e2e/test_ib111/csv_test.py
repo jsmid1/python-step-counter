@@ -32,7 +32,7 @@ class TestTurtleMethods(unittest.TestCase):
         with recording_activated():
             with open('file.csv', newline='') as csvfile:
                 csv.reader(csvfile)
-        self.assertTrue(is_recorded(self.recorder, csv, 'reader'))
+        self.assertTrue(is_recorded(self.recorder, csv, None, 'reader'))
 
     def test_csv_writer(self):
         try:
@@ -44,6 +44,6 @@ class TestTurtleMethods(unittest.TestCase):
         with recording_activated():
             with open('file.csv', 'w', newline='') as csvfile:
                 csv.writer(csvfile)
-        self.assertTrue(is_recorded(self.recorder, csv, 'writer'))
+        self.assertTrue(is_recorded(self.recorder, csv, None, 'writer'))
 
     # skip csv.DictReader, no methods are being recorder

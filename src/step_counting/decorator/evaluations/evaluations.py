@@ -1,26 +1,100 @@
-from typing import Any, Callable, Literal
-from .builtins_evaluations import builtins_complexities
-from .bytes_evaluations import bytes_complexities
-from .complex_evaluations import complex_complexities
-from .dict_evaluations import dict_complexities
-from .float_evaluations import float_complexities
-from .int_evaluations import int_complexities
-from .list_evaluations import list_complexities
-from .set_evaluations import set_complexities
-from .str_evaluations import str_complexities
+from types import ModuleType
+from typing import Any, Callable, Literal, Optional, Union
+from .builtins.builtins_evaluations import builtins_complexities
+from .builtins.bytes_evaluations import bytes_complexities
+from .builtins.complex_evaluations import complex_complexities
+from .builtins.dict_evaluations import dict_complexities
+from .builtins.float_evaluations import float_complexities
+from .builtins.int_evaluations import int_complexities
+from .builtins.list_evaluations import list_complexities
+from .builtins.set_evaluations import set_complexities
+from .builtins.str_evaluations import str_complexities
+from .builtins.tuple_evaluations import tuple_complexities
 
+from .ib111.calendar_evaluations import calendar_complexities
+from .ib111.csv_evaluations import csv_complexities, csv_dictreader_complexities
+from .ib111.datetime_evaluations import (
+    datetime_complexities,
+    datetime_date_complexities,
+    datetime_datetime_complexities,
+    datetime_time_complexities,
+    datetime_timedelta_complexities,
+)
+from .ib111.fractions_evaluation import (
+    fractions_complexities,
+    fractions_fraction_complexities,
+)
+from .ib111.glob_evaluations import glob_complexities
+from .ib111.gzip_evaluation import gzip_complexities
+from .ib111.httpclient_evaluations import (
+    httclient_complexities,
+    httclient_HTTPConnection_complexities,
+    httclient_HTTPSConnection_complexities,
+)
+from .ib111.io_evaluations import io_complexities, io_bytesio_complexities
+from .ib111.json_evaluations import json_complexities
+from .ib111.math_evaluations import math_complexities
+from .ib111.os_evaluations import os_complexities
+from .ib111.re_evaluations import re_complexities
+from .ib111.shutil_evaluations import shutil_complexities
+from .ib111.sys_evaluations import sys_complexities
+from .ib111.turtle_evaluations import turtle_complexities
+from .ib111.zipfile_evaluations import (
+    zipfile_complexities,
+    zipfile_zipfile_complexities,
+)
 
-# TODO fill in complexities for other types
+import builtins
+import calendar, csv, datetime, fractions, glob, gzip, io, json, io, json, math, os, re, shutil, sys, turtle, zipfile
+from http import client
+from datetime import date, datetime, timedelta, time
+from fractions import Fraction
+from csv import DictReader
+from io import BytesIO
+from zipfile import ZipFile
+
 evaluation_method: dict[str, dict[str, Callable[[tuple[Any, ...]], int]]] = {
-    'builtins': builtins_complexities,
-    'bytes': bytes_complexities,
-    'complex': complex_complexities,
-    'dict': dict_complexities,
-    'float': float_complexities,
-    'int': int_complexities,
-    'list': list_complexities,
-    'set': set_complexities,
-    'str': str_complexities,
+    builtins: {
+        None: builtins_complexities,
+        bytes: bytes_complexities,
+        complex: complex_complexities,
+        dict: dict_complexities,
+        float: float_complexities,
+        int: int_complexities,
+        list: list_complexities,
+        set: set_complexities,
+        str: str_complexities,
+        tuple: tuple_complexities,
+    },
+    calendar: {None: calendar_complexities},
+    csv: {None: csv_complexities, DictReader: csv_dictreader_complexities},
+    datetime: {
+        None: datetime_complexities,
+        date: datetime_date_complexities,
+        datetime: datetime_datetime_complexities,
+        timedelta: datetime_timedelta_complexities,
+        time: datetime_time_complexities,
+    },
+    fractions: {
+        None: fractions_complexities,
+        Fraction: fractions_fraction_complexities,
+    },
+    glob: {None: glob_complexities},
+    gzip: {None: gzip_complexities},
+    client: {
+        None: httclient_complexities,
+        client.HTTPConnection: httclient_HTTPConnection_complexities,
+        client.HTTPSConnection: httclient_HTTPSConnection_complexities,
+    },
+    io: {None: io_complexities, BytesIO: io_bytesio_complexities},
+    json: {None: json_complexities},
+    math: {None: math_complexities},
+    os: {None: os_complexities},
+    re: {None: re_complexities},
+    shutil: {None: shutil_complexities},
+    sys: {None: sys_complexities},
+    turtle: {None: turtle_complexities},
+    zipfile: {None: zipfile_complexities, ZipFile: zipfile_zipfile_complexities},
 }
 
 
@@ -29,13 +103,19 @@ def default_evaluation(_: Any) -> Literal[1]:
 
 
 def get_evaluation_method(
-    cls_name: str, func_name: str
+    module: ModuleType, class_: Union[ModuleType, type], func_name: str
 ) -> Callable[[tuple[Any, ...]], int]:
-    return evaluation_method.get(cls_name, {}).get(func_name, default_evaluation)
+    return (
+        evaluation_method.get(module, {})
+        .get(class_, {})
+        .get(func_name, default_evaluation)
+    )
 
 
-def evaluate_record(cls: str, func_name: str, args: tuple[Any, ...]) -> int:
+def evaluate_record(
+    module: ModuleType, class_: Optional[type], func_name: str, args: tuple[Any, ...]
+) -> int:
     if func_name == '__import__':
         return 1
 
-    return get_evaluation_method(cls, func_name)(args)
+    return get_evaluation_method(module, class_, func_name)(args)

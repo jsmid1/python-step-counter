@@ -37,8 +37,12 @@ class simple_call_recorder:
     def __init__(self) -> None:
         self.counter = counter()
 
-    def add_record(self, cls: type, func_name: str, arguments: Any) -> None:
-        self.counter.increase(evaluate_record(cls.__name__, func_name, arguments))
+    def add_record(
+        self, orig_module: ModuleType, cls: type, func_name: str, arguments: Any
+    ) -> None:
+        self.counter.increase(
+            evaluate_record(orig_module, cls.__name__, func_name, arguments)
+        )
 
     def get_data(self) -> counter:
         return self.counter
@@ -77,16 +81,17 @@ class detail_call_recorder:
         self,
         module: ModuleType,
         line_number: int,
+        orig_module: ModuleType,
         cls: type,
         func_name: str,
         arguments: Any,
     ) -> None:
-        record_eval = evaluate_record(cls.__name__, func_name, arguments)
+        record_eval = evaluate_record(orig_module, cls, func_name, arguments)
         module_records = dict_get(self.records, module, None)
 
         if module_records is None:
             records: dict[int, dict[tuple[type, str], counter]] = {
-                line_number: {(cls, func_name): counter(1, record_eval)}
+                line_number: {(orig_module, cls, func_name): counter(1, record_eval)}
             }
             dict.__setitem__(
                 # mypy gets confused with dunder method use
@@ -105,16 +110,16 @@ class detail_call_recorder:
                 module_records,
                 # mypy gets confused with dunder method use
                 line_number,  # type: ignore
-                {(cls, func_name): counter(1, record_eval)},
+                {(orig_module, cls, func_name): counter(1, record_eval)},
             )
             return
 
-        method_counter = dict_get(line_records, (cls, func_name), None)
+        method_counter = dict_get(line_records, (orig_module, cls, func_name), None)
         if method_counter is None:
             method_counter = counter()
 
         method_counter.increase(record_eval)
-        dict.__setitem__(line_records, (cls, func_name), method_counter)
+        dict.__setitem__(line_records, (orig_module, cls, func_name), method_counter)
 
     def get_data(
         self,

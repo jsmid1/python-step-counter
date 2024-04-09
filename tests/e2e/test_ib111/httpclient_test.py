@@ -36,7 +36,9 @@ class TestHttpclientMethods(unittest.TestCase):
         with recording_activated():
             self.connectionHTTP.connect()
         self.assertTrue(
-            is_recorded(self.recorder, http.client.HTTPConnection, 'connect')
+            is_recorded(
+                self.recorder, http.client, http.client.HTTPConnection, 'connect'
+            )
         )
 
     @patch('http.client.HTTPSConnection.connect')
@@ -44,5 +46,7 @@ class TestHttpclientMethods(unittest.TestCase):
         with recording_activated():
             self.connectionHTTPS.connect()
         self.assertTrue(
-            is_recorded(self.recorder, http.client.HTTPSConnection, 'connect')
+            is_recorded(
+                self.recorder, http.client, http.client.HTTPSConnection, 'connect'
+            )
         )

@@ -28,4 +28,4 @@ class TestGlobMethods(unittest.TestCase):
     def test_glob_glob(self):
         with recording_activated():
             glob.glob('*.py')
-        self.assertTrue(is_recorded(self.recorder, glob, 'glob'))
+        self.assertTrue(is_recorded(self.recorder, glob, None, 'glob'))

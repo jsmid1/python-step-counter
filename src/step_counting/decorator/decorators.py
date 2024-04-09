@@ -1,6 +1,6 @@
 from types import FunctionType, ModuleType
 import functools
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from .records.record_classes import (
     simple_call_recorder,
@@ -20,7 +20,12 @@ def create_decorator_default(
 ) -> tuple[Callable[..., Any], simple_call_recorder]:
     recorder = simple_call_recorder()
 
-    def decorator(func: Callable[..., Any], class_: type, func_name: str) -> Any:
+    def decorator(
+        orig_module: ModuleType,
+        class_: Optional[type],
+        func: Callable[..., Any],
+        func_name: str,
+    ) -> Any:
         method_type = get_method_type(class_, func_name)
         if method_type == classmethod:
             assert hasattr(func, '__func__')
@@ -49,7 +54,12 @@ def create_decorator_sequence(
 ]:
     recorder = sequence_call_recorder()
 
-    def decorator(func: Callable[..., Any], class_: type, func_name: str) -> Any:
+    def decorator(
+        orig_module: ModuleType,
+        class_: Optional[type],
+        func: Callable[..., Any],
+        func_name: str,
+    ) -> Any:
         method_type = get_method_type(class_, func_name)
         if method_type == classmethod:
             assert hasattr(func, '__func__')
@@ -63,7 +73,10 @@ def create_decorator_sequence(
             if module_in_list(module, tracked_modules):
                 assert module
                 recorder.add_record(
-                    module, class_.__name__, determine_method(func_name, args)
+                    orig_module,
+                    module,
+                    class_.__name__,
+                    determine_method(func_name, args),
                 )
             return func_obj(*args, **kwargs)
 
@@ -79,8 +92,13 @@ def create_decorator_detail(
 ) -> tuple[Callable[[Any, Any, Any], Callable[..., Any]], detail_call_recorder]:
     recorder = detail_call_recorder()
 
-    def decorator(func: Callable[..., Any], class_: type, func_name: str) -> Any:
-        method_type = get_method_type(class_, func_name)
+    def decorator(
+        orig_module: ModuleType,
+        class_: Optional[type],
+        func: Callable[..., Any],
+        func_name: str,
+    ) -> Any:
+        method_type = get_method_type(orig_module, class_, func_name)
         if method_type == classmethod:
             assert hasattr(func, '__func__')
             func_obj = func.__func__
@@ -95,6 +113,7 @@ def create_decorator_detail(
                 recorder.add_record(
                     module,
                     line_number,
+                    orig_module,
                     class_,
                     determine_method(func_name, args),
                     args,

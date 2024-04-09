@@ -32,9 +32,9 @@ class TestZipfileMethods(unittest.TestCase):
         zip_file = zipfile.ZipFile('test_zip.zip')
         with recording_activated():
             zip_file.close()
-        self.assertTrue(is_recorded(self.recorder, zipfile.ZipFile, 'close'))
+        self.assertTrue(is_recorded(self.recorder, zipfile, zipfile.ZipFile, 'close'))
 
     def test_zipfile_is_zipfile(self):
         with recording_activated():
             zipfile.is_zipfile('test.zip')
-        self.assertTrue(is_recorded(self.recorder, zipfile, 'is_zipfile'))
+        self.assertTrue(is_recorded(self.recorder, zipfile, None, 'is_zipfile'))

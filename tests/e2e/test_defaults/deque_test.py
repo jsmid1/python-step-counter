@@ -7,6 +7,7 @@ from src.step_counting.setup_recording import setup_recording, recording_activat
 from ..utils import is_recorded
 
 from collections import deque
+import collections
 
 
 class TestIntMethods(unittest.TestCase):
@@ -26,84 +27,84 @@ class TestIntMethods(unittest.TestCase):
         with recording_activated():
             x = deque([1, 2])
             x + deque([3, 4])
-        self.assertTrue(is_recorded(self.recorder, deque, '__add__'))
+        self.assertTrue(is_recorded(self.recorder, collections, deque, '__add__'))
 
     def test_deque_bool(self):
         with recording_activated():
             bool(deque([1, 2]))
-        self.assertTrue(is_recorded(self.recorder, deque, '__bool__'))
+        self.assertTrue(is_recorded(self.recorder, collections, deque, '__bool__'))
 
     def test_deque_contains(self):
         with recording_activated():
             2 in deque([1, 2, 3])
-        self.assertTrue(is_recorded(self.recorder, deque, '__contains__'))
+        self.assertTrue(is_recorded(self.recorder, collections, deque, '__contains__'))
 
     def test_deque_copy(self):
         with recording_activated():
             x = deque([1, 2, 3])
             x.copy()
-        self.assertTrue(is_recorded(self.recorder, deque, 'copy'))
+        self.assertTrue(is_recorded(self.recorder, collections, deque, 'copy'))
 
     @unittest.skip('Setitem internally, banned in restrict')
     def test_deque_delitem(self):
         with recording_activated():
             x = deque([1, 2, 3])
             del x[1]
-        self.assertTrue(is_recorded(self.recorder, deque, '__delitem__'))
+        self.assertTrue(is_recorded(self.recorder, collections, deque, '__delitem__'))
 
     def test_deque_eq(self):
         with recording_activated():
             deque([1, 2]) == deque([1, 2])
-        self.assertTrue(is_recorded(self.recorder, deque, '__eq__'))
+        self.assertTrue(is_recorded(self.recorder, collections, deque, '__eq__'))
 
     def test_deque_getitem(self):
         with recording_activated():
             _ = deque([1, 2, 3])[1]
-        self.assertTrue(is_recorded(self.recorder, deque, '__getitem__'))
+        self.assertTrue(is_recorded(self.recorder, collections, deque, '__getitem__'))
 
     def test_deque_len(self):
         with recording_activated():
             len(deque([1, 2, 3]))
-        self.assertTrue(is_recorded(self.recorder, deque, '__len__'))
+        self.assertTrue(is_recorded(self.recorder, collections, deque, '__len__'))
 
     def test_deque_append(self):
         with recording_activated():
             x = deque([1, 2])
             x.append(3)
-        self.assertTrue(is_recorded(self.recorder, deque, 'append'))
+        self.assertTrue(is_recorded(self.recorder, collections, deque, 'append'))
 
     def test_deque_clear(self):
         with recording_activated():
             x = deque([1, 2, 3])
             x.clear()
-        self.assertTrue(is_recorded(self.recorder, deque, 'clear'))
+        self.assertTrue(is_recorded(self.recorder, collections, deque, 'clear'))
 
     def test_deque_extend(self):
         with recording_activated():
             x = deque([1, 2])
             x.extend([3, 4])
-        self.assertTrue(is_recorded(self.recorder, deque, 'extend'))
+        self.assertTrue(is_recorded(self.recorder, collections, deque, 'extend'))
 
     def test_deque_pop(self):
         with recording_activated():
             x = deque([1, 2, 3])
             x.pop()
-        self.assertTrue(is_recorded(self.recorder, deque, 'pop'))
+        self.assertTrue(is_recorded(self.recorder, collections, deque, 'pop'))
 
     def test_deque_popleft(self):
         with recording_activated():
             x = deque([1, 2, 3])
             x.popleft()
-        self.assertTrue(is_recorded(self.recorder, deque, 'popleft'))
+        self.assertTrue(is_recorded(self.recorder, collections, deque, 'popleft'))
 
     def test_deque_reverse(self):
         with recording_activated():
             x = deque([1, 2, 3])
             x.reverse()
-        self.assertTrue(is_recorded(self.recorder, deque, 'reverse'))
+        self.assertTrue(is_recorded(self.recorder, collections, deque, 'reverse'))
 
     def test_deque_rotate(self):
         with recording_activated():
             x = deque([1, 2, 3])
             x.rotate(1)
-        self.assertTrue(is_recorded(self.recorder, deque, 'rotate'))
+        self.assertTrue(is_recorded(self.recorder, collections, deque, 'rotate'))

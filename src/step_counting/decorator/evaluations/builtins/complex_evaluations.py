@@ -1,5 +1,5 @@
 from typing import Any, Callable
-from .complexities import constant
+from ..complexities import constant
 
 # TODO recheck, mul and pow are quite difficult
 complex_complexities: dict[str, Callable[[tuple[Any, ...]], int]] = {
