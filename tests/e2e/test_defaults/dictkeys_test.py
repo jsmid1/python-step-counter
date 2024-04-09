@@ -32,7 +32,7 @@ class TestDictkeysMethods(unittest.TestCase):
             x & y
         self.assertTrue(
             is_recorded(self.recorder, builtins, dict_keys, '__and__')
-            or is_recorded(self.recorder, builtins, dict_items, '__contains__')
+            or is_recorded(self.recorder, builtins, dict_items, '__and__')
         )
 
     # Can be recorded under dict_items
@@ -43,7 +43,7 @@ class TestDictkeysMethods(unittest.TestCase):
             x | y
         self.assertTrue(
             is_recorded(self.recorder, builtins, dict_keys, '__or__')
-            or is_recorded(self.recorder, builtins, dict_items, '__contains__')
+            or is_recorded(self.recorder, builtins, dict_items, '__or__')
         )
 
     # Can be recorded under dict_items
@@ -54,7 +54,7 @@ class TestDictkeysMethods(unittest.TestCase):
             x ^ y
         self.assertTrue(
             is_recorded(self.recorder, builtins, dict_keys, '__xor__')
-            or is_recorded(self.recorder, builtins, dict_items, '__contains__')
+            or is_recorded(self.recorder, builtins, dict_items, '__xor__')
         )
 
     # Can be recorded under dict_items
@@ -65,7 +65,7 @@ class TestDictkeysMethods(unittest.TestCase):
             x - y
         self.assertTrue(
             is_recorded(self.recorder, builtins, dict_keys, '__sub__')
-            or is_recorded(self.recorder, builtins, dict_items, '__contains__')
+            or is_recorded(self.recorder, builtins, dict_items, '__sub__')
         )
 
     def test_dict_keys_contains(self):
