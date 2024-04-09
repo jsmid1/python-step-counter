@@ -256,7 +256,6 @@ def revert_one(module: ModuleType, class_: Optional[type], method_name: str) -> 
 
 def apply() -> None:
     for (module, class_, method_name), ms in method_switches.items():
-        print(module, class_, method_name, ms.get_replacement_method())
         ms.overwrite(module, class_, method_name, ms.get_replacement_method())
 
 
