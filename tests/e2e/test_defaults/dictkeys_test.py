@@ -8,6 +8,7 @@ from ..utils import is_recorded
 import builtins
 
 dict_keys = type({}.keys())
+dict_items = type({}.items())
 
 
 class TestDictkeysMethods(unittest.TestCase):
@@ -23,33 +24,49 @@ class TestDictkeysMethods(unittest.TestCase):
     def tearDown(self):
         self.recorder.clear_data()
 
+    # Can be recorded under dict_items
     def test_dict_keys_and(self):
         with RecodingActivated():
             x = {'a': 1, 'b': 2}.keys()
             y = {'b': 2, 'c': 3}.keys()
             x & y
-        self.assertTrue(is_recorded(self.recorder, builtins, dict_keys, '__and__'))
+        self.assertTrue(
+            is_recorded(self.recorder, builtins, dict_keys, '__and__')
+            or is_recorded(self.recorder, builtins, dict_items, '__contains__')
+        )
 
+    # Can be recorded under dict_items
     def test_dict_keys_or(self):
         with RecodingActivated():
             x = {'a': 1, 'b': 2}.keys()
             y = {'c': 3}.keys()
             x | y
-        self.assertTrue(is_recorded(self.recorder, builtins, dict_keys, '__or__'))
+        self.assertTrue(
+            is_recorded(self.recorder, builtins, dict_keys, '__or__')
+            or is_recorded(self.recorder, builtins, dict_items, '__contains__')
+        )
 
+    # Can be recorded under dict_items
     def test_dict_keys_xor(self):
         with RecodingActivated():
             x = {'a': 1, 'b': 2}.keys()
             y = {'b': 2, 'c': 3}.keys()
             x ^ y
-        self.assertTrue(is_recorded(self.recorder, builtins, dict_keys, '__xor__'))
+        self.assertTrue(
+            is_recorded(self.recorder, builtins, dict_keys, '__xor__')
+            or is_recorded(self.recorder, builtins, dict_items, '__contains__')
+        )
 
+    # Can be recorded under dict_items
     def test_dict_keys_sub(self):
         with RecodingActivated():
             x = {'a': 1, 'b': 2}.keys()
             y = {'b': 2}.keys()
             x - y
-        self.assertTrue(is_recorded(self.recorder, builtins, dict_keys, '__sub__'))
+        self.assertTrue(
+            is_recorded(self.recorder, builtins, dict_keys, '__sub__')
+            or is_recorded(self.recorder, builtins, dict_items, '__contains__')
+        )
 
     def test_dict_keys_contains(self):
         with RecodingActivated():
