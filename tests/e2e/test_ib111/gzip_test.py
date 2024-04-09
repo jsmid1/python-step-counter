@@ -3,7 +3,7 @@ import unittest
 import os
 
 from src.step_counting import setup_recording as sr
-from src.step_counting.setup_recording import setup_recording, recording_activated
+from src.step_counting.setup_recording import setup_recording, RecodingActivated
 
 from ..utils import is_recorded
 
@@ -29,7 +29,7 @@ class TestTurtleMethods(unittest.TestCase):
         self.recorder.clear_data()
 
     def test_gzip_open(self):
-        with recording_activated():
+        with RecodingActivated():
             with gzip.open('test.gz', 'wt') as f:
                 f.write('test')
         self.assertTrue(is_recorded(self.recorder, gzip, None, 'open'))

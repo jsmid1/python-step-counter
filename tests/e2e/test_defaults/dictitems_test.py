@@ -2,7 +2,7 @@ import sys
 import unittest
 
 from src.step_counting import setup_recording as sr
-from src.step_counting.setup_recording import setup_recording, recording_activated
+from src.step_counting.setup_recording import setup_recording, RecodingActivated
 
 from ..utils import is_recorded
 import builtins
@@ -28,7 +28,7 @@ class TestDictItemsMethods(unittest.TestCase):
 
     # Can be recorded under dict_keys or dict_items
     def test_dict_items_and(self):
-        with recording_activated():
+        with RecodingActivated():
             self.items1 & self.items2
         self.assertTrue(
             is_recorded(self.recorder, builtins, dict_keys, '__and__')
@@ -37,7 +37,7 @@ class TestDictItemsMethods(unittest.TestCase):
 
     # Can be recorded under dict_keys or dict_items
     def test_dict_items_or(self):
-        with recording_activated():
+        with RecodingActivated():
             self.items1 | self.items2
         self.assertTrue(
             is_recorded(self.recorder, builtins, dict_keys, '__or__')
@@ -46,7 +46,7 @@ class TestDictItemsMethods(unittest.TestCase):
 
     # Can be recorded under dict_keys or dict_items
     def test_dict_items_xor(self):
-        with recording_activated():
+        with RecodingActivated():
             self.items1 ^ self.items2
         self.assertTrue(
             is_recorded(self.recorder, builtins, dict_keys, '__xor__')
@@ -55,7 +55,7 @@ class TestDictItemsMethods(unittest.TestCase):
 
     # Can be recorded under dict_keys or dict_items
     def test_dict_items_sub(self):
-        with recording_activated():
+        with RecodingActivated():
             self.items1 - self.items2
         self.assertTrue(
             is_recorded(self.recorder, builtins, dict_keys, '__sub__')
@@ -63,33 +63,33 @@ class TestDictItemsMethods(unittest.TestCase):
         )
 
     def test_dict_items_contains(self):
-        with recording_activated():
+        with RecodingActivated():
             ('a', 1) in self.items1
         self.assertTrue(
             is_recorded(self.recorder, builtins, dict_items, '__contains__')
         )
 
     def test_dict_items_eq(self):
-        with recording_activated():
+        with RecodingActivated():
             self.items1 == self.items2
         self.assertTrue(is_recorded(self.recorder, builtins, dict_items, '__eq__'))
 
     def test_dict_items_ne(self):
-        with recording_activated():
+        with RecodingActivated():
             self.items1 != self.items2
         self.assertTrue(is_recorded(self.recorder, builtins, dict_items, '__ne__'))
 
     def test_dict_items_iter(self):
-        with recording_activated():
+        with RecodingActivated():
             iter(self.items1)
         self.assertTrue(is_recorded(self.recorder, builtins, dict_items, '__iter__'))
 
     def test_dict_items_len(self):
-        with recording_activated():
+        with RecodingActivated():
             len(self.items1)
         self.assertTrue(is_recorded(self.recorder, builtins, dict_items, '__len__'))
 
     def test_dict_items_isdisjoint(self):
-        with recording_activated():
+        with RecodingActivated():
             self.items1.isdisjoint(self.items2)
         self.assertTrue(is_recorded(self.recorder, builtins, dict_items, 'isdisjoint'))

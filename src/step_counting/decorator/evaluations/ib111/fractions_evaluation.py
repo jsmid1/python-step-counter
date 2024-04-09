@@ -1,9 +1,9 @@
-from ..complexities import constant, linear
+from ..complexities import ComplexitiesDict, constant
 
 
-fractions_complexities = {None}
+fractions_complexities: ComplexitiesDict = dict()
 
-fractions_fraction_complexities = {
+fractions_fraction_complexities: ComplexitiesDict = {
     'as_integer_ratio': constant,
     'conjugate': constant,
     'denominator': constant,

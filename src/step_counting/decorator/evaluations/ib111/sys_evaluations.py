@@ -1,7 +1,7 @@
-from ..complexities import constant
+from ..complexities import ComplexitiesDict, constant
 
 
-sys_complexities = {
+sys_complexities: ComplexitiesDict = {
     'stdin': constant,
     'stdout': constant,
     'stderr': constant,

@@ -1,11 +1,11 @@
-from ..complexities import constant
+from ..complexities import ComplexitiesDict, constant
 
 
-csv_complexities = {
+csv_complexities: ComplexitiesDict = {
     'reader': constant,
     'writer': constant,
 }
 
-csv_dictreader_complexities = {
+csv_dictreader_complexities: ComplexitiesDict = {
     'fieldnames': constant,
 }

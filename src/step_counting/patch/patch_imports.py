@@ -11,21 +11,21 @@ from ..original_methods import _setattr, _import, _callable
 ########################################################################################
 
 
-class module_proxy:
+class ModuleProxy:
     pass
 
 
-class class_proxy:
+class ClassProxy:
     pass
 
 
-def make_proxy(module: ModuleType, decorator: Callable[..., Any]) -> module_proxy:
-    proxy = module_proxy()
+def make_proxy(module: ModuleType, decorator: Callable[..., Any]) -> ModuleProxy:
+    proxy = ModuleProxy()
     _setattr(proxy, '__name__', module.__name__)
 
     for name, obj in module.__dict__.items():
         if inspect.isclass(obj):
-            class_ = class_proxy()
+            class_ = ClassProxy()
             for attr_name in dir(obj):
                 if attr_name == '__class__':
                     continue
@@ -47,7 +47,7 @@ def import_proxy(
     name: str,
     *args: Any,
     **kwargs: Any
-) -> Union[ModuleType, module_proxy]:
+) -> Union[ModuleType, ModuleProxy]:
     module = _import(name, *args, **kwargs)
     if is_user_defined_module(module):
         user_defined_modules.add(module)
@@ -57,8 +57,8 @@ def import_proxy(
 
 def import_decorator(
     decorator: Callable[..., Any], user_defined_modules: set[ModuleType]
-) -> Callable[..., Union[ModuleType, module_proxy]]:
-    def wrapped_import(*args: Any, **kwargs: Any) -> Union[ModuleType, module_proxy]:
+) -> Callable[..., Union[ModuleType, ModuleProxy]]:
+    def wrapped_import(*args: Any, **kwargs: Any) -> Union[ModuleType, ModuleProxy]:
         return import_proxy(
             decorator, user_defined_modules, *tuple.__iter__(args), **kwargs
         )

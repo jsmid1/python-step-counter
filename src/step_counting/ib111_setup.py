@@ -4,6 +4,8 @@ from typing import Callable, Any, Union
 import inspect
 import turtle, typing, math, fractions, gzip, http.client, re, zipfile, io, glob, sys, csv, datetime, calendar, json, shutil, os, sqlite3, random
 
+from .decorator.decorators import Decorator
+
 from .utils.methods import get_class_methods
 
 from .patch.patching import create_patch
@@ -89,7 +91,7 @@ allow = {
 
 def decorate_all_methods_in_module(
     module: ModuleType,
-    decorator: Callable[..., Any],
+    decorator: Decorator,
 ) -> None:
     for name, obj in inspect.getmembers(module, predicate=inspect.isclass):
         for name, fn in inspect.getmembers(obj, predicate=inspect.isroutine):
@@ -105,7 +107,7 @@ def decorate_all_methods_in_module(
         create_patch(module, None, name, decorator(module, None, obj, name))
 
 
-def setup_ib111_modules(decorator: Callable[..., Any]) -> None:
+def setup_ib111_modules(decorator: Decorator) -> None:
     for module, object_names in allow.items():
         for obj_name in object_names:
             obj = getattr(module, obj_name)

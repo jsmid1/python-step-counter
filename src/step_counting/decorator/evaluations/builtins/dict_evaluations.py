@@ -1,5 +1,5 @@
 from typing import Any
-from ..complexities import constant, linear_to_len
+from ..complexities import ComplexitiesDict, constant, linear_to_len
 
 
 def dict_update_complexity(args: tuple[dict[Any, Any], dict[Any, Any]]) -> int:
@@ -9,7 +9,7 @@ def dict_update_complexity(args: tuple[dict[Any, Any], dict[Any, Any]]) -> int:
 
 
 # TODO possible problems due to hash collisions...
-dict_complexities = {
+dict_complexities: ComplexitiesDict = {
     '__contains__': linear_to_len,
     '__len__': constant,
     '__getitem__': constant,

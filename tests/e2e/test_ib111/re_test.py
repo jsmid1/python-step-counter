@@ -2,7 +2,7 @@ import sys
 import unittest
 
 from src.step_counting import setup_recording as sr
-from src.step_counting.setup_recording import setup_recording, recording_activated
+from src.step_counting.setup_recording import setup_recording, RecodingActivated
 
 from ..utils import is_recorded
 
@@ -26,26 +26,26 @@ class TestTurtleMethods(unittest.TestCase):
         self.recorder.clear_data()
 
     def test_re_findall(self):
-        with recording_activated():
+        with RecodingActivated():
             result = re.findall('a', 'aardvark')
         self.assertTrue(is_recorded(self.recorder, re, None, 'findall'))
 
     def test_re_match(self):
-        with recording_activated():
+        with RecodingActivated():
             result = re.match('a', 'apple')
         self.assertTrue(is_recorded(self.recorder, re, None, 'match'))
 
     def test_re_compile(self):
-        with recording_activated():
+        with RecodingActivated():
             pattern = re.compile('a')
         self.assertTrue(is_recorded(self.recorder, re, None, 'compile'))
 
     def test_re_sub(self):
-        with recording_activated():
+        with RecodingActivated():
             result = re.sub('a', 'o', 'apple')
         self.assertTrue(is_recorded(self.recorder, re, None, 'sub'))
 
     def test_re_search(self):
-        with recording_activated():
+        with RecodingActivated():
             result = re.search('a', 'apple')
         self.assertTrue(is_recorded(self.recorder, re, None, 'search'))

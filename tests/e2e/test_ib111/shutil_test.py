@@ -3,7 +3,7 @@ import unittest
 import os
 
 from src.step_counting import setup_recording as sr
-from src.step_counting.setup_recording import setup_recording, recording_activated
+from src.step_counting.setup_recording import setup_recording, RecodingActivated
 
 from ..utils import is_recorded
 
@@ -31,7 +31,7 @@ class TestTurtleMethods(unittest.TestCase):
     def test_shutil_rmtree(self):
         testdir = 'testdir'
         os.mkdir(testdir)
-        with recording_activated():
+        with RecodingActivated():
             shutil.rmtree(testdir)
         self.assertTrue(is_recorded(self.recorder, shutil, None, 'rmtree'))
 
@@ -44,6 +44,6 @@ class TestTurtleMethods(unittest.TestCase):
             os.remove(cp_file)
         except:
             pass
-        with recording_activated():
+        with RecodingActivated():
             shutil.copyfile(test_file, cp_file)
         self.assertTrue(is_recorded(self.recorder, shutil, None, 'copyfile'))

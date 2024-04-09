@@ -1,5 +1,16 @@
 from types import ModuleType
-from typing import Any, Callable, Literal, Optional, Union
+from typing import Any, Callable, Literal, Optional, Union, Dict
+import builtins
+import calendar, csv, datetime as dt, fractions, glob, gzip, io, json, io, json, math, os, re, shutil, sys, turtle, zipfile
+from http import client
+from datetime import date, datetime, timedelta, time
+from fractions import Fraction
+from csv import DictReader
+from io import BytesIO
+from zipfile import ZipFile
+
+from src.step_counting.decorator.evaluations.complexities import ComplexitiesDict
+
 from .builtins.builtins_evaluations import builtins_complexities
 from .builtins.bytes_evaluations import bytes_complexities
 from .builtins.complex_evaluations import complex_complexities
@@ -44,16 +55,7 @@ from .ib111.zipfile_evaluations import (
     zipfile_zipfile_complexities,
 )
 
-import builtins
-import calendar, csv, datetime, fractions, glob, gzip, io, json, io, json, math, os, re, shutil, sys, turtle, zipfile
-from http import client
-from datetime import date, datetime, timedelta, time
-from fractions import Fraction
-from csv import DictReader
-from io import BytesIO
-from zipfile import ZipFile
-
-evaluation_method: dict[str, dict[str, Callable[[tuple[Any, ...]], int]]] = {
+evaluation_method: Dict[ModuleType, Dict[type | None, ComplexitiesDict]] = {
     builtins: {
         None: builtins_complexities,
         bytes: bytes_complexities,
@@ -68,7 +70,7 @@ evaluation_method: dict[str, dict[str, Callable[[tuple[Any, ...]], int]]] = {
     },
     calendar: {None: calendar_complexities},
     csv: {None: csv_complexities, DictReader: csv_dictreader_complexities},
-    datetime: {
+    dt: {
         None: datetime_complexities,
         date: datetime_date_complexities,
         datetime: datetime_datetime_complexities,
@@ -103,7 +105,7 @@ def default_evaluation(_: Any) -> Literal[1]:
 
 
 def get_evaluation_method(
-    module: ModuleType, class_: Union[ModuleType, type], func_name: str
+    module: ModuleType, class_: Optional[type], func_name: str
 ) -> Callable[[tuple[Any, ...]], int]:
     return (
         evaluation_method.get(module, {})

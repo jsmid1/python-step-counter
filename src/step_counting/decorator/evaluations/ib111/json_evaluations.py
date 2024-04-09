@@ -1,7 +1,7 @@
-from ..complexities import constant
+from ..complexities import ComplexitiesDict, constant
 
 
-json_complexities = {
+json_complexities: ComplexitiesDict = {
     'load': constant,
     'loads': constant,
     'dump': constant,

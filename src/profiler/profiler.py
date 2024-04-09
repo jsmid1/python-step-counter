@@ -2,11 +2,11 @@ import os
 from types import ModuleType
 from typing import Any
 
-from src.step_counting.decorator.records.record_classes import counter
+from src.step_counting.decorator.records.record_classes import Counter
 
 
 def create_module_profile(
-    module_file: str, module_data: dict[int, dict[Any, counter]]
+    module_file: str, module_data: dict[int, dict[Any, Counter]]
 ) -> str:
     lines = []
     with open(module_file, 'r') as file:
@@ -29,11 +29,11 @@ def create_module_profile(
 
 def create_profile(
     modules: set[ModuleType],
-    data: dict[str, dict[int, dict[tuple[str, str, str], counter]]],
+    data: dict[str, dict[int, dict[tuple[str, str, str], Counter]]],
 ) -> dict[ModuleType, str]:
     profiled_modules = dict()
     for module in modules:
-        module_data = data.get(module, {})
+        module_data = data.get(module, {})  # type: ignore
 
         assert module.__file__
         profiled_modules[module] = create_module_profile(module.__file__, module_data)

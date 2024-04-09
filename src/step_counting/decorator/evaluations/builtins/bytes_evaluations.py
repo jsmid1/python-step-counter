@@ -1,5 +1,6 @@
 from typing import Any
 from ..complexities import (
+    ComplexitiesDict,
     constant,
     linear_to_len,
     sequence_mul_complexity,
@@ -14,7 +15,7 @@ def bytes_add_complexity(args: tuple[Any, ...]) -> int:
     return len(list_one) + len(list_two)
 
 
-bytes_complexities = {
+bytes_complexities: ComplexitiesDict = {
     '__len__': constant,
     '__contains__': linear_to_len,
     '__getitem__': constant,

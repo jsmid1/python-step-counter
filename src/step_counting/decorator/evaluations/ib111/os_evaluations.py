@@ -1,7 +1,7 @@
-from ..complexities import constant
+from ..complexities import ComplexitiesDict, constant
 
 
-os_complexities = {
+os_complexities: ComplexitiesDict = {
     'path': constant,
     'remove': constant,
     'getcwd': constant,

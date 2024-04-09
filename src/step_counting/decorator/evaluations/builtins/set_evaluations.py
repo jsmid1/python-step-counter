@@ -1,6 +1,6 @@
 from typing import Any
 
-from ..complexities import *
+from ..complexities import ComplexitiesDict, constant, linear_to_len
 
 
 def set_or_complexity(args: tuple[Any, ...]) -> int:
@@ -32,7 +32,7 @@ def set_difference_complexity(args: tuple[Any, ...]) -> int:
     return sum(len(set_) for set_ in set_list)
 
 
-set_complexities = {
+set_complexities: ComplexitiesDict = {
     '__len__': constant,
     '__contains__': linear_to_len,
     '__sub__': linear_to_len,

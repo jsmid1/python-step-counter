@@ -1,7 +1,7 @@
-from ..complexities import constant, logarithmic_to_min, linear
+from ..complexities import ComplexitiesDict, constant, logarithmic_to_min, linear
 
 
-math_complexities = {
+math_complexities: ComplexitiesDict = {
     'acos': constant,
     'cos': constant,
     'asin': constant,

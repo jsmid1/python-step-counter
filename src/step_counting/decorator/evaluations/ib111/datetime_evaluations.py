@@ -1,9 +1,9 @@
-from ..complexities import constant, linear
+from ..complexities import ComplexitiesDict, constant, linear
 
 
-datetime_complexities = dict()
+datetime_complexities: ComplexitiesDict = dict()
 
-datetime_date_complexities = {
+datetime_date_complexities: ComplexitiesDict = {
     'ctime': constant,
     'day': constant,
     'fromisocalendar': constant,
@@ -26,7 +26,7 @@ datetime_date_complexities = {
     'year': linear,
 }
 
-datetime_datetime_complexities = {
+datetime_datetime_complexities: ComplexitiesDict = {
     'astimezone': constant,
     'combine': constant,
     'ctime': constant,
@@ -69,7 +69,7 @@ datetime_datetime_complexities = {
     'year': constant,
 }
 
-datetime_timedelta_complexities = {
+datetime_timedelta_complexities: ComplexitiesDict = {
     'dst': constant,
     'fold': constant,
     'fromisoformat': constant,
@@ -88,7 +88,7 @@ datetime_timedelta_complexities = {
     'utcoffset': constant,
 }
 
-datetime_time_complexities = {
+datetime_time_complexities: ComplexitiesDict = {
     'days': constant,
     'max': constant,
     'microseconds': constant,

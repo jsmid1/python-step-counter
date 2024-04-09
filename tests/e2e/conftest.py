@@ -17,7 +17,7 @@ def setup_module(request):
         request.module, {utils, setup_recording}
     )
 
-    return recorder, setup_recording.recording_activated
+    return recorder, setup_recording.RecodingActivated
 
 
 @pytest.fixture(scope='function')

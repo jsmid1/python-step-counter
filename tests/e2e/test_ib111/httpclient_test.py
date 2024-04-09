@@ -4,7 +4,7 @@ import unittest
 from unittest.mock import patch
 
 from src.step_counting import setup_recording as sr
-from src.step_counting.setup_recording import setup_recording, recording_activated
+from src.step_counting.setup_recording import setup_recording, RecodingActivated
 
 from ..utils import is_recorded
 
@@ -33,7 +33,7 @@ class TestHttpclientMethods(unittest.TestCase):
 
     @patch('http.client.HTTPConnection.connect')
     def test_connectHTTP(self, mock_connect):
-        with recording_activated():
+        with RecodingActivated():
             self.connectionHTTP.connect()
         self.assertTrue(
             is_recorded(
@@ -43,7 +43,7 @@ class TestHttpclientMethods(unittest.TestCase):
 
     @patch('http.client.HTTPSConnection.connect')
     def test_connectHTTPS(self, mock_connect):
-        with recording_activated():
+        with RecodingActivated():
             self.connectionHTTPS.connect()
         self.assertTrue(
             is_recorded(

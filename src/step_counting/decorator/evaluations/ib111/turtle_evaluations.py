@@ -1,7 +1,7 @@
-from ..complexities import constant
+from ..complexities import ComplexitiesDict, constant
 
 
-turtle_complexities = {
+turtle_complexities: ComplexitiesDict = {
     'forward': constant,
     'backward': constant,
     'right': constant,

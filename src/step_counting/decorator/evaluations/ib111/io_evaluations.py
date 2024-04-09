@@ -1,8 +1,8 @@
-from ..complexities import constant
+from ..complexities import ComplexitiesDict, constant
 
-io_complexities = dict()
+io_complexities: ComplexitiesDict = dict()
 
-io_bytesio_complexities = {
+io_bytesio_complexities: ComplexitiesDict = {
     'close': constant,
     'closed': constant,
     'detach': constant,

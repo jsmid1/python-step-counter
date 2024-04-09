@@ -1,7 +1,7 @@
-from ..complexities import constant, linear_to_len
+from ..complexities import ComplexitiesDict, constant, linear_to_len
 
 
-tuple_complexities = {
+tuple_complexities: ComplexitiesDict = {
     '__len__': constant,
     '__getitem__': constant,
     '__contains__': linear_to_len,

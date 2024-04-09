@@ -2,7 +2,7 @@ import sys
 import unittest
 
 from src.step_counting import setup_recording as sr
-from src.step_counting.setup_recording import setup_recording, recording_activated
+from src.step_counting.setup_recording import setup_recording, RecodingActivated
 
 from ..utils import is_recorded
 import builtins
@@ -24,33 +24,33 @@ class TestDictvaluesMethods(unittest.TestCase):
         self.recorder.clear_data()
 
     def test_dict_values_eq(self):
-        with recording_activated():
+        with RecodingActivated():
             x = {'a': 1, 'b': 2}.values() == {'a': 1, 'b': 2}.values()
         self.assertTrue(is_recorded(self.recorder, builtins, dict_values, '__eq__'))
 
     def test_dict_values_ne(self):
-        with recording_activated():
+        with RecodingActivated():
             x = {'a': 1, 'b': 2}.values() != {'a': 2, 'b': 3}.values()
         self.assertTrue(is_recorded(self.recorder, builtins, dict_values, '__ne__'))
 
     def test_dict_values_iter(self):
-        with recording_activated():
+        with RecodingActivated():
             iter({'a': 1, 'b': 2}.values())
         self.assertTrue(is_recorded(self.recorder, builtins, dict_values, '__iter__'))
 
     def test_dict_values_len(self):
-        with recording_activated():
+        with RecodingActivated():
             len({'a': 1, 'b': 2}.values())
         self.assertTrue(is_recorded(self.recorder, builtins, dict_values, '__len__'))
 
     def test_dict_values_repr(self):
-        with recording_activated():
+        with RecodingActivated():
             repr({'a': 1, 'b': 2}.values())
         self.assertTrue(is_recorded(self.recorder, builtins, dict_values, '__repr__'))
 
     @unittest.skip('Maps to different function (uses dict_values.__iter__)')
     def test_dict_values_contains(self):
-        with recording_activated():
+        with RecodingActivated():
             x = {'a': 1, 'b': 2}.values()
             1 in x
         print(self.recorder.get_data())
@@ -59,7 +59,7 @@ class TestDictvaluesMethods(unittest.TestCase):
         )
 
     def test_dict_values_reversed(self):
-        with recording_activated():
+        with RecodingActivated():
             x = {'a': 1, 'b': 2}.values()
             reversed(x)
 

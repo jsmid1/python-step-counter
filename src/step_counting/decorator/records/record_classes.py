@@ -1,16 +1,20 @@
 from types import ModuleType
-from typing import Any, Optional
+from typing import Any, Optional, TypeAlias
 from ..evaluations.evaluations import evaluate_record
 
 from ...original_methods import dict_get, list_append
 
+RecordKey: TypeAlias = tuple[ModuleType, Optional[type], str]
+SequenceRecords: TypeAlias = list[tuple[ModuleType, str, str]]
+ModuleDetailRecords: TypeAlias = dict[int, dict[RecordKey, 'Counter']]
+DetailRecords: TypeAlias = dict[ModuleType, ModuleDetailRecords]
 ########################################################################################
 # These methods are used with patches applied. Even through it is not necessary
 # to use original methods, they are used for optimization.
 ########################################################################################
 
 
-class counter:
+class Counter:
     def __init__(self, count: int = 0, evaluation: int = 0) -> None:
         self.count_total = count
         self.evaluation_total = evaluation
@@ -33,18 +37,20 @@ class counter:
         return f'(Counter {self.count_total}, {self.evaluation_total})'
 
 
-class simple_call_recorder:
+class SimpleCallRecorder:
     def __init__(self) -> None:
-        self.counter = counter()
+        self.counter = Counter()
 
     def add_record(
-        self, orig_module: ModuleType, cls: type, func_name: str, arguments: Any
+        self,
+        orig_module: ModuleType,
+        cls: Optional[type],
+        func_name: str,
+        arguments: Any,
     ) -> None:
-        self.counter.increase(
-            evaluate_record(orig_module, cls.__name__, func_name, arguments)
-        )
+        self.counter.increase(evaluate_record(orig_module, cls, func_name, arguments))
 
-    def get_data(self) -> counter:
+    def get_data(self) -> Counter:
         return self.counter
 
     def evaluate_data(self) -> int:
@@ -54,12 +60,14 @@ class simple_call_recorder:
         self.counter.clear()
 
 
-class sequence_call_recorder:
+class SequnceCallRecorder:
     def __init__(self) -> None:
-        self.records: list[tuple[ModuleType, str, str]] = []
+        self.records: SequenceRecords = []
 
-    def add_record(self, module: ModuleType, class_name: str, func_name: str) -> None:
-        list_append(self.records, (module, class_name, func_name))
+    def add_record(
+        self, module: ModuleType, class_: Optional[type], func_name: str
+    ) -> None:
+        list_append(self.records, (module, class_, func_name))  # type: ignore
 
     def get_data(self) -> list[tuple[ModuleType, str, str]]:
         return self.records.copy()
@@ -71,18 +79,16 @@ class sequence_call_recorder:
         self.records.clear()
 
 
-class detail_call_recorder:
+class DetailCallRecorder:
     def __init__(self) -> None:
-        self.records: dict[ModuleType, dict[int, dict[tuple[str, str], counter]]] = (
-            dict()
-        )
+        self.records: DetailRecords = dict()
 
     def add_record(
         self,
         module: ModuleType,
         line_number: int,
         orig_module: ModuleType,
-        cls: type,
+        cls: Optional[type],
         func_name: str,
         arguments: Any,
     ) -> None:
@@ -90,40 +96,38 @@ class detail_call_recorder:
         module_records = dict_get(self.records, module, None)
 
         if module_records is None:
-            records: dict[int, dict[tuple[type, str], counter]] = {
-                line_number: {(orig_module, cls, func_name): counter(1, record_eval)}
+            records: dict[int, dict[RecordKey, Counter]] = {
+                line_number: {(orig_module, cls, func_name): Counter(1, record_eval)}
             }
             dict.__setitem__(
                 # mypy gets confused with dunder method use
                 self.records,
-                module,  # type: ignore
+                module,
                 records,
             )
             return
 
         # mypy gets confused with dunder method use
-        line_records: Optional[dict[tuple[type, str], counter]] = dict_get(
+        line_records: Optional[dict[tuple[type, str], Counter]] = dict_get(
             module_records, line_number, None
         )  # type: ignore
         if line_records is None:
             dict.__setitem__(
                 module_records,
                 # mypy gets confused with dunder method use
-                line_number,  # type: ignore
-                {(orig_module, cls, func_name): counter(1, record_eval)},
+                line_number,
+                {(orig_module, cls, func_name): Counter(1, record_eval)},
             )
             return
 
-        method_counter = dict_get(line_records, (orig_module, cls, func_name), None)
+        method_counter = dict_get(line_records, (orig_module, cls, func_name), None)  # type: ignore
         if method_counter is None:
-            method_counter = counter()
+            method_counter = Counter()
 
         method_counter.increase(record_eval)
-        dict.__setitem__(line_records, (orig_module, cls, func_name), method_counter)
+        dict.__setitem__(line_records, (orig_module, cls, func_name), method_counter)  # type: ignore
 
-    def get_data(
-        self,
-    ) -> dict[ModuleType, dict[int, dict[tuple[str, str], counter]]]:
+    def get_data(self) -> DetailRecords:
         return self.records.copy()
 
     def evaluate_data(self) -> int:

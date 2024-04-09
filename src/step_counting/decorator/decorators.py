@@ -1,11 +1,11 @@
-from types import FunctionType, ModuleType
+from types import ModuleType
 import functools
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, TypeAlias
 
 from .records.record_classes import (
-    simple_call_recorder,
-    sequence_call_recorder,
-    detail_call_recorder,
+    SimpleCallRecorder,
+    SequnceCallRecorder,
+    DetailCallRecorder,
 )
 from .utils import (
     get_caller_module_info,
@@ -14,11 +14,15 @@ from .utils import (
     determine_method,
 )
 
+Decorator: TypeAlias = Callable[
+    [ModuleType, Optional[type], Callable[..., Any], str], Callable[..., Any]
+]
+
 
 def create_decorator_default(
     tracked_modules: set[ModuleType],
-) -> tuple[Callable[..., Any], simple_call_recorder]:
-    recorder = simple_call_recorder()
+) -> tuple[Decorator, SimpleCallRecorder]:
+    recorder = SimpleCallRecorder()
 
     def decorator(
         orig_module: ModuleType,
@@ -26,7 +30,7 @@ def create_decorator_default(
         func: Callable[..., Any],
         func_name: str,
     ) -> Any:
-        method_type = get_method_type(class_, func_name)
+        method_type = get_method_type(orig_module, class_, func_name)
         if method_type == classmethod:
             assert hasattr(func, '__func__')
             func_obj = func.__func__
@@ -37,7 +41,10 @@ def create_decorator_default(
         def wrapper(*args: tuple[Any], **kwargs: tuple[Any]) -> Any:
             module, _ = get_caller_module_info()
             if module_in_list(module, tracked_modules):
-                recorder.add_record(class_, determine_method(func_name, args), args)
+                assert module
+                recorder.add_record(
+                    module, class_, determine_method(func_name, args), args
+                )
             return func_obj(*args, **kwargs)
 
         if method_type in {classmethod, staticmethod}:
@@ -49,18 +56,16 @@ def create_decorator_default(
 
 def create_decorator_sequence(
     tracked_modules: set[ModuleType],
-) -> tuple[
-    Callable[[Any, Any, Any], Callable[[Any, Any], Any]], sequence_call_recorder
-]:
-    recorder = sequence_call_recorder()
+) -> tuple[Decorator, SequnceCallRecorder]:
+    recorder = SequnceCallRecorder()
 
     def decorator(
         orig_module: ModuleType,
         class_: Optional[type],
         func: Callable[..., Any],
         func_name: str,
-    ) -> Any:
-        method_type = get_method_type(class_, func_name)
+    ) -> Callable[..., Any]:
+        method_type = get_method_type(orig_module, class_, func_name)
         if method_type == classmethod:
             assert hasattr(func, '__func__')
             func_obj = func.__func__
@@ -74,14 +79,13 @@ def create_decorator_sequence(
                 assert module
                 recorder.add_record(
                     orig_module,
-                    module,
-                    class_.__name__,
+                    class_,
                     determine_method(func_name, args),
                 )
             return func_obj(*args, **kwargs)
 
         if method_type in {classmethod, staticmethod}:
-            return method_type(wrapper)
+            return method_type(wrapper)  # type: ignore
         return wrapper
 
     return decorator, recorder
@@ -89,15 +93,15 @@ def create_decorator_sequence(
 
 def create_decorator_detail(
     tracked_modules: set[ModuleType],
-) -> tuple[Callable[[Any, Any, Any], Callable[..., Any]], detail_call_recorder]:
-    recorder = detail_call_recorder()
+) -> tuple[Decorator, DetailCallRecorder]:
+    recorder = DetailCallRecorder()
 
     def decorator(
         orig_module: ModuleType,
         class_: Optional[type],
         func: Callable[..., Any],
         func_name: str,
-    ) -> Any:
+    ) -> Callable[..., Any]:
         method_type = get_method_type(orig_module, class_, func_name)
         if method_type == classmethod:
             assert hasattr(func, '__func__')
@@ -122,7 +126,7 @@ def create_decorator_detail(
             return func_obj(*args, **kwargs)
 
         if method_type in {classmethod, staticmethod}:
-            return method_type(wrapper)
+            return method_type(wrapper)  # type: ignore
         return wrapper
 
     return decorator, recorder

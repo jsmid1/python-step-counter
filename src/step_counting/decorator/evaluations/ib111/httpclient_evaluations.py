@@ -1,9 +1,9 @@
-from ..complexities import constant
+from ..complexities import ComplexitiesDict, constant
 
 
-httclient_complexities = dict()
+httclient_complexities: ComplexitiesDict = dict()
 
-httclient_HTTPConnection_complexities = {
+httclient_HTTPConnection_complexities: ComplexitiesDict = {
     'auto_open': constant,
     'close': constant,
     'connect': constant,
@@ -20,7 +20,7 @@ httclient_HTTPConnection_complexities = {
     'set_tunnel': constant,
 }
 
-httclient_HTTPSConnection_complexities = {
+httclient_HTTPSConnection_complexities: ComplexitiesDict = {
     'auto_open': constant,
     'close': constant,
     'connect': constant,

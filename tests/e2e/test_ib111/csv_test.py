@@ -3,7 +3,7 @@ import unittest
 import os
 
 from src.step_counting import setup_recording as sr
-from src.step_counting.setup_recording import setup_recording, recording_activated
+from src.step_counting.setup_recording import setup_recording, RecodingActivated
 
 from ..utils import is_recorded
 
@@ -29,7 +29,7 @@ class TestTurtleMethods(unittest.TestCase):
         self.recorder.clear_data()
 
     def test_csv_reader(self):
-        with recording_activated():
+        with RecodingActivated():
             with open('file.csv', newline='') as csvfile:
                 csv.reader(csvfile)
         self.assertTrue(is_recorded(self.recorder, csv, None, 'reader'))
@@ -41,7 +41,7 @@ class TestTurtleMethods(unittest.TestCase):
         except:
             pass
 
-        with recording_activated():
+        with RecodingActivated():
             with open('file.csv', 'w', newline='') as csvfile:
                 csv.writer(csvfile)
         self.assertTrue(is_recorded(self.recorder, csv, None, 'writer'))

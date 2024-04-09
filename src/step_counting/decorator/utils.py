@@ -55,7 +55,7 @@ def get_caller_module_info() -> tuple[Optional[ModuleType], int]:
 
 
 def get_method_type(
-    orig_module: ModuleType, class_: type, method_name: str
+    orig_module: ModuleType, class_: Optional[type], method_name: str
 ) -> Callable[..., Any]:
     if method_name == 'comparison':
         return FunctionType

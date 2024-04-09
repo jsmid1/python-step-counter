@@ -1,5 +1,7 @@
 import math
-from typing import Any, Literal, Sequence
+from typing import Any, Callable, Dict, Literal, Sequence, TypeAlias
+
+ComplexitiesDict: TypeAlias = Dict[str, Callable[[tuple[Any, ...]], int]]
 
 
 def constant(_: tuple[Any, ...]) -> int:

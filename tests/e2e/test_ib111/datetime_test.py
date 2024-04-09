@@ -2,7 +2,7 @@ import sys
 import unittest
 
 from src.step_counting import setup_recording as sr
-from src.step_counting.setup_recording import setup_recording, recording_activated
+from src.step_counting.setup_recording import setup_recording, RecodingActivated
 
 from ..utils import is_recorded
 
@@ -27,13 +27,13 @@ class TestDatetimeMethods(unittest.TestCase):
 
     def test_date_today_test(self):
         d = datetime.date(1, 2, 3)
-        with recording_activated():
+        with RecodingActivated():
             d.today()
         self.assertTrue(is_recorded(self.recorder, datetime, datetime.date, 'today'))
 
     def test_datetime_today_test(self):
         d = datetime.datetime(1, 2, 3)
-        with recording_activated():
+        with RecodingActivated():
             d.today()
         self.assertTrue(
             is_recorded(self.recorder, datetime, datetime.datetime, 'today')
@@ -41,7 +41,7 @@ class TestDatetimeMethods(unittest.TestCase):
 
     def test_time_fromisoformat_test(self):
         t = datetime.time(1, 2, 3)
-        with recording_activated():
+        with RecodingActivated():
             t.fromisoformat('14:05:15')
         self.assertTrue(
             is_recorded(self.recorder, datetime, datetime.time, 'fromisoformat')
@@ -49,7 +49,7 @@ class TestDatetimeMethods(unittest.TestCase):
 
     def test_timedelta_total_seconds_test(self):
         td = datetime.timedelta(1, 2, 3)
-        with recording_activated():
+        with RecodingActivated():
             td.total_seconds()
         self.assertTrue(
             is_recorded(self.recorder, datetime, datetime.timedelta, 'total_seconds')

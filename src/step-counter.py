@@ -1,6 +1,6 @@
 from types import ModuleType
-from typing import Literal
-from step_counting.setup_recording import setup_recording, recording_activated
+
+from step_counting.setup_recording import setup_recording, RecodingActivated
 from profiler.profiler import create_profile, output_profile
 from parser.parser import setup_parser
 from utils import import_from_path, insert_module_to_path
@@ -18,7 +18,7 @@ def main() -> None:
     eval_module: ModuleType = import_from_path(input_file)
     recorder, tracked_modules = setup_recording(eval_module, {'default_ib111'})
 
-    with recording_activated():
+    with RecodingActivated():
         eval_module.testing_func()
 
     module_profiles = create_profile(tracked_modules, recorder.get_data())

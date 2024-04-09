@@ -1,6 +1,6 @@
-from ..complexities import constant
+from ..complexities import ComplexitiesDict, constant
 
 
-glob_complexities = {
+glob_complexities: ComplexitiesDict = {
     'glob': constant,
 }

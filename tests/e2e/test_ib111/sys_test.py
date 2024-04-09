@@ -2,7 +2,7 @@ import sys
 import unittest
 
 from src.step_counting import setup_recording as sr
-from src.step_counting.setup_recording import setup_recording, recording_activated
+from src.step_counting.setup_recording import setup_recording, RecodingActivated
 
 from ..utils import is_recorded
 
@@ -25,18 +25,18 @@ class TestTurtleMethods(unittest.TestCase):
 
     @unittest.skip('Requires input')
     def test_sys_stdin(self):
-        with recording_activated():
+        with RecodingActivated():
             input = sys.stdin.readline()
         self.assertTrue(is_recorded(self.recorder, sys, None, 'stdin'))
 
     @unittest.skip('stdout')
     def test_sys_stdout(self):
-        with recording_activated():
+        with RecodingActivated():
             sys.stdout.write('test')
         self.assertTrue(is_recorded(self.recorder, sys, None, 'stdout'))
 
     @unittest.skip('stderr')
     def test_sys_stderr(self):
-        with recording_activated():
+        with RecodingActivated():
             sys.stderr.write('error')
         self.assertTrue(is_recorded(self.recorder, sys, None, 'stderr'))

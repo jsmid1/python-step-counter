@@ -1,6 +1,11 @@
 from typing import Any
 
-from ..complexities import *
+from ..complexities import (
+    ComplexitiesDict,
+    constant,
+    linear_to_len,
+    linearithmic_to_len,
+)
 
 
 def list_del_complexity(args: tuple[list[Any], int]) -> int:
@@ -45,7 +50,7 @@ def list_slice_complexity(args: tuple[list[Any], int]) -> int:
     return multiplier * len(list_)
 
 
-list_complexities = {
+list_complexities: ComplexitiesDict = {
     'append': constant,
     'clear': constant,
     'comparison': linear_to_len,

@@ -3,7 +3,7 @@ import unittest
 import os
 
 from src.step_counting import setup_recording as sr
-from src.step_counting.setup_recording import setup_recording, recording_activated
+from src.step_counting.setup_recording import setup_recording, RecodingActivated
 
 from ..utils import is_recorded
 
@@ -30,11 +30,11 @@ class TestZipfileMethods(unittest.TestCase):
 
     def test_zipfile_Zipfile_close(self):
         zip_file = zipfile.ZipFile('test_zip.zip')
-        with recording_activated():
+        with RecodingActivated():
             zip_file.close()
         self.assertTrue(is_recorded(self.recorder, zipfile, zipfile.ZipFile, 'close'))
 
     def test_zipfile_is_zipfile(self):
-        with recording_activated():
+        with RecodingActivated():
             zipfile.is_zipfile('test.zip')
         self.assertTrue(is_recorded(self.recorder, zipfile, None, 'is_zipfile'))

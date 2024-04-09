@@ -5,11 +5,11 @@ import traceback
 from types import ModuleType
 from typing import Any, Callable, Optional, Type
 
-from src.step_counting.decorator.records.record_classes import detail_call_recorder
+from src.step_counting.decorator.records.record_classes import DetailCallRecorder
 
 from .ib111_setup import setup_ib111_modules
 
-from .decorator import decorators
+from .decorator.decorators import create_decorator_detail, Decorator
 from .non_builtin_types import (
     dict_items_type,
     dict_keys_type,
@@ -18,7 +18,6 @@ from .non_builtin_types import (
 
 from .ignor import ignored_methods
 from .patch.patch_imports import import_decorator
-from .patch import py_object as pyo
 from .patch.default_classes.default_classes import is_py_method_def
 from .patch.patching import (
     create_patch,
@@ -26,7 +25,6 @@ from .patch.patching import (
     revert,
 )
 from .utils.module import (
-    get_module_imports,
     get_module_imports,
     is_user_defined_module,
     get_module_by_name,
@@ -136,7 +134,7 @@ builtin_methods: list[str] = [
 ]
 
 
-def decorate_builtins(decorator: Callable[..., Any]) -> None:
+def decorate_builtins(decorator: Decorator) -> None:
     for obj_name in builtin_methods:
         obj = getattr(builtins, obj_name)
 
@@ -146,7 +144,7 @@ def decorate_builtins(decorator: Callable[..., Any]) -> None:
             )
 
 
-def decorate_defaults(decorator: Callable[..., Any]) -> None:
+def decorate_defaults(decorator: Decorator) -> None:
     for module, classes in py_objects.items():
         for class_ in classes:
             for n in dir(class_) + ['comparison']:
@@ -172,9 +170,7 @@ def decorate_defaults(decorator: Callable[..., Any]) -> None:
                     )
 
 
-def decorate_all_methods_in_module(
-    module: ModuleType, decorator: Callable[..., Any]
-) -> None:
+def decorate_all_methods_in_module(module: ModuleType, decorator: Decorator) -> None:
     for name, obj in inspect.getmembers(module):
         if inspect.isclass(obj):
             if obj.__name__ in ignored_classes:
@@ -192,9 +188,7 @@ def decorate_all_methods_in_module(
             create_patch(module, None, name, decorator(module, None, obj, name))
 
 
-def wrap_import(
-    decorator: Callable[..., Any], user_defined_modules: set[ModuleType]
-) -> None:
+def wrap_import(decorator: Decorator, user_defined_modules: set[ModuleType]) -> None:
     import_wrapper = import_decorator(decorator, user_defined_modules)
 
     create_patch(
@@ -206,14 +200,16 @@ def wrap_import(
 
 
 def patch_imported_methods(
-    imported_callables: set[Callable[..., Any]], decorator: Callable[..., Any]
+    imported_callables: set[Callable[..., Any]], decorator: Decorator
 ) -> None:
     for call in imported_callables:
         module = get_module_by_name(call.__module__)
         if inspect.isclass(call):
+            if call in py_objects.values():
+                continue
             for method_name in dir(call):
                 method = getattr(call, method_name, None)
-                if callable(method) and method_name != '__class__':
+                if callable(method) and method_name not in ignored_class_methods:
                     create_patch(
                         module,
                         call.__name__,
@@ -236,7 +232,7 @@ def patch_imported_methods(
 
 def setup_recording(
     module: ModuleType, ignored_modules: set[ModuleType]
-) -> tuple[detail_call_recorder, set[ModuleType]]:
+) -> tuple[DetailCallRecorder, set[ModuleType]]:
     setup_modules, setup_callables = get_def_ignored_modules()
     ignored_modules.update(setup_modules)
     module_imports, imported_callables = get_module_imports(module, ignored_modules)
@@ -255,7 +251,7 @@ def setup_recording(
     }
     user_defined_modules.add(module)
 
-    decorator, recorder = decorators.create_decorator_detail(user_defined_modules)
+    decorator, recorder = create_decorator_detail(user_defined_modules)
 
     wrap_import(decorator, user_defined_modules)
 
@@ -273,13 +269,13 @@ def setup_recording(
     return recorder, user_defined_modules
 
 
-class recording_activated:
+class RecodingActivated:
     def __enter__(self) -> None:
         apply()
 
     def __exit__(
         self,
-        type: Optional[Type[BaseException]],
+        type: Optional[BaseException],
         value: Optional[BaseException],
         traceback: Optional[traceback.TracebackException],
     ) -> None:
