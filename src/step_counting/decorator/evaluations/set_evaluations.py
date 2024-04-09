@@ -1,31 +1,33 @@
+from typing import Any
+
 from .complexities import *
 
 
-def set_or_complexity(args):
+def set_or_complexity(args: tuple[Any, ...]) -> int:
     sequence_one = args[0]
     sequence_two = args[1]
 
     return len(sequence_one) + len(sequence_two)
 
 
-def min_len_complexity(args):
+def min_len_complexity(args: tuple[Any, ...]) -> int:
     set_one = args[0]
     set_two = args[1]
     return min(len(set_one), len(set_two))
 
 
-def sum_len_complexity(args):
+def sum_len_complexity(args: tuple[Any, ...]) -> int:
     set_one = args[0]
     set_two = args[1]
     return len(set_one) + len(set_two)
 
 
-def sum_len_list_complexity(args):
+def sum_len_list_complexity(args: tuple[Any, ...]) -> int:
     set_list = args[0]
     return sum(len(set_) for set_ in set_list)
 
 
-def set_difference_complexity(args):
+def set_difference_complexity(args: tuple[Any, ...]) -> int:
     set_list = args
     return sum(len(set_) for set_ in set_list)
 

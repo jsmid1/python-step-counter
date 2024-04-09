@@ -1,23 +1,24 @@
-import types
+from types import ModuleType
 import inspect
 import os
 import sys
+from typing import Any, Callable
 
 
-def get_module_by_name(module_name):
+def get_module_by_name(module_name: str) -> ModuleType:
     try:
         return sys.modules[module_name]
     except:
         raise Exception(f'Unkown module: {module_name}')
 
 
-def is_std_module(module):
+def is_std_module(module: ModuleType) -> bool:
     parent_module = module.__name__.split('.')[0]
 
     return parent_module in sys.stdlib_module_names
 
 
-def is_user_defined_module(module):
+def is_user_defined_module(module: ModuleType) -> bool:
     # To check if the module is defined bu the user
     # try to get the module's file path
     # if the module is builtin, inspect.getfile will raise a TypeError
@@ -41,16 +42,16 @@ def is_user_defined_module(module):
         return True
 
 
-def get_imports(mod):
+def get_imports(module: ModuleType) -> tuple[set[ModuleType], set[Callable[..., Any]]]:
     imported_modules = set()
     imported_functions = set()
-    for _, obj in vars(mod).items():
-        if isinstance(obj, types.ModuleType):
+    for _, obj in vars(module).items():
+        if isinstance(obj, ModuleType):
             imported_modules.add(obj)
         elif (
             callable(obj)
             and hasattr(obj, '__module__')
-            and obj.__module__ != mod.__name__
+            and obj.__module__ != module.__name__
         ):
             if callable(obj):
                 imported_functions.add(obj)
@@ -67,20 +68,21 @@ def get_imports(mod):
     return imported_modules, imported_functions
 
 
-def get_module_imports(mod, ignored_modules):
-    if mod in ignored_modules:
-        return {}, {}
+def get_module_imports(
+    module: ModuleType, ignored_modules: set[ModuleType]
+) -> tuple[set[ModuleType], set[Callable[..., Any]]]:
+    if module in ignored_modules:
+        return set(), set()
 
     imported_modules = set()
     imported_functions = set()
-    for name, obj in vars(mod).items():
-        if isinstance(obj, types.ModuleType):
-            # if inspect.ismodule(obj) or type(obj).__name__ == 'module_proxy':
+    for name, obj in vars(module).items():
+        if isinstance(obj, ModuleType):
             imported_modules.add(obj)
         elif (
             callable(obj)
             and hasattr(obj, '__module__')
-            and obj.__module__ != mod.__name__
+            and obj.__module__ != module.__name__
         ):
             if callable(obj):
                 imported_functions.add(obj)

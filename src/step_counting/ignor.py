@@ -1,3 +1,5 @@
+from types import ModuleType
+from typing import Any, Callable
 from .utils.module import get_imports, is_user_defined_module
 from . import setup_recording
 
@@ -55,7 +57,7 @@ ignored_classes = {'BuiltinImporter'}
 ignored_class_methods = {'__init__', '__new__'}
 
 
-def get_def_ignored_modules():
+def get_def_ignored_modules() -> tuple[set[ModuleType], set[Callable[..., Any]]]:
     setup_modules, setup_callables = get_imports(setup_recording)
     setup_modules = {
         module for module in setup_modules if is_user_defined_module(module)

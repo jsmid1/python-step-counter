@@ -1,10 +1,12 @@
+from types import ModuleType
+from typing import Literal
 from step_counting.setup_recording import setup_recording, recording_activated
 from profiler.profiler import create_profile, output_profile
 from parser.parser import setup_parser
 from utils import import_from_path, insert_module_to_path
 
 
-def main():
+def main() -> None:
     parser = setup_parser()
     args = parser.parse_args()
 
@@ -13,7 +15,7 @@ def main():
 
     insert_module_to_path(input_file)
 
-    eval_module = import_from_path(input_file)
+    eval_module: ModuleType = import_from_path(input_file)
     recorder, tracked_modules = setup_recording(eval_module, {'default_ib111'})
 
     with recording_activated():
@@ -25,8 +27,6 @@ def main():
 
     evaluation = recorder.evaluate_data()
     print('SCORE:', evaluation)
-
-    return evaluation
 
 
 if __name__ == '__main__':

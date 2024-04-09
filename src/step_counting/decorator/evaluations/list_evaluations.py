@@ -1,31 +1,33 @@
+from typing import Any
+
 from .complexities import *
 
 
-def list_del_complexity(args):
+def list_del_complexity(args: tuple[list[Any], int]) -> int:
     list_ = args[0]
     index = args[1]
     return len(list_) - index
 
 
-def list_extend_complexity(args):
+def list_extend_complexity(args: tuple[list[Any], list[Any]]) -> int:
     extending_list = args[1]
 
     return len(extending_list)
 
 
-def list_insert_complexity(args):
+def list_insert_complexity(args: tuple[list[Any], int]) -> int:
     list_ = args[0]
     index = args[1]
     return len(list_) - index + 1
 
 
-def list_mul_complexity(args):
+def list_mul_complexity(args: tuple[list[Any], int]) -> int:
     list_ = args[0]
     multiplier = args[1]
     return multiplier * len(list_)
 
 
-def list_pop_complexity(args):
+def list_pop_complexity(args: tuple[list[Any], int]) -> int:
     # In this case, pop is used without a second argument
     # therefore we are popping from the end of the list
     # making the time complexity constant.
@@ -37,7 +39,7 @@ def list_pop_complexity(args):
     return len(list_) - index
 
 
-def list_slice_complexity(args):
+def list_slice_complexity(args: tuple[list[Any], int]) -> int:
     list_ = args[0]
     multiplier = args[1]
     return multiplier * len(list_)

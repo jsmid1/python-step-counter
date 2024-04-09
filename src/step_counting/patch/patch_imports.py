@@ -1,11 +1,13 @@
 import inspect
+from types import ModuleType
+from typing import Any, Callable, Union
 
 from ..utils.module import is_user_defined_module
 from ..original_methods import _setattr, _import, _callable
 
 ########################################################################################
 # These methods are used with patches applied. Even though it is not necessary
-# to use original methods, they are used for optimalization.
+# to use original methods, they are used for optimization.
 ########################################################################################
 
 
@@ -17,9 +19,9 @@ class class_proxy:
     pass
 
 
-def make_proxy(module, decorator):
+def make_proxy(module: ModuleType, decorator: Callable[..., Any]) -> module_proxy:
     proxy = module_proxy()
-    proxy.__name__ = module.__name__
+    _setattr(proxy, '__name__', module.__name__)
 
     for name, obj in module.__dict__.items():
         if inspect.isclass(obj):
@@ -39,16 +41,24 @@ def make_proxy(module, decorator):
     return proxy
 
 
-def import_proxy(decorator, user_defined_modules, name, *args, **kwargs):
+def import_proxy(
+    decorator: Callable[..., Any],
+    user_defined_modules: set[ModuleType],
+    name: str,
+    *args: Any,
+    **kwargs: Any
+) -> Union[ModuleType, module_proxy]:
     module = _import(name, *args, **kwargs)
     if is_user_defined_module(module):
-        user_defined_modules.append(module)
+        user_defined_modules.add(module)
         return make_proxy(module, decorator)
     return module
 
 
-def import_decorator(decorator, user_defined_modules):
-    def wrapped_import(*args, **kwargs):
+def import_decorator(
+    decorator: Callable[..., Any], user_defined_modules: set[ModuleType]
+) -> Callable[..., Union[ModuleType, module_proxy]]:
+    def wrapped_import(*args: Any, **kwargs: Any) -> Union[ModuleType, module_proxy]:
         return import_proxy(
             decorator, user_defined_modules, *tuple.__iter__(args), **kwargs
         )

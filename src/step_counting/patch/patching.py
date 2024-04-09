@@ -1,22 +1,27 @@
+from ast import FunctionType
 import ctypes
 import gc
 import inspect
+from types import ModuleType
+from typing import Any, Callable, Optional
 
 from ..utils.module import is_user_defined_module
-from . import patch_imports
 from . import py_object as pyo
 from ..non_builtin_types import non_builtin_types
 from .default_classes.default_classes import is_py_method_def
-from .bin import patchdictionary, patchint, patchtuple, patchstr, patchlist
+from .bin import patchdictionary, patchint, patchtuple, patchstr, patchlist  # type: ignore
 from .method_switch import MethodSwitch
 from ..utils.methods import get_c_method, get_class_methods
 from ..utils.module import is_std_module
 
-tp_as_dict = {}
 tp_func_dict = {}
 
 
-def substitute_py_methods_structure(_, class_, tyobj, tp_name, struct_ty):
+def substitute_py_methods_structure(
+    tyobj: pyo.PyTypeObject,
+    tp_name: str,
+    struct_ty: type[ctypes.Structure],
+) -> None:
     tp_as_obj = struct_ty()
     tp_as_new_ptr = ctypes.cast(ctypes.addressof(tp_as_obj), ctypes.POINTER(struct_ty))
 
@@ -24,8 +29,12 @@ def substitute_py_methods_structure(_, class_, tyobj, tp_name, struct_ty):
 
 
 def patch_py_object_method_with_type(
-    class_, tp_name, method_name, method_type, replacement_method
-):
+    class_: Optional[type],
+    tp_name: str,
+    method_name: Optional[str],
+    method_type: Any,
+    replacement_method: Any,
+) -> None:
     tyobj = pyo.PyTypeObject.from_address(id(class_))
 
     if inspect.isfunction(replacement_method):
@@ -37,25 +46,27 @@ def patch_py_object_method_with_type(
         struct_ty = pyo.py_type_object_structs[tp_name]
         tp_as_ptr = getattr(tyobj, tp_name)
         if not tp_as_ptr:
-            substitute_py_methods_structure(class_, tyobj, tp_name, struct_ty)
+            substitute_py_methods_structure(tyobj, tp_name, struct_ty)
 
         tp_as = tp_as_ptr[0]
         tp_func_dict[(class_, tp_name, method_name)] = cfunc
 
+        assert method_name
         setattr(tp_as, method_name, cfunc)
     else:
-        if not (class_, tp_name) in tp_as_dict:
-            tp_as_dict[(class_, tp_name)] = ctypes.cast(
-                getattr(tyobj, tp_name), method_type
-            )
-
-        tp_func_dict[(class_, tp_name)] = cfunc
+        tp_func_dict[(class_, tp_name, None)] = cfunc
 
         # override function call
         setattr(tyobj, tp_name, cfunc)
 
 
-def patch_py_object_method(_, class_, method_name, replacement_method):
+def patch_py_object_method(
+    module: ModuleType,
+    class_: Optional[type],
+    method_name: str,
+    replacement_method: Callable[..., Any],
+) -> None:
+    assert class_
     spec_method = special_patch_methods.get(class_.__name__, {}).get(method_name, None)
     if spec_method is not None:
         spec_method(replacement_method)
@@ -74,44 +85,58 @@ def patch_py_object_method(_, class_, method_name, replacement_method):
     )
 
 
-def patch_py_builtin_method(module, _, method_name, replacement_method):
+def patch_py_builtin_method(
+    module: ModuleType,
+    class_: Optional[type],
+    method_name: str,
+    replacement_method: Callable[..., Any],
+) -> None:
     setattr(module, method_name, replacement_method)
 
 
-def patchable_builtin(class_):
+def patchable_builtin(class_: type) -> Any:
     refs = gc.get_referents(class_.__dict__)
     assert len(refs) == 1
     return refs[0]
 
 
-def get_py_std_class_method(class_, method_name):
+def get_py_std_class_method(class_: type, method_name: str) -> Any:
     dikt = patchable_builtin(class_)
 
     return dikt.get(method_name, None)
 
 
-def patch_py_std_class_method(_, class_, method_name, patched_func):
+def patch_py_std_class_method(
+    module: ModuleType,
+    class_: Optional[type],
+    method_name: str,
+    replacement_method: Callable[..., Any],
+) -> None:
+    assert class_
     dikt = patchable_builtin(class_)
 
     try:
-        dikt[method_name] = patched_func
+        dikt[method_name] = replacement_method
     except Exception:
         raise Exception(f"Unknown method {method_name} of class {class_.__name__}")
 
     ctypes.pythonapi.PyType_Modified(ctypes.py_object(class_))
 
 
-def patch_user_defined_method(module, class_: str, method_name, replacement_method):
+def patch_user_defined_method(
+    module: ModuleType,
+    class_: Optional[type],
+    method_name: str,
+    replacement_method: Callable[..., Any],
+) -> None:
     if class_ is None:
         setattr(module, method_name, replacement_method)
     else:
-        class_to_patch = getattr(module, class_)
-
-        if method_name not in get_class_methods(class_to_patch):
+        if method_name not in get_class_methods(class_):
             raise Exception(
-                f'Class {class_} in module {module.__name__} does not contain method {method_name}!'
+                f'Class {class_.__name__} in module {module.__name__} does not contain method {method_name}!'
             )
-        setattr(class_to_patch, method_name, replacement_method)
+        setattr(class_, method_name, replacement_method)
 
 
 # TODO: Check which are actually necessary
@@ -141,25 +166,26 @@ special_patch_methods = {
 }
 
 
-def patch_with_module(class_: str, method_name: str, replacement_method):
+def patch_with_module(
+    class_: str, method_name: str, replacement_method: Callable[..., Any]
+) -> None:
     special_patch_methods[class_][method_name](replacement_method)
 
 
-def set_import_replacement_method(module, class_, method_name, patched_func):
-    patch_imports.replacement_import_methods.setdefault(module.__name__, dict())[
-        (class_, method_name)
-    ] = patched_func
+method_switches: dict[tuple[ModuleType, Optional[type], str], MethodSwitch] = dict()
 
 
-method_switches = dict()
-
-
-def create_patch(module, class_: str, method_name, replacement_method):
+def create_patch(
+    module: ModuleType,
+    class_: Optional[str],
+    method_name: str,
+    replacement_method: Callable[..., Any],
+) -> None:
     if is_std_module(module):
         if class_ is None:
             patching_method = patch_py_builtin_method
             original_method = getattr(module, method_name)
-            class_to_patch = class_
+            class_to_patch = None
         else:
             class_to_patch = non_builtin_types.get(class_, None)
 
@@ -182,11 +208,12 @@ def create_patch(module, class_: str, method_name, replacement_method):
     elif is_user_defined_module(module):
         if class_ == None:
             original_method = getattr(module, method_name)
+            class_to_patch = None
         else:
+            assert class_
             class_to_patch = getattr(module, class_)
             original_method = getattr(class_to_patch, method_name)
         patching_method = patch_user_defined_method
-        class_to_patch = class_
 
     else:
         raise Exception(
@@ -207,21 +234,31 @@ def create_patch(module, class_: str, method_name, replacement_method):
         )
 
 
-def apply_one(module_name, class_name, method_name):
-    ms = method_switches.get((module_name, class_name, method_name))
-    ms.overwrite(module_name, class_name, method_name, ms.get_replacement_method())
+def apply_one(module: ModuleType, class_: Optional[type], method_name: str) -> None:
+    ms = method_switches.get((module, class_, method_name))
+    if ms is None:
+        raise Exception(
+            f'{module.__name__}, {class_}, {method_name} is not a valid patch'
+        )
+    assert ms
+    ms.overwrite(module, class_, method_name, ms.get_replacement_method())
 
 
-def revert_one(module_name, class_name, method_name):
-    ms = method_switches.get((module_name, class_name, method_name))
-    ms.overwrite(module_name, class_name, method_name, ms.get_original_method())
+def revert_one(module: ModuleType, class_: Optional[type], method_name: str) -> None:
+    ms = method_switches.get((module, class_, method_name))
+    if ms is None:
+        raise Exception(
+            f'{module.__name__}, {class_}, {method_name} is not a valid patch'
+        )
+    assert ms
+    ms.overwrite(module, class_, method_name, ms.get_original_method())
 
 
-def apply():
-    for (module_name, class_name, method_name), ms in method_switches.items():
-        ms.overwrite(module_name, class_name, method_name, ms.get_replacement_method())
+def apply() -> None:
+    for (module, class_, method_name), ms in method_switches.items():
+        ms.overwrite(module, class_, method_name, ms.get_replacement_method())
 
 
-def revert():
-    for (module_name, class_name, method_name), ms in method_switches.items():
-        ms.overwrite(module_name, class_name, method_name, ms.get_original_method())
+def revert() -> None:
+    for (module, class_, method_name), ms in method_switches.items():
+        ms.overwrite(module, class_, method_name, ms.get_original_method())

@@ -1,20 +1,21 @@
 import inspect
 import ctypes
+from typing import Any, Callable, Optional
 
 from ..patch import py_object as pyo
 
 
-def get_class_methods(cls):
-    members = inspect.getmembers(cls)
+def get_class_methods(class_: type) -> list[str]:
+    members = inspect.getmembers(class_)
 
     methods = [
-        member for member in members if inspect.isroutine(getattr(cls, member[0]))
+        member for member in members if inspect.isroutine(getattr(class_, member[0]))
     ]
 
     return [method_name for (method_name, _) in methods]
 
 
-def get_c_method(class_, method_name):
+def get_c_method(class_: type, method_name: str) -> Optional[Callable[..., Any]]:
     tyobj = pyo.PyTypeObject.from_address(id(class_))
 
     method_mapping_info = pyo.get_function_mapping(class_, method_name)

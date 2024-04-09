@@ -10,7 +10,7 @@ from src.step_counting.patch.patching import (
     patch_py_object_method_with_type,
 )
 
-from src.step_counting.utils.utils import get_c_method
+from src.step_counting.utils.methods import get_c_method
 
 
 def generic_replacement_method_str(*args, **kwargs):

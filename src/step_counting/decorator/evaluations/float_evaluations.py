@@ -1,7 +1,8 @@
+from typing import Any, Callable
 from .complexities import constant, logarithmic_to_sec
 
 
-float_complexities = {
+float_complexities: dict[str, Callable[[tuple[Any, ...]], int]] = {
     '__add__': constant,
     '__and__': constant,
     '__floordiv__': constant,

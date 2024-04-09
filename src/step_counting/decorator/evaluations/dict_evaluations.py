@@ -1,10 +1,11 @@
+from typing import Any
 from .complexities import constant, linear_to_len
 
 
-def dict_update_complexity(args):
-    list_one = args[0]
-    list_two = args[1]
-    return len(list_one) + len(list_two)
+def dict_update_complexity(args: tuple[dict[Any, Any], dict[Any, Any]]) -> int:
+    dict_one = args[0]
+    dict_two = args[1]
+    return len(dict_one) + len(dict_two)
 
 
 # TODO possible problems due to hash collisions...

@@ -1,31 +1,28 @@
-def make_generator():
+from typing import Any, Generator
+
+
+def make_generator() -> Generator[None, Any, None]:
     yield None
 
 
-async def make_async():
+async def make_async() -> None:
     pass
 
 
-class EmptyClass:
-    pass
-
-
-class_type = type(EmptyClass)
-dict_keys_type = type({}.keys())
-dict_items_type = type({}.items())
-dict_values_type = type({}.values())
+dict_keys_type = type({}.keys())  # type: ignore
+dict_items_type = type({}.items())  # type: ignore
+dict_values_type = type({}.values())  # type: ignore
 generator_type = type(make_generator())
 
 bytes_iter_type = type(iter(bytes()))
 bytearray_iter_type = type(iter(bytearray()))
-list_iter_type = type(iter(list()))
-dict_iter_type = type(iter(dict()))
-set_iter_type = type(iter(set()))
-tuple_iter_type = type(iter(tuple()))
+list_iter_type = type(iter(list()))  # type: ignore
+dict_iter_type = type(iter(dict()))  # type: ignore
+set_iter_type = type(iter(set()))  # type: ignore
+tuple_iter_type = type(iter(tuple()))  # type: ignore
 
 
 non_builtin_types = {
-    'class': class_type,
     'dict_keys': dict_keys_type,
     'dict_items': dict_items_type,
     'dict_values': dict_values_type,

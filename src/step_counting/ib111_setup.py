@@ -1,3 +1,6 @@
+from types import ModuleType
+from typing import Callable, Any, Union
+
 import inspect
 import turtle, typing, math, fractions, gzip, http.client, re, zipfile, io, glob, sys, csv, datetime, calendar, json, shutil, os, sqlite3, random
 
@@ -84,9 +87,12 @@ allow = {
 }
 
 
-def decorate_all_methods_in_module(module, decorator):
+def decorate_all_methods_in_module(
+    module: ModuleType,
+    decorator: Callable[..., Any],
+) -> None:
     for name, obj in inspect.getmembers(module, predicate=inspect.isclass):
-        for name, fn in inspect.getmembers(obj, predicate=inspect.isfunction):
+        for name, fn in inspect.getmembers(obj, predicate=inspect.isroutine):
             if name not in ignored_object_methods:
                 create_patch(
                     module,
@@ -95,11 +101,11 @@ def decorate_all_methods_in_module(module, decorator):
                     decorator(fn, obj, name),
                 )
 
-    for name, obj in inspect.getmembers(module, predicate=inspect.isroutine):
+    for name, obj in inspect.getmembers(module, predicate=inspect.isroutine):  # type: ignore
         create_patch(module, None, name, decorator(obj, module, name))
 
 
-def setup_ib111_modules(decorator):
+def setup_ib111_modules(decorator: Callable[..., Any]) -> None:
     for module, object_names in allow.items():
         for obj_name in object_names:
             obj = getattr(module, obj_name)

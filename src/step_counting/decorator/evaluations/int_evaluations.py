@@ -1,3 +1,4 @@
+from typing import Any, Callable, Literal, Sequence
 from .complexities import (
     constant,
     logarithmic,
@@ -7,16 +8,17 @@ from .complexities import (
 )
 
 
-def linear_to_len(args):
+def linear_to_len(args: tuple[Sequence[Any]]) -> int:
     return len(args[0])
 
 
-def quadratic_to_bit_len(args):
+# TODO finish
+def quadratic_to_bit_len(args: tuple[Sequence[Any]]) -> Literal[5]:
     n = args[0]
     return 5
 
 
-int_complexities = {
+int_complexities: dict[str, Callable[[tuple[Any, ...]], int]] = {
     '__add__': constant,
     '__and__': constant,
     '__floordiv__': constant,

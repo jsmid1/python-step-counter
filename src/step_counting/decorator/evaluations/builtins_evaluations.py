@@ -1,6 +1,7 @@
+from typing import Any, Callable
 from .complexities import constant
 
-builtins_complexities = {
+builtins_complexities: dict[str, Callable[[tuple[Any, ...]], int]] = {
     'ArithmeticError': constant,
     'AssertionError': constant,
     'AttributeError': constant,

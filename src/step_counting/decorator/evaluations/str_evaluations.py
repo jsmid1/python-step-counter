@@ -1,7 +1,8 @@
+from typing import Any
 from .complexities import *
 
 
-def str_add_complexity(args):
+def str_add_complexity(args: tuple[Any, ...]) -> int:
     list_one = args[0]
     list_two = args[1]
     return len(list_one) + len(list_two)

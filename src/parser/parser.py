@@ -1,7 +1,7 @@
 import argparse
 
 
-def setup_parser():
+def setup_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description='Parse command line arguments')
     parser.add_argument('input_file', type=str, help='Input file')
     parser.add_argument(

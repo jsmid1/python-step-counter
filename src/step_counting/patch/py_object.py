@@ -1,4 +1,5 @@
 import ctypes
+from typing import Any, Optional
 
 from ..non_builtin_types import (
     dict_items_type,
@@ -212,9 +213,9 @@ method_mapping = {
     # # Finalize (typically for __del__, but Python's __del__ maps to tp_dealloc)
     # '__del__': ('tp_finalize', None),
     # Asynchronous execution methods mappings
-    '__await__': ('tp_as_async', 'am_await'),
-    '__aiter__': ('tp_as_async', 'am_aiter'),
-    '__anext__': ('tp_as_async', 'am_anext'),
+    '__await__': ('tp_as_async', 'am_await', None),
+    '__aiter__': ('tp_as_async', 'am_aiter', None),
+    '__anext__': ('tp_as_async', 'am_anext', None),
     # Numeric operations mappings
     '__sub__': ('tp_as_number', 'nb_subtract', binary),
     '__mod__': ('tp_as_number', 'nb_remainder', binary),
@@ -279,15 +280,17 @@ numeric_classes = [bool, int, float, complex]
 sequence_classes = [str, list, tuple, range, memoryview]
 
 
-def get_function_mapping(class_name, method_name):
+def get_function_mapping(
+    class_: type, method_name: str
+) -> Optional[tuple[str, Optional[str], Any]]:
     match method_name:
         case '__add__':
-            if class_name in numeric_classes:
+            if class_ in numeric_classes:
                 return ('tp_as_number', 'nb_add', binary)
             return ('tp_as_sequence', 'sq_concat', binary)
 
         case '__mul__':
-            if class_name in numeric_classes:
+            if class_ in numeric_classes:
                 return ('tp_as_number', 'nb_multiply', binary)
             return (
                 'tp_as_sequence',
@@ -296,7 +299,7 @@ def get_function_mapping(class_name, method_name):
             )
 
         case '__len__':
-            if class_name in sequence_classes + [
+            if class_ in sequence_classes + [
                 set,
                 frozenset,
                 dict_items_type,
@@ -308,7 +311,7 @@ def get_function_mapping(class_name, method_name):
             return ('tp_as_mapping', 'mp_length', (c_ssize_t, c_pyobject_p))
 
         case '__getitem__':
-            if class_name in [deque]:
+            if class_ in [deque]:
                 return (
                     'tp_as_sequence',
                     'sq_item',
@@ -317,7 +320,7 @@ def get_function_mapping(class_name, method_name):
             return ('tp_as_mapping', 'mp_subscript', binary)
 
         case '__setitem__':
-            if class_name in [deque]:
+            if class_ in [deque]:
                 return (
                     'tp_as_sequence',
                     'sq_ass_item',

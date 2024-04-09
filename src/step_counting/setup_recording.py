@@ -1,6 +1,11 @@
 import builtins
 import collections
 import inspect
+import traceback
+from types import ModuleType
+from typing import Any, Callable, Optional, Type
+
+from src.step_counting.decorator.records.record_classes import detail_call_recorder
 
 from .ib111_setup import setup_ib111_modules
 
@@ -9,10 +14,6 @@ from .non_builtin_types import (
     dict_items_type,
     dict_keys_type,
     dict_values_type,
-    generator_type,
-    dict_iter_type,
-    list_iter_type,
-    tuple_iter_type,
 )
 
 from .ignor import ignored_methods
@@ -39,7 +40,7 @@ from .ignor import (
     ignored_class_methods,
 )
 
-py_objects = {
+py_objects: dict[ModuleType, set[type]] = {
     builtins: {
         int,
         float,
@@ -65,7 +66,7 @@ py_objects = {
     },
 }
 
-builtin_methods = [
+builtin_methods: list[str] = [
     'print',
     'AssertionError',
     #'AttributeError',
@@ -135,7 +136,7 @@ builtin_methods = [
 ]
 
 
-def decorate_builtins(decorator):
+def decorate_builtins(decorator: Callable[..., Any]) -> None:
     for obj_name in builtin_methods:
         obj = getattr(builtins, obj_name)
 
@@ -143,7 +144,7 @@ def decorate_builtins(decorator):
             create_patch(builtins, None, obj_name, decorator(obj, builtins, obj_name))
 
 
-def decorate_defaults(decorator):
+def decorate_defaults(decorator: Callable[..., Any]) -> None:
     for module, classes in py_objects.items():
         for class_ in classes:
             for n in dir(class_) + ['comparison']:
@@ -169,7 +170,9 @@ def decorate_defaults(decorator):
                     )
 
 
-def decorate_all_methods_in_module(module, decorator):
+def decorate_all_methods_in_module(
+    module: ModuleType, decorator: Callable[..., Any]
+) -> None:
     for name, obj in inspect.getmembers(module):
         if inspect.isclass(obj):
             if obj.__name__ in ignored_classes:
@@ -187,7 +190,9 @@ def decorate_all_methods_in_module(module, decorator):
             create_patch(module, None, name, decorator(obj, module, name))
 
 
-def wrap_import(decorator, user_defined_modules):
+def wrap_import(
+    decorator: Callable[..., Any], user_defined_modules: set[ModuleType]
+) -> None:
     import_wrapper = import_decorator(decorator, user_defined_modules)
 
     create_patch(
@@ -198,7 +203,9 @@ def wrap_import(decorator, user_defined_modules):
     )
 
 
-def patch_imported_methods(imported_callables, decorator):
+def patch_imported_methods(
+    imported_callables: set[Callable[..., Any]], decorator: Callable[..., Any]
+) -> None:
     for call in imported_callables:
 
         if inspect.isclass(call):
@@ -220,23 +227,26 @@ def patch_imported_methods(imported_callables, decorator):
             )
 
 
-def setup_recording(module, ignored_modules: set):
+def setup_recording(
+    module: ModuleType, ignored_modules: set[ModuleType]
+) -> tuple[detail_call_recorder, set[ModuleType]]:
     setup_modules, setup_callables = get_def_ignored_modules()
     ignored_modules.update(setup_modules)
     module_imports, imported_callables = get_module_imports(module, ignored_modules)
 
-    imported_callables = [
+    imported_callables = {
         cal
         for cal in imported_callables
         if get_module_by_name(cal.__module__) not in ignored_modules
         and cal not in setup_callables
-    ]
-    module_imports = [
+    }
+    module_imports = {
         import_ for import_ in module_imports if import_ not in ignored_modules
-    ]
-    user_defined_modules = [
+    }
+    user_defined_modules = {
         import_ for import_ in module_imports if is_user_defined_module(import_)
-    ] + [module]
+    }
+    user_defined_modules.add(module)
 
     decorator, recorder = decorators.create_decorator_detail(user_defined_modules)
 
@@ -257,8 +267,13 @@ def setup_recording(module, ignored_modules: set):
 
 
 class recording_activated:
-    def __enter__(self):
+    def __enter__(self) -> None:
         apply()
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(
+        self,
+        type: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[traceback.TracebackException],
+    ) -> None:
         revert()
