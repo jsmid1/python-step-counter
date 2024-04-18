@@ -22,128 +22,128 @@ class TestByteArrayMethods(unittest.TestCase):
         self.recorder.clear_data()
 
     def test_bytearray_add(self):
+        x = bytearray(b'Hello ')
         with RecodingActivated():
-            x = bytearray(b'Hello ')
             x = x + bytearray(b'World')
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, '__add__'))
 
     def test_bytearray_contains(self):
+        x = bytearray(b'Hello')
         with RecodingActivated():
-            x = bytearray(b'Hello')
-            result = b'o' in x
+            b'o' in x
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, '__contains__'))
 
     def test_bytearray_decode(self):
+        x = bytearray(b'Hello')
         with RecodingActivated():
-            x = bytearray(b'Hello')
             x = x.decode()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'decode'))
 
     def test_bytearray_endswith(self):
+        x = bytearray(b'Hello World')
         with RecodingActivated():
-            x = bytearray(b'Hello World')
-            result = x.endswith(b'World')
+            x.endswith(b'World')
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'endswith'))
 
     def test_bytearray_expandtabs(self):
+        x = bytearray(b'Hello\tWorld')
         with RecodingActivated():
-            x = bytearray(b'Hello\tWorld')
-            x = x.expandtabs()
+            x.expandtabs()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'expandtabs'))
 
     def test_bytearray_find(self):
+        x = bytearray(b'Hello World')
         with RecodingActivated():
-            x = bytearray(b'Hello World')
-            position = x.find(b'o')
+            x.find(b'o')
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'find'))
 
     def test_bytearray_fromhex(self):
         with RecodingActivated():
-            x = bytearray.fromhex('48656c6c6f')
+            bytearray.fromhex('48656c6c6f')
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'fromhex'))
 
     def test_bytearray_hex(self):
+        x = bytearray(b'Hello')
         with RecodingActivated():
-            x = bytearray(b'Hello')
-            result = x.hex()
+            x.hex()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'hex'))
 
     def test_bytearray_index(self):
+        x = bytearray(b'Hello World')
         with RecodingActivated():
-            x = bytearray(b'Hello World')
-            position = x.index(b'o')
+            x.index(b'o')
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'index'))
 
     def test_bytearray_isalnum(self):
         with RecodingActivated():
             x = bytearray(b'Hello123')
-            result = x.isalnum()
+            x.isalnum()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'isalnum'))
 
     def test_bytearray_isalpha(self):
         with RecodingActivated():
             x = bytearray(b'Hello')
-            result = x.isalpha()
+            x.isalpha()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'isalpha'))
 
     def test_bytearray_isascii(self):
         with RecodingActivated():
             x = bytearray(b'Hello')
-            result = x.isascii()
+            x.isascii()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'isascii'))
 
     def test_bytearray_isdigit(self):
         with RecodingActivated():
             x = bytearray(b'123')
-            result = x.isdigit()
+            x.isdigit()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'isdigit'))
 
     def test_bytearray_islower(self):
         with RecodingActivated():
             x = bytearray(b'hello')
-            result = x.islower()
+            x.islower()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'islower'))
 
     def test_bytearray_isspace(self):
         with RecodingActivated():
             x = bytearray(b' ')
-            result = x.isspace()
+            x.isspace()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'isspace'))
 
     def test_bytearray_istitle(self):
         with RecodingActivated():
             x = bytearray(b'Hello World')
-            result = x.istitle()
+            x.istitle()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'istitle'))
 
     def test_bytearray_isupper(self):
         with RecodingActivated():
             x = bytearray(b'HELLO')
-            result = x.isupper()
+            x.isupper()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'isupper'))
 
     def test_bytearray_join(self):
         with RecodingActivated():
             x = bytearray(b', ')
-            result = x.join([bytearray(b'Hello'), bytearray(b'World')])
+            x.join([bytearray(b'Hello'), bytearray(b'World')])
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'join'))
 
     def test_bytearray_ljust(self):
         with RecodingActivated():
             x = bytearray(b'Hello')
-            result = x.ljust(10)
+            x.ljust(10)
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'ljust'))
 
     def test_bytearray_lower(self):
         with RecodingActivated():
             x = bytearray(b'HELLO')
-            result = x.lower()
+            x.lower()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'lower'))
 
     def test_bytearray_lstrip(self):
         with RecodingActivated():
             x = bytearray(b'  Hello')
-            result = x.lstrip()
+            x.lstrip()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'lstrip'))
 
     def test_bytearray_maketrans(self):
@@ -155,13 +155,13 @@ class TestByteArrayMethods(unittest.TestCase):
     def test_bytearray_partition(self):
         with RecodingActivated():
             x = bytearray(b'Hello World')
-            result = x.partition(b' ')
+            x.partition(b' ')
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'partition'))
 
     def test_bytearray_pop(self):
         with RecodingActivated():
             x = bytearray(b'Hello')
-            result = x.pop()
+            x.pop()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'pop'))
 
     def test_bytearray_remove(self):
@@ -173,7 +173,7 @@ class TestByteArrayMethods(unittest.TestCase):
     def test_bytearray_replace(self):
         with RecodingActivated():
             x = bytearray(b'Hello World')
-            result = x.replace(b'World', b'Universe')
+            x.replace(b'World', b'Universe')
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'replace'))
 
     def test_bytearray_reverse(self):
@@ -185,89 +185,89 @@ class TestByteArrayMethods(unittest.TestCase):
     def test_bytearray_rfind(self):
         with RecodingActivated():
             x = bytearray(b'Hello World World')
-            position = x.rfind(b'World')
+            x.rfind(b'World')
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'rfind'))
 
     def test_bytearray_rindex(self):
         with RecodingActivated():
             x = bytearray(b'Hello World World')
-            position = x.rindex(b'World')
+            x.rindex(b'World')
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'rindex'))
 
     def test_bytearray_rjust(self):
         with RecodingActivated():
             x = bytearray(b'Hello')
-            result = x.rjust(10)
+            x.rjust(10)
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'rjust'))
 
     def test_bytearray_rpartition(self):
         with RecodingActivated():
             x = bytearray(b'Hello World World')
-            result = x.rpartition(b' ')
+            x.rpartition(b' ')
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'rpartition'))
 
     def test_bytearray_rsplit(self):
         with RecodingActivated():
             x = bytearray(b'Hello World World')
-            result = x.rsplit(b' ')
+            x.rsplit(b' ')
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'rsplit'))
 
     def test_bytearray_rstrip(self):
         with RecodingActivated():
             x = bytearray(b'Hello World  ')
-            result = x.rstrip()
+            x.rstrip()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'rstrip'))
 
     def test_bytearray_split(self):
         with RecodingActivated():
             x = bytearray(b'Hello World')
-            result = x.split(b' ')
+            x.split(b' ')
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'split'))
 
     def test_bytearray_splitlines(self):
         with RecodingActivated():
             x = bytearray(b'Hello\nWorld')
-            result = x.splitlines()
+            x.splitlines()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'splitlines'))
 
     def test_bytearray_startswith(self):
         with RecodingActivated():
             x = bytearray(b'Hello World')
-            result = x.startswith(b'Hello')
+            x.startswith(b'Hello')
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'startswith'))
 
     def test_bytearray_strip(self):
         with RecodingActivated():
             x = bytearray(b'  Hello World  ')
-            result = x.strip()
+            x.strip()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'strip'))
 
     def test_bytearray_swapcase(self):
         with RecodingActivated():
             x = bytearray(b'Hello World')
-            result = x.swapcase()
+            x.swapcase()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'swapcase'))
 
     def test_bytearray_title(self):
         with RecodingActivated():
             x = bytearray(b'hello world')
-            result = x.title()
+            x.title()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'title'))
 
     def test_bytearray_translate(self):
+        transtable = bytearray.maketrans(b'lo', b'OL')
         with RecodingActivated():
-            transtable = bytearray.maketrans(b'lo', b'OL')
-            x = bytearray(b'hello world').translate(transtable)
+            bytearray(b'hello world').translate(transtable)
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'translate'))
 
     def test_bytearray_upper(self):
         with RecodingActivated():
             x = bytearray(b'hello')
-            result = x.upper()
+            x.upper()
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'upper'))
 
     def test_bytearray_zfill(self):
         with RecodingActivated():
             x = bytearray(b'42')
-            result = x.zfill(5)
+            x.zfill(5)
         self.assertTrue(is_recorded(self.recorder, builtins, bytearray, 'zfill'))

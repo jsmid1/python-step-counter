@@ -1,6 +1,6 @@
 import os
 from types import ModuleType
-from typing import Any
+from typing import Any, Optional
 
 from src.step_counting.decorator.records.record_classes import Counter
 
@@ -29,11 +29,13 @@ def create_module_profile(
 
 def create_profile(
     modules: set[ModuleType],
-    data: dict[str, dict[int, dict[tuple[str, str, str], Counter]]],
+    data: dict[
+        ModuleType, dict[int, dict[tuple[ModuleType, Optional[type], str], Counter]]
+    ],
 ) -> dict[ModuleType, str]:
     profiled_modules = dict()
     for module in modules:
-        module_data = data.get(module, {})  # type: ignore
+        module_data = data.get(module, {})
 
         assert module.__file__
         profiled_modules[module] = create_module_profile(module.__file__, module_data)

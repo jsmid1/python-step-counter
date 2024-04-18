@@ -24,38 +24,39 @@ class TestBoolMethods(unittest.TestCase):
         self.recorder.clear_data()
 
     def test_bool_abs(self):
+        x = True
         with RecodingActivated():
-            x = abs(True)
+            abs(x)
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__abs__'))
 
     def test_bool_add(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = True + x
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__add__'))
 
     def test_bool_and(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = True & x
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__and__'))
 
     @unittest.skip('Not used')
     def test_bool_bool(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = bool(x)
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__bool__'))
 
     def test_bool_eq(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = True == x
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__eq__'))
 
     def test_bool_float(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = float(x)
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__float__'))
 
@@ -63,111 +64,111 @@ class TestBoolMethods(unittest.TestCase):
         ' Would be recorded under operator module but import of operator is nor allowed'
     )
     def test_bool_index(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = operator.index(x)
 
         self.assertTrue(is_recorded(self.recorder, operator, None, '__index__'))
 
     def test_bool_int(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = int(x)
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__int__'))
 
     def test_bool_invert(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = ~x
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__invert__'))
 
     def test_bool_lshift(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = x << 2
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__lshift__'))
 
     def test_bool_mod(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = x % True
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__mod__'))
 
     def test_bool_mul(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = x * True
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__mul__'))
 
     def test_bool_ne(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = x != False
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__ne__'))
 
     def test_bool_neg(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = -x
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__neg__'))
 
     def test_bool_or(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = x | True
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__or__'))
 
     def test_bool_pos(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = +x
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__pos__'))
 
     def test_bool_pow(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = pow(x, True)
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__pow__'))
 
     def test_bool_rshift(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = x >> 2
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__rshift__'))
 
     def test_bool_sub(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = x - True
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__sub__'))
 
     def test_bool_truediv(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = x / True
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__truediv__'))
 
     def test_bool_xor(self):
+        x = True
         with RecodingActivated():
-            x = True
             x = x ^ True
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__xor__'))
 
     # Testing non-dunder methods that make sense for bool
     def test_bool_as_integer_ratio(self):
+        x = True
         with RecodingActivated():
-            x = True
             x.as_integer_ratio()
         self.assertTrue(is_recorded(self.recorder, builtins, bool, 'as_integer_ratio'))
 
     def test_bool_bit_length(self):
+        x = True
         with RecodingActivated():
-            x = True
             x.bit_length()
         self.assertTrue(is_recorded(self.recorder, builtins, bool, 'bit_length'))
 
     def test_bool_conjugate(self):
+        x = True
         with RecodingActivated():
-            x = True
             x.conjugate()
         self.assertTrue(is_recorded(self.recorder, builtins, bool, 'conjugate'))

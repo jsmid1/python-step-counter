@@ -22,6 +22,7 @@ ignored_object_methods = {
     '__alloc__',
     '__setformat__',
     '__setitem__',
+    '__format__',  # Can be removed after fix in restrict.
 }
 
 comparison_operations = {'__eq__', '__ge__', '__gt__', '__le__', '__lt__', '__ne__'}

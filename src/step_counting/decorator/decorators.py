@@ -91,6 +91,9 @@ def create_decorator_sequence(
     return decorator, recorder
 
 
+from ..utils.module import get_module_by_name
+
+
 def create_decorator_detail(
     tracked_modules: set[ModuleType],
 ) -> tuple[Decorator, DetailCallRecorder]:
