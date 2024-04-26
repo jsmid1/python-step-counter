@@ -1,6 +1,6 @@
 from typing import Any
 
-from ..complexities import ComplexitiesDict, constant, linear_to_len
+from ..complexities import ComplexitiesDict, constant, linear_to_len, comparison_com
 
 
 def set_or_complexity(args: tuple[Any, ...]) -> int:
@@ -40,6 +40,11 @@ set_complexities: ComplexitiesDict = {
     '__and__': min_len_complexity,
     '__xor__': set_or_complexity,
     '__iter__': constant,
+    '__le__': comparison_com,
+    '__eq__': comparison_com,
+    '__ne__': comparison_com,
+    '__gt__': comparison_com,
+    '__ge__': comparison_com,
     'add': constant,
     'clear': linear_to_len,
     'copy': linear_to_len,

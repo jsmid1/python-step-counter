@@ -1,4 +1,4 @@
-from types import ModuleType
+from types import FunctionType, ModuleType
 import functools
 from typing import Any, Callable, Optional, TypeAlias
 
@@ -122,6 +122,7 @@ def create_decorator_detail(
                     line_number,
                     orig_module,
                     class_,
+                    func,
                     determine_method(func_name, args),
                     args,
                 )

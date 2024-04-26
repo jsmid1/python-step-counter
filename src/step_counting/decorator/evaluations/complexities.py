@@ -1,5 +1,6 @@
 import math
 from typing import Any, Callable, Dict, Literal, Sequence, TypeAlias
+from collections.abc import Sequence, Mapping
 
 ComplexitiesDict: TypeAlias = Dict[str, Callable[[tuple[Any, ...]], int]]
 
@@ -37,6 +38,51 @@ def logarithmic_to_min(args: tuple[int, int]) -> int:
     n1 = args[0]
     n2 = args[1]
     return logarithmic((min(n1, n2),))
+
+
+def hash_com(args: tuple[Any]) -> int:
+    o = args[0]
+
+    # Catch string to avoid creating substrings
+    if isinstance(o, str):
+        return len(o)
+
+    total = 0
+    if isinstance(o, Sequence):
+        for elem in o:
+            total += hash_com((elem,))
+    else:
+        total += 1
+
+    return total
+
+
+def hash_sec_com(args: tuple[Any, Any]) -> int:
+    return hash_com((args[1],))
+
+
+def comparison_com(args: tuple[Any, Any]) -> int:
+    s1 = args[0]
+    s2 = args[1]
+
+    total = 1
+    if type(s1) != type(s2):
+        return 1
+
+    # Catch string to avoid creating substrings
+    if isinstance(s1, str) and len(s1) == len(s2):
+        return len(s1)
+
+    if isinstance(s1, Sequence) and len(s1) == len(s2):
+        for i in range(len(s1)):
+            total += comparison_com((s1[i], s2[i]))
+
+    if isinstance(s1, dict) and len(s1) == len(s2):
+        for key in s1.keys():
+            total += hash_com((key,))
+            total += comparison_com((s1.get(key, None), s2.get(key, None)))
+
+    return total
 
 
 def linear_to_len(args: tuple[Any, ...]) -> int:

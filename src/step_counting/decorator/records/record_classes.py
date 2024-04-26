@@ -1,5 +1,7 @@
 from types import ModuleType
-from typing import Any, Optional, TypeAlias
+from typing import Any, Callable, Optional, TypeAlias
+
+from src.step_counting.utils.module import get_module_by_name
 from ..evaluations.evaluations import evaluate_record
 
 from ...original_methods import dict_get, list_append
@@ -89,10 +91,16 @@ class DetailCallRecorder:
         line_number: int,
         orig_module: ModuleType,
         cls: Optional[type],
+        func: Callable[..., Any],
         func_name: str,
         arguments: Any,
     ) -> None:
-        record_eval = evaluate_record(orig_module, cls, func_name, arguments)
+
+        fn_class = getattr(func, '__objclass__', cls)
+        fn_module_name = getattr(fn_class, '__module__', None)
+        fn_module = get_module_by_name(fn_module_name) if fn_module_name else module
+
+        record_eval = evaluate_record(fn_module, fn_class, func_name, arguments)
         module_records = dict_get(self.records, module, None)
 
         if module_records is None:

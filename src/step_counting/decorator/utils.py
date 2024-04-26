@@ -75,4 +75,6 @@ def get_method_type(
         elif callable(method):
             return FunctionType
 
+    if method_name == '__hash__':
+        return staticmethod
     raise ValueError(f'Method {method_name} not found in {parent}.')

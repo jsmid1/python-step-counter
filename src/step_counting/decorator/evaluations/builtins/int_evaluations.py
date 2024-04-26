@@ -14,9 +14,9 @@ def linear_to_len(args: tuple[Sequence[Any]]) -> int:
 
 
 # TODO finish
-def quadratic_to_bit_len(args: tuple[Sequence[Any]]) -> Literal[5]:
+def quadratic_to_bit_len(args: tuple[int]) -> int:
     n = args[0]
-    return n.bitlength
+    return n.bit_length()
 
 
 int_complexities: ComplexitiesDict = {

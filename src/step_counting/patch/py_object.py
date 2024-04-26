@@ -1,5 +1,7 @@
-import ctypes
 from typing import Any, Optional
+
+import ctypes
+from collections import deque
 
 from ..non_builtin_types import (
     dict_items_type,
@@ -176,7 +178,7 @@ py_type_object_structs = {
 method_mapping = {
     '__del__': ('tp_dealloc', None, (None, c_pyobject_p)),
     '__repr__': ('tp_repr', None, unary),
-    '__call__': ('tp_call', None, unary),  # TODO recheck type
+    '__call__': ('tp_call', None, unary),
     '__str__': ('tp_str', None, unary),
     '__getattribute__': ('tp_getattro', None, binary),
     '__setattr__': (
@@ -211,7 +213,7 @@ method_mapping = {
     # '__ge__': ('tp_richcompare', None),
     '__hash__': ('tp_hash', None, (c_ssize_t, c_pyobject_p)),
     # # Finalize (typically for __del__, but Python's __del__ maps to tp_dealloc)
-    # '__del__': ('tp_finalize', None),
+    '__del__': ('tp_finalize', None, (c_void_p, c_pyobject_p)),
     # Asynchronous execution methods mappings
     '__await__': ('tp_as_async', 'am_await', None),
     '__aiter__': ('tp_as_async', 'am_aiter', None),
@@ -274,10 +276,20 @@ method_mapping = {
     ),
 }
 
-from collections import deque
-
-numeric_classes = [bool, int, float, complex]
-sequence_classes = [str, list, tuple, range, memoryview]
+numeric_classes = {bool, int, float, complex}
+sequence_classes = {
+    str,
+    list,
+    tuple,
+    range,
+    memoryview,
+    set,
+    frozenset,
+    dict_items_type,
+    dict_keys_type,
+    dict_values_type,
+    deque,
+}
 
 
 def get_function_mapping(
@@ -299,14 +311,7 @@ def get_function_mapping(
             )
 
         case '__len__':
-            if class_ in sequence_classes + [
-                set,
-                frozenset,
-                dict_items_type,
-                dict_keys_type,
-                dict_values_type,
-                deque,
-            ]:
+            if class_ in sequence_classes:
                 return ('tp_as_sequence', 'sq_length', (c_ssize_t, c_pyobject_p))
             return ('tp_as_mapping', 'mp_length', (c_ssize_t, c_pyobject_p))
 

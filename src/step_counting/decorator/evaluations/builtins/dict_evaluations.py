@@ -1,5 +1,11 @@
 from typing import Any
-from ..complexities import ComplexitiesDict, constant, linear_to_len
+from ..complexities import (
+    ComplexitiesDict,
+    constant,
+    linear_to_len,
+    comparison_com,
+    hash_sec_com,
+)
 
 
 def dict_update_complexity(args: tuple[dict[Any, Any], dict[Any, Any]]) -> int:
@@ -12,18 +18,23 @@ def dict_update_complexity(args: tuple[dict[Any, Any], dict[Any, Any]]) -> int:
 dict_complexities: ComplexitiesDict = {
     '__contains__': linear_to_len,
     '__len__': constant,
-    '__getitem__': constant,
+    '__getitem__': hash_sec_com,
     '__iter__': linear_to_len,
     '__setitem__': constant,
+    '__le__': comparison_com,
+    '__eq__': comparison_com,
+    '__ne__': comparison_com,
+    '__gt__': comparison_com,
+    '__ge__': comparison_com,
     'clear': linear_to_len,
     'copy': linear_to_len,
     'fromkeys': linear_to_len,
     'get': constant,
-    'items': constant,  # TODO check, view object creation
-    'keys': constant,  # TODO ^
+    'items': linear_to_len,
+    'keys': linear_to_len,
     'pop': constant,
     'popitem': constant,
     'setdefault': constant,
     'update': dict_update_complexity,
-    'values': constant,  # TODO check, view object creation
+    'values': linear_to_len,
 }

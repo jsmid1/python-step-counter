@@ -152,35 +152,35 @@ class TestFloatMethods(unittest.TestCase):
             pow(x, 2)
         self.assertTrue(is_recorded(self.recorder, builtins, float, '__pow__'))
 
-    @unittest.skip
+    @unittest.skip('Recorded as non r method')
     def test_float_radd(self):
         with RecodingActivated():
             x = 1.0
             2.0 + x
         self.assertTrue(is_recorded(self.recorder, builtins, float, '__radd__'))
 
-    @unittest.skip
+    @unittest.skip('Recorded as non r method')
     def test_float_rdivmod(self):
         with RecodingActivated():
             x = 2.0
             divmod(4.0, x)
         self.assertTrue(is_recorded(self.recorder, builtins, float, '__rdivmod__'))
 
-    @unittest.skip
+    @unittest.skip('Recorded as non r method')
     def test_float_rfloordiv(self):
         with RecodingActivated():
             x = 2.0
             4.0 // x
         self.assertTrue(is_recorded(self.recorder, builtins, float, '__rfloordiv__'))
 
-    @unittest.skip
+    @unittest.skip('Recorded as non r method')
     def test_float_rmod(self):
         with RecodingActivated():
             x = 2.0
             4.0 % x
         self.assertTrue(is_recorded(self.recorder, builtins, float, '__rmod__'))
 
-    @unittest.skip
+    @unittest.skip('Recorded as non r method')
     def test_float_rmul(self):
         with RecodingActivated():
             x = 2.0
@@ -193,21 +193,21 @@ class TestFloatMethods(unittest.TestCase):
             round(x, 2)
         self.assertTrue(is_recorded(self.recorder, builtins, float, '__round__'))
 
-    @unittest.skip
+    @unittest.skip('Recorded as non r method')
     def test_float_rpow(self):
         with RecodingActivated():
             x = 2.0
             3.0**x
         self.assertTrue(is_recorded(self.recorder, builtins, float, '__rpow__'))
 
-    @unittest.skip
+    @unittest.skip('Recorded as non r method')
     def test_float_rsub(self):
         with RecodingActivated():
             x = 1.0
             2.0 - x
         self.assertTrue(is_recorded(self.recorder, builtins, float, '__rsub__'))
 
-    @unittest.skip
+    @unittest.skip('Recorded as non r method')
     def test_float_rtruediv(self):
         with RecodingActivated():
             x = 2.0

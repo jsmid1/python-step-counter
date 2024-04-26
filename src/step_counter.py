@@ -11,6 +11,7 @@ def main() -> None:
     args = parser.parse_args()
 
     input_file = args.input_file
+    profile = args.profile
     output_file = args.output_dir
 
     insert_module_to_path(input_file)
@@ -23,7 +24,8 @@ def main() -> None:
 
     module_profiles = create_profile(tracked_modules, recorder.get_data())
 
-    output_profile(module_profiles, output_file)
+    if profile:
+        output_profile(module_profiles, output_file)
 
     evaluation = recorder.evaluate_data()
     print('SCORE:', evaluation)

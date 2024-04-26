@@ -1,8 +1,16 @@
+from ast import FunctionType
 import builtins
 import inspect
 import traceback
-from types import ModuleType
-from typing import Any, Callable, Optional
+from types import (
+    BuiltinFunctionType,
+    ClassMethodDescriptorType,
+    MethodDescriptorType,
+    MethodType,
+    ModuleType,
+    WrapperDescriptorType,
+)
+from typing import Any, Callable, Optional, TypeGuard
 
 from src.step_counting.decorator.records.record_classes import DetailCallRecorder
 from .ib111_restrictions import default_types, builtin_methods, ib111_imports
@@ -27,7 +35,6 @@ from .ignor import (
     get_def_ignored_modules,
     ignored_specifics,
     ignored_classes,
-    ignored_class_methods,
 )
 
 
@@ -68,10 +75,14 @@ def decorate_defaults(decorator: Decorator) -> None:
 
 
 def decorate_class(
-    module: ModuleType, class_: type, predicate, decorator: Decorator
+    module: ModuleType,
+    class_: type,
+    decorator: Decorator,
 ) -> None:
-    for name, fn in inspect.getmembers(class_, predicate=predicate):
-        if name not in ignored_class_methods and name not in ignored_object_methods:
+    for name, fn in inspect.getmembers(class_, predicate=inspect.isroutine):
+        if name not in ignored_methods and class_ not in set.union(
+            *default_types.values()
+        ):
             create_patch(
                 module,
                 class_.__name__,
@@ -86,7 +97,7 @@ def decorate_all_methods_in_module(module: ModuleType, decorator: Decorator) -> 
             if obj.__name__ in ignored_classes:
                 continue
 
-            decorate_class(module, obj, inspect.isfunction, decorator)
+            decorate_class(module, obj, decorator)
 
         elif inspect.isroutine(obj):
             create_patch(
@@ -104,18 +115,8 @@ def decorate_ib111_modules(decorator: Decorator) -> None:
             if inspect.ismodule(obj):
                 decorate_all_methods_in_module(obj, decorator)
             if inspect.isclass(obj):
-                decorate_class(module, obj, inspect.isroutine, decorator)
-                # for method_name in get_class_methods(obj):
-                #     if method_name in ignored_object_methods:
-                #         continue
+                decorate_class(module, obj, decorator)
 
-                #     method = getattr(obj, method_name)
-                #     create_patch(
-                #         module,
-                #         obj_name,
-                #         method_name,
-                #         decorator(module, obj, method, method_name),
-                #     )
             elif inspect.isroutine(obj):
                 create_patch(
                     module, None, obj_name, decorator(module, None, obj, obj_name)
@@ -139,9 +140,10 @@ def patch_imported_methods(
     for call in imported_callables:
         module = get_module_by_name(call.__module__)
         if inspect.isclass(call):
-            if call in default_types.values() or call in ib111_imports.values():
+            if call in set().union(*default_types.values()):
                 continue
-            decorate_class(module, call, inspect.isroutine, decorator)
+
+            decorate_class(module, call, decorator)
         else:
             create_patch(
                 module,

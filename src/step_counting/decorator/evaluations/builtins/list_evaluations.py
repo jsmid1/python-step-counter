@@ -4,7 +4,9 @@ from ..complexities import (
     ComplexitiesDict,
     constant,
     linear_to_len,
+    comparison_com,
     linearithmic_to_len,
+    comparison_com,
 )
 
 
@@ -53,6 +55,12 @@ def list_slice_complexity(args: tuple[list[Any], int]) -> int:
 list_complexities: ComplexitiesDict = {
     'append': constant,
     'clear': constant,
+    '__lt__': comparison_com,
+    '__le__': comparison_com,
+    '__eq__': comparison_com,
+    '__ne__': comparison_com,
+    '__gt__': comparison_com,
+    '__ge__': comparison_com,
     'comparison': linear_to_len,
     '__contains__': linear_to_len,
     'copy': linear_to_len,

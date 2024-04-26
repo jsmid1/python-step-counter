@@ -84,8 +84,7 @@ def get_module_imports(
             and hasattr(obj, '__module__')
             and obj.__module__ != module.__name__
         ):
-            if callable(obj):
-                imported_functions.add(obj)
+            imported_functions.add(obj)
 
     subimports = set()
     for module in imported_modules:

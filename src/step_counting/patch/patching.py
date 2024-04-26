@@ -80,6 +80,7 @@ def patch_py_object_method(
 
     c_structure, c_name, type_ = method_info
     c_type = ctypes.CFUNCTYPE(*type_)
+
     patch_py_object_method_with_type(
         class_, c_structure, c_name, c_type, replacement_method
     )
