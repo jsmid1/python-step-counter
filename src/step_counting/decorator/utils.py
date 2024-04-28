@@ -24,6 +24,25 @@ comparison_methods = {
 
 
 def module_in_list(module: Optional[ModuleType], modules: set[ModuleType]) -> bool:
+    """
+    !IMPORTANT: This function is used with patches applied. Therefore the
+    presence of a module in list can't be determined with:
+
+                    module in list of modules
+
+    This would cause recursion. Therefore this fuction uses hashes instead.
+
+    Checks if module is present in list of modules.
+
+    Parameters
+    ----------
+    module (ModuleType): Module which defines the class/method
+    modules (set): set of modules
+
+    Returns
+    -------
+    bool: information if the module is present in the list
+    """
     for item in set.__iter__(modules):
         if int.__eq__(_hash(module), _hash(item)):
             return True
@@ -31,6 +50,25 @@ def module_in_list(module: Optional[ModuleType], modules: set[ModuleType]) -> bo
 
 
 def determine_method(method_name: str, args: tuple[Any, ...]) -> str:
+    """
+    Names of some function is determined by it's argument.
+    Determines the name of a method.
+
+    Parameters
+    ----------
+    method_name (str): collective name of method
+    args (tuple): arguments of the method
+
+    Returns
+    -------
+    str: name of the method
+
+    Example
+    -------
+    All comparison operations are internally performed by a single method.
+    Based on the last argument of this method, we can determine which
+    comparison method was originally called.
+    """
     if str.__eq__(method_name, 'comparison'):
         return dict.__getitem__(comparison_methods, tuple.__getitem__(args, 2))
 
@@ -38,6 +76,14 @@ def determine_method(method_name: str, args: tuple[Any, ...]) -> str:
 
 
 def get_caller_module_info() -> tuple[Optional[ModuleType], int]:
+    """
+    Returns module and line from which the function was called.
+
+    Returns
+    -------
+    ModuleType: module if the caller moduel can be found, None otherwise
+    int: no of line from which the method was called
+    """
     try:
         caller_frame = sys._getframe(2)
     except:
@@ -57,6 +103,20 @@ def get_caller_module_info() -> tuple[Optional[ModuleType], int]:
 def get_method_type(
     orig_module: ModuleType, class_: Optional[type], method_name: str
 ) -> Callable[..., Any]:
+    """
+    Returns type of a method based on combination of module, class and name.
+
+    Parameters
+    ----------
+    module (ModuleType): Module which defines the class/method
+    class_ (Optional[type]): class which defines the method, None if the
+    function is not defined by class
+    funct_name (str): name of the function
+
+    Returns
+    -------
+    Function: type of a method
+    """
     if method_name == 'comparison':
         return FunctionType
 

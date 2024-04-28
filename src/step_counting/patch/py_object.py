@@ -295,6 +295,24 @@ sequence_classes = {
 def get_function_mapping(
     class_: type, method_name: str
 ) -> Optional[tuple[str, Optional[str], Any]]:
+    """
+    Return information about method which represents given method
+    internally.
+
+    Parameters
+    ----------
+    class_ (Optional[type]): class if the method belongs to a class,
+    None otherwise
+    method_name (str): name of the method
+
+    Returns
+    -------
+    Optional:
+        str: name of the method or structure
+        Optinal[str]: name of method if its part of a structure,
+        None otherwise
+        Any: method type
+    """
     match method_name:
         case '__add__':
             if class_ in numeric_classes:

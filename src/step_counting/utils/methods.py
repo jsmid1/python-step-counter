@@ -5,7 +5,36 @@ from typing import Any, Callable, Optional
 from ..patch import py_object as pyo
 
 
+def is_py_method_def(class_: type, method_name: str) -> bool:
+    """
+    Determines if methods is part of PyMethodDef.
+
+    Parameters
+    ----------
+    class_ (type): class
+    method_name (str): name of the method
+
+    Returns
+    -------
+    bool: information if methods is part of PyMethodDef
+    """
+    return pyo.get_function_mapping(class_, method_name) is None and method_name in dir(
+        class_
+    )
+
+
 def get_class_methods(class_: type) -> list[str]:
+    """
+    Returns a list of class methods.
+
+    Parameters
+    ----------
+    class_ (type): class
+
+    Returns
+    -------
+    list: list of names of methods in a class
+    """
     members = inspect.getmembers(class_)
 
     methods = [
@@ -16,6 +45,19 @@ def get_class_methods(class_: type) -> list[str]:
 
 
 def get_c_method(class_: type, method_name: str) -> Optional[Callable[..., Any]]:
+    """
+    Returns a method defined in C.
+
+    Parameters
+    ----------
+    class_ (Optional[type]): class if the method belongs to a class,
+    None otherwise
+    method_name (str): name of the method
+
+    Returns
+    -------
+    Optional[Function]: C method if it exists, None otherwise
+    """
     tyobj = pyo.PyTypeObject.from_address(id(class_))
 
     method_mapping_info = pyo.get_function_mapping(class_, method_name)

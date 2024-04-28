@@ -6,6 +6,17 @@ from importlib.util import spec_from_file_location, module_from_spec
 
 
 def import_from_path(file_path: str) -> ModuleType:
+    """
+    Imports a module from given path.
+
+    Parameters
+    ----------
+    file_path (str): path to a file with module definition
+
+    Returns
+    -------
+    ModuleType: module defined on given path
+    """
     path = Path(file_path).resolve()
     module_name = path.stem
 
@@ -20,6 +31,17 @@ def import_from_path(file_path: str) -> ModuleType:
 
 
 def insert_module_to_path(input_file: str) -> None:
+    """
+    Inserts module of the input file to path.
+
+    Parameters
+    ----------
+    input_file (str): path to the input file
+
+    Returns
+    -------
+    None
+    """
     module_dir = os.path.dirname(input_file)
     if module_dir not in sys.path:
         sys.path.insert(0, module_dir)

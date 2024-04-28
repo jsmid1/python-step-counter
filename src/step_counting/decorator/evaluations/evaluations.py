@@ -101,12 +101,37 @@ evaluation_method: Dict[ModuleType, Dict[type | None, ComplexitiesDict]] = {
 
 
 def default_evaluation(_: Any) -> Literal[1]:
+    """
+    Returns default evaluation (1) for functions with unknown evaluation.
+
+    Parameters
+    ----------
+    _ (Any): parameters of the method with unknown evaluation
+    Returns
+    -------
+    1
+    """
     return 1
 
 
 def get_evaluation_method(
     module: ModuleType, class_: Optional[type], func_name: str
 ) -> Callable[[tuple[Any, ...]], int]:
+    """
+    Return evaluation method for given combination of module,
+    class and function name.
+
+    Parameters
+    ----------
+    module (ModuleType): Module which defines the class/method
+    class_ (Optional[type]): class which defines the method, None if the
+    function is not defined by class
+    function_name (str): name of the function
+
+    Returns
+    -------
+    Function: function for evaluation of given function
+    """
     return (
         evaluation_method.get(module, {})
         .get(class_, {})
@@ -117,6 +142,22 @@ def get_evaluation_method(
 def evaluate_record(
     module: ModuleType, class_: Optional[type], func_name: str, args: tuple[Any, ...]
 ) -> int:
+    """
+    Gets evaluation method for given combination of module, class and funtion
+    name and uses it with given arguments to get evaluation.
+
+    Parameters
+    ----------
+    module (ModuleType): Module which defines the class/method
+    class_ (Optional[type]): class which defines the method, None if the
+    function is not defined by class
+    function_name (str): name of the function
+    args (tuple(Any)): arguments with which the function was called
+
+    Returns
+    -------
+    None
+    """
     if func_name == '__import__':
         return 1
 

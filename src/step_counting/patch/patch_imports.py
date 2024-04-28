@@ -20,6 +20,20 @@ class ClassProxy:
 
 
 def make_proxy(module: ModuleType, decorator: Callable[..., Any]) -> ModuleProxy:
+    """
+    Creates a proxy module for given module so that all the methods from
+    given module are replaced with decorated functions.
+
+    Parameters
+    ----------
+    module (ModuleType): module which will serve as base for creating
+    the proxy module
+    decorator(Function): decorator with which the methods will be decorated
+
+    Returns
+    -------
+    ModuleProxy: module with decorated methods of original module
+    """
     proxy = ModuleProxy()
     _setattr(proxy, '__name__', module.__name__)
 
@@ -48,6 +62,23 @@ def import_proxy(
     *args: Any,
     **kwargs: Any
 ) -> Union[ModuleType, ModuleProxy]:
+    """
+    Creates a proxy module for given module so that all the methods from
+    given module are replaced with decorated functions.
+
+    Parameters
+    ----------
+    decorator (Function): decorator with which the methods will be decorated
+    user_define_modules (set): set of modules which were defined by user
+    name (str): name of the module
+    args (Any): import args
+    kwargs(Any): improt kwargs
+
+    Returns
+    -------
+    ModuleType/ModuleProxy: original module if the module is not user defines,
+    proxy module with decorated methods otherwise
+    """
     module = _import(name, *args, **kwargs)
     if is_user_defined_module(module):
         user_defined_modules.add(module)
@@ -58,6 +89,21 @@ def import_proxy(
 def import_decorator(
     decorator: Callable[..., Any], user_defined_modules: set[ModuleType]
 ) -> Callable[..., Union[ModuleType, ModuleProxy]]:
+    """
+    Creates a proxy module for given module so that all the methods from
+    given module are replaced with decorated functions.
+
+    Parameters
+    ----------
+    decorator (Function): decorator with which the methods will be decorated
+    user_define_modules (set): set of modules which were defined by user
+
+    Returns
+    -------
+    Function: method suitable for replacing builtins.__import__ with method
+    that will decorate all modules defined by user
+    """
+
     def wrapped_import(*args: Any, **kwargs: Any) -> Union[ModuleType, ModuleProxy]:
         return import_proxy(
             decorator, user_defined_modules, *tuple.__iter__(args), **kwargs

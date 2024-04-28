@@ -22,6 +22,18 @@ Decorator: TypeAlias = Callable[
 def create_decorator_default(
     tracked_modules: set[ModuleType],
 ) -> tuple[Decorator, SimpleCallRecorder]:
+    """
+    Creates a decorated which uses SimpleCallRecorder.
+
+    Parameters
+    ----------
+    tracked_modules (set): set of tracked modules
+
+    Returns
+    -------
+    Decorator: decorator
+    SimpleCallRecorder:  call recorder for simple call recording
+    """
     recorder = SimpleCallRecorder()
 
     def decorator(
@@ -30,6 +42,21 @@ def create_decorator_default(
         func: Callable[..., Any],
         func_name: str,
     ) -> Any:
+        """
+        Decorates given function.
+
+        Parameters
+        ----------
+        module (ModuleType): Module which defines the class/method
+        class_ (Optional[type]): class which defines the method, None if the
+        function is not defined by class
+        func: function which will be decorated
+        funct_name (str): name of the function
+
+        Returns
+        -------
+        Function: decorated function
+        """
         method_type = get_method_type(orig_module, class_, func_name)
         if method_type == classmethod:
             assert hasattr(func, '__func__')
@@ -57,6 +84,18 @@ def create_decorator_default(
 def create_decorator_sequence(
     tracked_modules: set[ModuleType],
 ) -> tuple[Decorator, SequnceCallRecorder]:
+    """
+    Creates a decorated which uses SequenceCallRecorder.
+
+    Parameters
+    ----------
+    tracked_modules (set): set of tracked modules
+
+    Returns
+    -------
+    Decorator: decorator
+    SequenceCallRecorder:  call recorder for simple call recording
+    """
     recorder = SequnceCallRecorder()
 
     def decorator(
@@ -65,6 +104,21 @@ def create_decorator_sequence(
         func: Callable[..., Any],
         func_name: str,
     ) -> Callable[..., Any]:
+        """
+        Decorates given function.
+
+        Parameters
+        ----------
+        module (ModuleType): Module which defines the class/method
+        class_ (Optional[type]): class which defines the method, None if the
+        function is not defined by class
+        func: function which will be decorated
+        func_name (str): name of the function
+
+        Returns
+        -------
+        Function: decorated function
+        """
         method_type = get_method_type(orig_module, class_, func_name)
         if method_type == classmethod:
             assert hasattr(func, '__func__')
@@ -97,6 +151,18 @@ from ..utils.module import get_module_by_name
 def create_decorator_detail(
     tracked_modules: set[ModuleType],
 ) -> tuple[Decorator, DetailCallRecorder]:
+    """
+    Creates a decorated which uses DetailCallRecorder.
+
+    Parameters
+    ----------
+    tracked_modules (set): set of tracked modules
+
+    Returns
+    -------
+    Decorator: decorator
+    DetailCallRecorder:  call recorder for simple call recording
+    """
     recorder = DetailCallRecorder()
 
     def decorator(
@@ -105,6 +171,21 @@ def create_decorator_detail(
         func: Callable[..., Any],
         func_name: str,
     ) -> Callable[..., Any]:
+        """
+        Decorates given function.
+
+        Parameters
+        ----------
+        module (ModuleType): Module which defines the class/method
+        class_ (Optional[type]): class which defines the method, None if the
+        function is not defined by class
+        func: function which will be decorated
+        funct_name (str): name of the function
+
+        Returns
+        -------
+        Function: decorated function
+        """
         method_type = get_method_type(orig_module, class_, func_name)
         if method_type == classmethod:
             assert hasattr(func, '__func__')

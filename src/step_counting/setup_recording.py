@@ -1,24 +1,16 @@
-from ast import FunctionType
 import builtins
 import inspect
 import traceback
-from types import (
-    BuiltinFunctionType,
-    ClassMethodDescriptorType,
-    MethodDescriptorType,
-    MethodType,
-    ModuleType,
-    WrapperDescriptorType,
-)
-from typing import Any, Callable, Optional, TypeGuard
+from types import ModuleType
+from typing import Any, Callable, Optional
 
 from src.step_counting.decorator.records.record_classes import DetailCallRecorder
 from .ib111_restrictions import default_types, builtin_methods, ib111_imports
 from .decorator.decorators import create_decorator_detail, Decorator
 
-from .ignor import ignored_methods, ignored_object_methods
+from .ignor import ignored_methods
 from .patch.patch_imports import import_decorator
-from .patch.default_classes.default_classes import is_py_method_def
+from .utils.methods import is_py_method_def
 from .patch.patching import (
     create_patch,
     apply,
@@ -39,6 +31,18 @@ from .ignor import (
 
 
 def decorate_builtins(decorator: Decorator) -> None:
+    """
+    Decorates all builtin methods stored in builtin_method
+    with given decorator and creates patches for them.
+
+    Parameters
+    ----------
+    decorator(Decorator): decorator
+
+    Returns
+    -------
+    None
+    """
     for obj_name in builtin_methods:
         obj = getattr(builtins, obj_name)
 
@@ -49,13 +53,24 @@ def decorate_builtins(decorator: Decorator) -> None:
 
 
 def decorate_defaults(decorator: Decorator) -> None:
+    """
+    Decorates all methods of default types and creates patches fro them.
+
+    Parameters
+    ----------
+    decorator(Decorator): decorator
+
+    Returns
+    -------
+    None
+    """
     for module, classes in default_types.items():
         for class_ in classes:
             for n in dir(class_) + ['comparison']:
                 if n in ignored_methods or (class_, n) in ignored_specifics:
                     continue
 
-                if is_py_method_def(module, class_, n):
+                if is_py_method_def(class_, n):
                     orig_method = getattr(class_, n)
                 else:
                     orig_method = get_c_method(class_, n)
@@ -79,6 +94,20 @@ def decorate_class(
     class_: type,
     decorator: Decorator,
 ) -> None:
+    """
+    Decorates all methods of a class from given module and creates patches
+    for them.
+
+    Parameters
+    ----------
+    module (ModuleType): module to which the class belongs
+    class_ (type): class whose methods
+    decorator(Decorator): decorator
+
+    Returns
+    -------
+    None
+    """
     for name, fn in inspect.getmembers(class_, predicate=inspect.isroutine):
         if name not in ignored_methods and class_ not in set.union(
             *default_types.values()
@@ -92,6 +121,19 @@ def decorate_class(
 
 
 def decorate_all_methods_in_module(module: ModuleType, decorator: Decorator) -> None:
+    """
+    Decorates all methods of a module and method of all classes in the module
+    and creates patches for them.
+
+    Parameters
+    ----------
+    module (ModuleType): module to which the class belongs
+    decorator (Decorator): decorator
+
+    Returns
+    -------
+    None
+    """
     for name, obj in inspect.getmembers(module):
         if inspect.isclass(obj):
             if obj.__name__ in ignored_classes:
@@ -109,6 +151,17 @@ def decorate_all_methods_in_module(module: ModuleType, decorator: Decorator) -> 
 
 
 def decorate_ib111_modules(decorator: Decorator) -> None:
+    """
+    Decorates all modules specific for ib111 preparation.
+
+    Parameters
+    ----------
+    decorator (Decorator): decorator
+
+    Returns
+    -------
+    None
+    """
     for module, object_names in ib111_imports.items():
         for obj_name in object_names:
             obj = getattr(module, obj_name)
@@ -124,6 +177,19 @@ def decorate_ib111_modules(decorator: Decorator) -> None:
 
 
 def wrap_import(decorator: Decorator, user_defined_modules: set[ModuleType]) -> None:
+    """
+    This method wrapps import with its designated decorator and creates
+    a patch for it.
+
+    Parameters
+    ----------
+    decorator (Decorator): decorator
+    user_define_modules (set): set of all modules defined by user
+
+    Returns
+    -------
+    None
+    """
     import_wrapper = import_decorator(decorator, user_defined_modules)
 
     create_patch(
@@ -137,6 +203,18 @@ def wrap_import(decorator: Decorator, user_defined_modules: set[ModuleType]) -> 
 def patch_imported_methods(
     imported_callables: set[Callable[..., Any]], decorator: Decorator
 ) -> None:
+    """
+    Decorates each imported callable and creates patch(es) for it.
+
+    Parameters
+    ----------
+    imported_callables (Callable): class or method
+    decorator(Decorator): decorator
+
+    Returns
+    -------
+    None
+    """
     for call in imported_callables:
         module = get_module_by_name(call.__module__)
         if inspect.isclass(call):
@@ -156,6 +234,20 @@ def patch_imported_methods(
 def setup_recording(
     module: ModuleType, ignored_modules: set[ModuleType]
 ) -> tuple[DetailCallRecorder, set[ModuleType]]:
+    """
+    Performs complete setup.
+
+    Parameters
+    ----------
+    module (ModuleType): original module that will be tested
+    ignored_modules (set): set of modules user wishes to not account for
+    while recording
+
+    Returns
+    -------
+    DetailCallRecorded: detailed recorder
+    set: set of modules that will be accounted for in the recording
+    """
     setup_modules, _ = get_def_ignored_modules()
     ignored_modules.update(setup_modules)
     module_imports, imported_callables = get_module_imports(module, ignored_modules)
@@ -189,7 +281,20 @@ def setup_recording(
 
 
 class RecodingActivated:
+    """
+    A class representing a state of the recording
+    This classed is used for simplification of the recording process.
+    All patches are applied upon entering and reverted on exit.
+    """
+
     def __enter__(self) -> None:
+        """
+        Applies all patches.
+
+        Returns
+        -------
+        None
+        """
         apply()
 
     def __exit__(
@@ -198,4 +303,11 @@ class RecodingActivated:
         value: Optional[BaseException],
         traceback: Optional[traceback.TracebackException],
     ) -> None:
+        """
+        Reverts all patches.
+
+        Returns
+        -------
+        None
+        """
         revert()

@@ -1,4 +1,3 @@
-from ast import FunctionType
 import ctypes
 import gc
 import inspect
@@ -8,7 +7,6 @@ from typing import Any, Callable, Optional
 from ..utils.module import is_user_defined_module
 from . import py_object as pyo
 from ..non_builtin_types import non_builtin_types
-from .default_classes.default_classes import is_py_method_def
 from .bin import patchdictionary, patchint, patchtuple, patchstr, patchlist  # type: ignore
 from .method_switch import MethodSwitch
 from ..utils.methods import get_c_method, get_class_methods
@@ -22,6 +20,19 @@ def substitute_py_methods_structure(
     tp_name: str,
     struct_ty: type[ctypes.Structure],
 ) -> None:
+    """
+    Substitutes python method structure for given type object.
+
+    Parameters
+    ----------
+    tyobj (PyTypeObject): Python type object
+    tp_name (str): name of the structure
+    struct_ty (type): type of the structure
+
+    Returns
+    -------
+    None
+    """
     tp_as_obj = struct_ty()
     tp_as_new_ptr = ctypes.cast(ctypes.addressof(tp_as_obj), ctypes.POINTER(struct_ty))
 
@@ -35,6 +46,21 @@ def patch_py_object_method_with_type(
     method_type: Any,
     replacement_method: Any,
 ) -> None:
+    """
+    Replaces method of Python object with replacement method.
+
+    Parameters
+    ----------
+    class_(Optional type): type of the class
+    tp_name (str): name of the structure
+    method_name (str): name of the method
+    method_type (Any): type of the method
+    replacement_method (Function): replacement method
+
+    Returns
+    -------
+    None
+    """
     tyobj = pyo.PyTypeObject.from_address(id(class_))
 
     if inspect.isfunction(replacement_method):
@@ -66,6 +92,22 @@ def patch_py_object_method(
     method_name: str,
     replacement_method: Callable[..., Any],
 ) -> None:
+    """
+    Checks if method exists, determines information about the method,
+    patches Python object method for given class_.
+
+    Parameters
+    ----------
+    module (ModuleType): module where the method was defined
+    class_ (Optional[type]): class if the method belongs to a class,
+    None otherwise
+    method_name (str): name of the method
+    replacement_method (Function): replacement method
+
+    Returns
+    -------
+    None
+    """
     assert class_
     spec_method = special_patch_methods.get(class_.__name__, {}).get(method_name, None)
     if spec_method is not None:
@@ -92,16 +134,56 @@ def patch_py_builtin_method(
     method_name: str,
     replacement_method: Callable[..., Any],
 ) -> None:
+    """
+    Patches Python builtin method.
+
+    Parameters
+    ----------
+    module (ModuleType): module where the method was defined
+    class_ (Optional[type]): class if the method belongs to a class,
+    None otherwise
+    method_name (str): name of the method
+    replacement_method (Function): replacement method
+
+    Returns
+    -------
+    None
+    """
     setattr(module, method_name, replacement_method)
 
 
 def patchable_builtin(class_: type) -> Any:
+    """
+    Returns all builtin python method of a class that can be patched
+    using pythonapi.
+
+    Parameters
+    ----------
+    class_ (type): class
+
+    Returns
+    -------
+    Any: first directly reffered object
+    """
     refs = gc.get_referents(class_.__dict__)
     assert len(refs) == 1
     return refs[0]
 
 
 def get_py_std_class_method(class_: type, method_name: str) -> Any:
+    """
+    Return method of a class with given name
+
+    Parameters
+    ----------
+    class_ (Optional[type]): class if the method belongs to a class,
+    None otherwise
+    method_name (str): name of the method
+
+    Returns
+    -------
+    Any: method of a class if exists, None otherwise
+    """
     dikt = patchable_builtin(class_)
 
     return dikt.get(method_name, None)
@@ -113,6 +195,21 @@ def patch_py_std_class_method(
     method_name: str,
     replacement_method: Callable[..., Any],
 ) -> None:
+    """
+    Patches Python object method in PyMethodDef.
+
+    Parameters
+    ----------
+    module (ModuleType): module where the method was defined
+    class_ (Optional[type]): class if the method belongs to a class,
+    None otherwise
+    method_name (str): name of the method
+    replacement_method (Function): replacement method
+
+    Returns
+    -------
+    None
+    """
     assert class_
     dikt = patchable_builtin(class_)
 
@@ -130,6 +227,21 @@ def patch_user_defined_method(
     method_name: str,
     replacement_method: Callable[..., Any],
 ) -> None:
+    """
+    Patches method defined by user.
+
+    Parameters
+    ----------
+    module (ModuleType): module where the method was defined
+    class_ (Optional[type]): class if the method belongs to a class,
+    None otherwise
+    method_name (str): name of the method
+    replacement_method (Function): replacement method
+
+    Returns
+    -------
+    None
+    """
     if class_ is None:
         setattr(module, method_name, replacement_method)
     else:
@@ -167,12 +279,6 @@ special_patch_methods = {
 }
 
 
-def patch_with_module(
-    class_: str, method_name: str, replacement_method: Callable[..., Any]
-) -> None:
-    special_patch_methods[class_][method_name](replacement_method)
-
-
 method_switches: dict[tuple[ModuleType, Optional[type], str], MethodSwitch] = dict()
 
 
@@ -182,6 +288,23 @@ def create_patch(
     method_name: str,
     replacement_method: Callable[..., Any],
 ) -> None:
+    """
+    Determines correct method for patching.
+    Retrieves original method.
+    Creates method switch and stores it in method_switches.
+
+    Parameters
+    ----------
+    module (ModuleType): module where the method was defined
+    class_ (Optional[type]): class if the method belongs to a class,
+    None otherwise
+    method_name (str): name of the method
+    replacement_method (Function): replacement method
+
+    Returns
+    -------
+    None
+    """
     if is_std_module(module):
         if class_ is None:
             patching_method = patch_py_builtin_method
@@ -236,6 +359,21 @@ def create_patch(
 
 
 def apply_one(module: ModuleType, class_: Optional[type], method_name: str) -> None:
+    """
+    Applies a single method switch. Replaces original method with replacement
+    method.
+
+    Parameters
+    ----------
+    module (ModuleType): module where the method was defined
+    class_ (Optional[type]): class if the method belongs to a class,
+    None otherwise
+    method_name (str): name of the method
+
+    Returns
+    -------
+    None
+    """
     ms = method_switches.get((module, class_, method_name))
     if ms is None:
         raise Exception(
@@ -246,6 +384,21 @@ def apply_one(module: ModuleType, class_: Optional[type], method_name: str) -> N
 
 
 def revert_one(module: ModuleType, class_: Optional[type], method_name: str) -> None:
+    """
+    Applies a single method switch. Replaces replacement method with original
+    method.
+
+    Parameters
+    ----------
+    module (ModuleType): module where the method was defined
+    class_ (Optional[type]): class if the method belongs to a class,
+    None otherwise
+    method_name (str): name of the method
+
+    Returns
+    -------
+    None
+    """
     ms = method_switches.get((module, class_, method_name))
     if ms is None:
         raise Exception(
@@ -256,10 +409,26 @@ def revert_one(module: ModuleType, class_: Optional[type], method_name: str) -> 
 
 
 def apply() -> None:
+    """
+    Applies all method switches. Replaces all original methods with replacement
+    methods.
+
+    Returns
+    -------
+    None
+    """
     for (module, class_, method_name), ms in method_switches.items():
         ms.overwrite(module, class_, method_name, ms.get_replacement_method())
 
 
 def revert() -> None:
+    """
+    Recerts a single method switch. Replaces replacement method with original
+    method.
+
+    Returns
+    -------
+    None
+    """
     for (module, class_, method_name), ms in method_switches.items():
         ms.overwrite(module, class_, method_name, ms.get_original_method())
