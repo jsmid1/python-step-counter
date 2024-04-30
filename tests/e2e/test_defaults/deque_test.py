@@ -9,6 +9,8 @@ from ..utils import is_recorded
 from collections import deque
 import collections
 
+py_minor_version = sys.version_info[1]
+
 
 class TestIntMethods(unittest.TestCase):
     @classmethod
@@ -32,7 +34,14 @@ class TestIntMethods(unittest.TestCase):
     def test_deque_bool(self):
         with RecodingActivated():
             bool(deque([1, 2]))
-        self.assertTrue(is_recorded(self.recorder, collections, deque, '__bool__'))
+        self.assertTrue(
+            is_recorded(
+                self.recorder,
+                collections,
+                deque,
+                '__bool__' if py_minor_version == 10 else '__len__',
+            )
+        )
 
     def test_deque_contains(self):
         with RecodingActivated():

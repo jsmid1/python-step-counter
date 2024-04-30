@@ -7,6 +7,8 @@ from src.step_counting.setup_recording import setup_recording, RecodingActivated
 from ..utils import is_recorded
 import builtins
 
+py_minor_version = sys.version_info[1]
+
 
 class TestFrozensetMethods(unittest.TestCase):
     @classmethod
@@ -32,7 +34,14 @@ class TestFrozensetMethods(unittest.TestCase):
         with RecodingActivated():
             x = frozenset([1, 2, 3])
             result = 1 in x
-        self.assertTrue(is_recorded(self.recorder, builtins, set, '__contains__'))
+        self.assertTrue(
+            is_recorded(
+                self.recorder,
+                builtins,
+                set if py_minor_version == 10 else frozenset,
+                '__contains__',
+            )
+        )
 
     def test_frozenset_eq(self):
         with RecodingActivated():
@@ -69,7 +78,15 @@ class TestFrozensetMethods(unittest.TestCase):
         with RecodingActivated():
             x = frozenset([1, 2, 3])
             len(x)
-        self.assertTrue(is_recorded(self.recorder, builtins, set, '__len__'))
+
+        self.assertTrue(
+            is_recorded(
+                self.recorder,
+                builtins,
+                set if py_minor_version == 10 else frozenset,
+                '__len__',
+            )
+        )
 
     def test_frozenset_lt(self):
         with RecodingActivated():
