@@ -265,7 +265,7 @@ def setup_recording(
             user_defined_modules.add(call_module)
     user_defined_modules.add(module)
 
-    # Filter out ignored methods
+    # Filter out ignored modules
     user_defined_modules = {
         module for module in user_defined_modules if module not in ignored_modules
     }

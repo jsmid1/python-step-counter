@@ -8,6 +8,7 @@ PyObject* dictionary_getitem_patched_method;
 PyObject* dictionary_setitem_patched_method;
 PyObject* dictionary_iter_patched_method;
 
+static objobjargproc original_dict_setitem = NULL;
 
 static int patched_dictionary_contains(PyObject *self, PyObject* key) {
     PyObject* result = PyObject_CallFunction(dictionary_contains_patched_method, "(OO)", self, key);
@@ -22,8 +23,11 @@ static long patched_dictionary_len(PyObject *self) {
 }
 
 static int patched_dictionary_setitem(PyObject *self, PyObject *key, PyObject *value) {
-    // NULL value means delitem
-    assert(value != NULL);
+    // NULL in value means dict.__delitem__ was called.
+    // No need to patch this occurence.
+    if (value == NULL){
+        return original_dict_setitem(self, key, value);
+    }
 
     PyObject* result = PyObject_CallFunction(dictionary_setitem_patched_method, "(OOO)", self, key, value);
 
@@ -116,6 +120,10 @@ static PyObject* patch_dictionary_setitem(PyObject* self, PyObject* args) {
     }
 
     Py_XINCREF(patched_method); // Increase reference count
+
+    if (original_dict_setitem == NULL) {
+        original_dict_setitem = PyDict_Type.tp_as_mapping->mp_ass_subscript;
+    }
 
     dictionary_setitem_patched_method = patched_method;
 

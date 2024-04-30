@@ -7,7 +7,7 @@ from typing import Any, Callable, Optional
 from ..utils.module import is_user_defined_module
 from . import py_object as pyo
 from ..non_builtin_types import non_builtin_types
-from .bin import patchdictionary, patchint, patchtuple, patchstr, patchlist  # type: ignore
+from .bin import patchdictionary, patchint, patchtuple, patchstr, patchlist, patchbytearray  # type: ignore
 from .method_switch import MethodSwitch
 from ..utils.methods import get_c_method, get_class_methods
 from ..utils.module import is_std_module
@@ -255,16 +255,21 @@ def patch_user_defined_method(
 
 
 special_patch_methods = {
+    'bytearray': {
+        '__setitem__': patchbytearray.patch_bytearray_setitem,
+    },
     'tuple': {
         '__len__': patchtuple.patch_tuple_len,
         '__getitem__': patchtuple.patch_tuple_getitem,
     },
     'dict': {
         '__getitem__': patchdictionary.patch_dictionary_getitem,
+        '__setitem__': patchdictionary.patch_dictionary_setitem,
         '__iter__': patchdictionary.patch_dictionary_iter,
     },
     'list': {
         '__getitem__': patchlist.patch_list_getitem,
+        '__setitem__': patchlist.patch_list_setitem,
     },
     'str': {
         '__getitem__': patchstr.patch_str_getitem,

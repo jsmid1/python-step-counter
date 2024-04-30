@@ -22,7 +22,6 @@ ignored_object_methods = {
     '__delitem__',
     '__alloc__',
     '__setformat__',
-    '__setitem__',  # Ignored because of delete item
     '__format__',  # Can be removed after fix in restrict.
 }
 
@@ -50,9 +49,7 @@ ignored_methods = set.union(
 
 ignored_specifics = {
     (dict, '__iter__'),
-    # (dict, '__setitem__'),
-    (memoryview, 'itemsize'),
-    # (int, 'comparison'),
+    # (memoryview, 'itemsize'),
 }
 
 ignored_classes = {BuiltinImporter, FrozenImporter}
