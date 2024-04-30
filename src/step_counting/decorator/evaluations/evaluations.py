@@ -9,7 +9,7 @@ from csv import DictReader
 from io import BytesIO
 from zipfile import ZipFile
 
-from src.step_counting.decorator.evaluations.complexities import ComplexitiesDict
+from .complexities import ComplexitiesDict
 
 from .builtins.builtins_evaluations import builtins_complexities
 from .builtins.bytes_evaluations import bytes_complexities
@@ -100,7 +100,7 @@ evaluation_method: Dict[ModuleType, Dict[type | None, ComplexitiesDict]] = {
 }
 
 
-def default_evaluation(_: Any) -> Literal[1]:
+def default_evaluation(_: tuple[Any, ...]) -> int:
     """
     Returns default evaluation (1) for functions with unknown evaluation.
 

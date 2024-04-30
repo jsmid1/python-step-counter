@@ -1,5 +1,7 @@
+import collections
+from importlib.machinery import BuiltinImporter, FrozenImporter
 from types import ModuleType
-from typing import Any, Callable
+from typing import Any, Callable, Hashable, Optional
 from .utils.module import get_module_imports, is_user_defined_module
 from . import setup_recording
 
@@ -7,7 +9,6 @@ ignored_object_methods = {
     '__class__',
     '__dir__',
     '__getattribute__',
-    '__hash__',
     '__init__',
     '__new__',
     '__delattr__',
@@ -51,13 +52,29 @@ ignored_specifics = {
     (dict, '__iter__'),
     # (dict, '__setitem__'),
     (memoryview, 'itemsize'),
+    # (int, 'comparison'),
 }
 
-ignored_classes = {'BuiltinImporter'}
+ignored_classes = {BuiltinImporter, FrozenImporter}
+
+
+def is_ignored(class_: Optional[type], method_name: Optional[str]) -> bool:
+    return (
+        (
+            class_
+            and (
+                class_ in ignored_classes
+                or not issubclass(class_, Hashable)
+                and method_name == '__hash__'
+            )
+        )
+        or method_name in ignored_methods
+        or (class_, method_name) in ignored_specifics
+    )
 
 
 def get_def_ignored_modules() -> tuple[set[ModuleType], set[Callable[..., Any]]]:
-    setup_modules, setup_callables = get_module_imports(setup_recording, {})
+    setup_modules, setup_callables = get_module_imports(setup_recording, set())
     setup_modules = {
         module for module in setup_modules if is_user_defined_module(module)
     }

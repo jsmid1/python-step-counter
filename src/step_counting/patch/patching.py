@@ -109,7 +109,9 @@ def patch_py_object_method(
     None
     """
     assert class_
-    spec_method = special_patch_methods.get(class_.__name__, {}).get(method_name, None)
+    spec_method = special_patch_methods.get(class_.__name__, dict()).get(
+        method_name, None
+    )
     if spec_method is not None:
         spec_method(replacement_method)
         return
@@ -252,22 +254,13 @@ def patch_user_defined_method(
         setattr(class_, method_name, replacement_method)
 
 
-# TODO: Check which are actually necessary
 special_patch_methods = {
-    'int': {
-        'comparison': patchint.patch_int_richcompare,
-    },
     'tuple': {
         '__len__': patchtuple.patch_tuple_len,
         '__getitem__': patchtuple.patch_tuple_getitem,
     },
-    'tuple_iterator': {
-        '__next__': patchtuple.patch_tuple_iterator_next,
-    },
     'dict': {
         '__getitem__': patchdictionary.patch_dictionary_getitem,
-        #'__setitem__': patchdictionary.patch_dictionary_setitem,
-        #'__contains__': patchdictionary.patch_dictionary_contains,
         '__iter__': patchdictionary.patch_dictionary_iter,
     },
     'list': {

@@ -4,11 +4,11 @@ import traceback
 from types import ModuleType
 from typing import Any, Callable, Optional
 
-from src.step_counting.decorator.records.record_classes import DetailCallRecorder
+from .decorator.records.record_classes import DetailCallRecorder
 from .ib111_restrictions import default_types, builtin_methods, ib111_imports
 from .decorator.decorators import create_decorator_detail, Decorator
 
-from .ignor import ignored_methods
+from .ignor import ignored_methods, is_ignored
 from .patch.patch_imports import import_decorator
 from .utils.methods import is_py_method_def
 from .patch.patching import (
@@ -67,7 +67,7 @@ def decorate_defaults(decorator: Decorator) -> None:
     for module, classes in default_types.items():
         for class_ in classes:
             for n in dir(class_) + ['comparison']:
-                if n in ignored_methods or (class_, n) in ignored_specifics:
+                if is_ignored(class_, n):
                     continue
 
                 if is_py_method_def(class_, n):
@@ -109,7 +109,7 @@ def decorate_class(
     None
     """
     for name, fn in inspect.getmembers(class_, predicate=inspect.isroutine):
-        if name not in ignored_methods and class_ not in set.union(
+        if not is_ignored(None, name) and class_ not in set.union(
             *default_types.values()
         ):
             create_patch(
@@ -136,7 +136,7 @@ def decorate_all_methods_in_module(module: ModuleType, decorator: Decorator) -> 
     """
     for name, obj in inspect.getmembers(module):
         if inspect.isclass(obj):
-            if obj.__name__ in ignored_classes:
+            if is_ignored(obj, None):
                 continue
 
             decorate_class(module, obj, decorator)
@@ -235,7 +235,8 @@ def setup_recording(
     module: ModuleType, ignored_modules: set[ModuleType]
 ) -> tuple[DetailCallRecorder, set[ModuleType]]:
     """
-    Performs complete setup.
+    Performs complete setup of all imported modules, callables.
+    Also sets up default types and methods and ib111 specific libraries.
 
     Parameters
     ----------
@@ -252,24 +253,25 @@ def setup_recording(
     ignored_modules.update(setup_modules)
     module_imports, imported_callables = get_module_imports(module, ignored_modules)
 
-    imported_user_callables = {
-        cal
-        for cal in imported_callables
-        if is_user_defined_module(get_module_by_name(cal.__module__))
-    }
-
     user_defined_modules = {
         import_
         for import_ in module_imports
         if is_user_defined_module(import_) and import_ not in ignored_modules
     }
+
+    user_defined_callables = set()
+    for call in imported_callables:
+        call_module = get_module_by_name(call.__module__)
+        if is_user_defined_module(call_module):
+            user_defined_modules.add(call_module)
+            user_defined_callables.add(call)
     user_defined_modules.add(module)
 
     decorator, recorder = create_decorator_detail(user_defined_modules)
 
     wrap_import(decorator, user_defined_modules)
 
-    patch_imported_methods(imported_user_callables, decorator)
+    patch_imported_methods(user_defined_callables, decorator)
     for module in user_defined_modules:
         decorate_all_methods_in_module(module, decorator)
 

@@ -1,9 +1,9 @@
 from types import ModuleType
 
-from src.step_counting.setup_recording import setup_recording, RecodingActivated
-from src.profiler.profiler import create_profile, output_profile
-from src.parser.parser import setup_parser
-from src.utils import import_from_path, insert_module_to_path
+from step_counting.setup_recording import setup_recording, RecodingActivated
+from profiler.profiler import create_profile, output_profile
+from parser.parser import setup_parser
+from utils import import_from_path, insert_module_to_path
 
 
 def main() -> None:

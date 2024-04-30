@@ -198,21 +198,12 @@ method_mapping = {
     ),
     '__iter__': ('tp_iter', None, unary),
     '__next__': ('tp_iternext', None, unary),
-    # TODO decide how to handle this
-    # probably one method for all comparisons to match the structure
     'comparison': (
         'tp_richcompare',
         None,
         (c_pyobject_p, c_pyobject_p, c_pyobject_p, c_int),
-    ),  # to avoid confusion
-    # '__eq__': ('tp_richcompare', None),
-    # '__ne__': ('tp_richcompare', None),
-    # '__lt__': ('tp_richcompare', None),
-    # '__le__': ('tp_richcompare', None),
-    # '__gt__': ('tp_richcompare', None),
-    # '__ge__': ('tp_richcompare', None),
+    ),
     '__hash__': ('tp_hash', None, (c_ssize_t, c_pyobject_p)),
-    # # Finalize (typically for __del__, but Python's __del__ maps to tp_dealloc)
     '__del__': ('tp_finalize', None, (c_void_p, c_pyobject_p)),
     # Asynchronous execution methods mappings
     '__await__': ('tp_as_async', 'am_await', None),

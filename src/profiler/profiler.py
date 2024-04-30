@@ -2,7 +2,7 @@ import os
 from types import ModuleType
 from typing import Any, Optional
 
-from src.step_counting.decorator.records.record_classes import Counter
+from step_counting.decorator.records.record_classes import Counter
 
 
 def create_module_profile(

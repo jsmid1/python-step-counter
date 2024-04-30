@@ -5,6 +5,7 @@ from ..complexities import (
     logarithmic,
     linear,
     linear_to_sec,
+    logarithmic_to_sec,
     quadratic,
 )
 
@@ -16,7 +17,7 @@ def linear_to_len(args: tuple[Sequence[Any]]) -> int:
 # TODO finish
 def quadratic_to_bit_len(args: tuple[int]) -> int:
     n = args[0]
-    return n.bit_length()
+    return n.bit_length() ** 2
 
 
 int_complexities: ComplexitiesDict = {
@@ -29,7 +30,7 @@ int_complexities: ComplexitiesDict = {
     '__mul__': constant,
     '__neg__': constant,
     '__or__': constant,
-    '__pow__': linear_to_sec,  # Karatsuba algorithm may be used on large numbers
+    '__pow__': logarithmic_to_sec,  # Karatsuba algorithm may be used on large numbers
     '__rshift__': constant,
     '__sub__': constant,
     '__truediv__': constant,

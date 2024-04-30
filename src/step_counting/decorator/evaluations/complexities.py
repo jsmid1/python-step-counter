@@ -1,6 +1,6 @@
 import math
-from typing import Any, Callable, Dict, Literal, Sequence, TypeAlias
-from collections.abc import Sequence, Mapping
+from typing import Any, Callable, Dict, Sequence, TypeAlias
+from collections.abc import Sequence
 
 ComplexitiesDict: TypeAlias = Dict[str, Callable[[tuple[Any, ...]], int]]
 
@@ -21,7 +21,7 @@ def linear(args: tuple[Any, ...]) -> int:
 
 def linearithmic(args: tuple[Any, ...]) -> int:
     n = args[0]
-    return int(float.__mul__(float(n), math.log(n)))
+    return int(float.__mul__(float(n), math.log(n, 2)))
 
 
 def quadratic(args: tuple[Any, ...]) -> int:
@@ -40,28 +40,7 @@ def logarithmic_to_min(args: tuple[int, int]) -> int:
     return logarithmic((min(n1, n2),))
 
 
-def hash_com(args: tuple[Any]) -> int:
-    o = args[0]
-
-    # Catch string to avoid creating substrings
-    if isinstance(o, str):
-        return len(o)
-
-    total = 0
-    if isinstance(o, Sequence):
-        for elem in o:
-            total += hash_com((elem,))
-    else:
-        total += 1
-
-    return total
-
-
-def hash_sec_com(args: tuple[Any, Any]) -> int:
-    return hash_com((args[1],))
-
-
-def comparison_com(args: tuple[Any, Any]) -> int:
+def comparison_com(args: tuple[Any, ...]) -> int:
     s1 = args[0]
     s2 = args[1]
 
@@ -79,7 +58,6 @@ def comparison_com(args: tuple[Any, Any]) -> int:
 
     if isinstance(s1, dict) and len(s1) == len(s2):
         for key in s1.keys():
-            total += hash_com((key,))
             total += comparison_com((s1.get(key, None), s2.get(key, None)))
 
     return total

@@ -1,0 +1,13 @@
+LICENSE
+README
+setup.py
+./src/step_counting/patch/c_modules/customdict.c
+./src/step_counting/patch/c_modules/customint.c
+./src/step_counting/patch/c_modules/customlist.c
+./src/step_counting/patch/c_modules/customstr.c
+./src/step_counting/patch/c_modules/customtuple.c
+src/stepcounter.egg-info/PKG-INFO
+src/stepcounter.egg-info/SOURCES.txt
+src/stepcounter.egg-info/dependency_links.txt
+src/stepcounter.egg-info/entry_points.txt
+src/stepcounter.egg-info/top_level.txt

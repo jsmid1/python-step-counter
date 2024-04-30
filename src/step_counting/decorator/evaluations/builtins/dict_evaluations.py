@@ -4,7 +4,6 @@ from ..complexities import (
     constant,
     linear_to_len,
     comparison_com,
-    hash_sec_com,
 )
 
 
@@ -16,9 +15,9 @@ def dict_update_complexity(args: tuple[dict[Any, Any], dict[Any, Any]]) -> int:
 
 # TODO possible problems due to hash collisions...
 dict_complexities: ComplexitiesDict = {
-    '__contains__': linear_to_len,
+    '__contains__': constant,
     '__len__': constant,
-    '__getitem__': hash_sec_com,
+    '__getitem__': constant,
     '__iter__': linear_to_len,
     '__setitem__': constant,
     '__le__': comparison_com,
