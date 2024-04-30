@@ -254,18 +254,21 @@ def setup_recording(
     module_imports, imported_callables = get_module_imports(module, ignored_modules)
 
     user_defined_modules = {
-        import_
-        for import_ in module_imports
-        if is_user_defined_module(import_) and import_ not in ignored_modules
+        import_ for import_ in module_imports if is_user_defined_module(import_)
     }
 
     user_defined_callables = set()
     for call in imported_callables:
         call_module = get_module_by_name(call.__module__)
         if is_user_defined_module(call_module):
-            user_defined_modules.add(call_module)
             user_defined_callables.add(call)
+            user_defined_modules.add(call_module)
     user_defined_modules.add(module)
+
+    # Filter out ignored methods
+    user_defined_modules = {
+        module for module in user_defined_modules if module not in ignored_modules
+    }
 
     decorator, recorder = create_decorator_detail(user_defined_modules)
 
