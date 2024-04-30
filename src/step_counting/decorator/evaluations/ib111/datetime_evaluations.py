@@ -1,4 +1,4 @@
-from ..complexities import ComplexitiesDict, constant, linear
+from ..complexities import ComplexitiesDict, constant
 
 
 datetime_complexities: ComplexitiesDict = dict()
@@ -23,7 +23,7 @@ datetime_date_complexities: ComplexitiesDict = {
     'today': constant,
     'toordinal': constant,
     'weekday': constant,
-    'year': linear,
+    'year': constant,
 }
 
 datetime_datetime_complexities: ComplexitiesDict = {

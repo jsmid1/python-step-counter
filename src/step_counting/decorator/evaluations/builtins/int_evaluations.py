@@ -22,6 +22,12 @@ def quadratic_to_bit_len(args: tuple[int]) -> int:
 
 int_complexities: ComplexitiesDict = {
     '__add__': constant,
+    '__lt__': constant,
+    '__le__': constant,
+    '__eq__': constant,
+    '__ne__': constant,
+    '__gt__': constant,
+    '__ge__': constant,
     '__and__': constant,
     '__floordiv__': constant,
     '__invert__': constant,

@@ -1,3 +1,4 @@
+import collections
 from types import ModuleType
 from typing import Any, Callable, Literal, Optional, Union, Dict
 import builtins
@@ -8,21 +9,33 @@ from fractions import Fraction
 from csv import DictReader
 from io import BytesIO
 from zipfile import ZipFile
+from collections import deque
 
+from ...non_builtin_types import dict_items_type, dict_keys_type, dict_values_type
 from .complexities import ComplexitiesDict
 
 from .builtins.builtins_evaluations import builtins_complexities
+from .builtins.bool_evaluations import bool_complexities
+from .builtins.bytearray_evaluations import bytearray_complexities
 from .builtins.bytes_evaluations import bytes_complexities
 from .builtins.complex_evaluations import complex_complexities
 from .builtins.dict_evaluations import dict_complexities
+from .builtins.dict_keys_evaluations import dict_keys_complexities
+from .builtins.dict_items_evaluations import dict_items_complexities
+from .builtins.dict_values_evaluations import dict_values_complexities
 from .builtins.float_evaluations import float_complexities
+from .builtins.frozenset_evaluations import frozenset_complexities
 from .builtins.int_evaluations import int_complexities
 from .builtins.list_evaluations import list_complexities
+from .builtins.memoryview_evaluations import memoryview_complexities
+from .builtins.range_evaluations import range_complexities
 from .builtins.set_evaluations import set_complexities
+from .builtins.slice_evaluations import slice_complexities
 from .builtins.str_evaluations import str_complexities
 from .builtins.tuple_evaluations import tuple_complexities
 
 from .ib111.calendar_evaluations import calendar_complexities
+from .ib111.collections_evaluations import deque_complexities
 from .ib111.csv_evaluations import csv_complexities, csv_dictreader_complexities
 from .ib111.datetime_evaluations import (
     datetime_complexities,
@@ -58,15 +71,27 @@ from .ib111.zipfile_evaluations import (
 evaluation_method: Dict[ModuleType, Dict[type | None, ComplexitiesDict]] = {
     builtins: {
         None: builtins_complexities,
+        bool: bool_complexities,
+        bytearray: bytearray_complexities,
         bytes: bytes_complexities,
         complex: complex_complexities,
         dict: dict_complexities,
+        dict_keys_type: dict_keys_complexities,
+        dict_items_type: dict_items_complexities,
+        dict_values_type: dict_values_complexities,
         float: float_complexities,
+        frozenset: frozenset_complexities,
         int: int_complexities,
         list: list_complexities,
+        memoryview: memoryview_complexities,
+        range: range_complexities,
         set: set_complexities,
+        slice: slice_complexities,
         str: str_complexities,
         tuple: tuple_complexities,
+    },
+    collections: {
+        deque: deque_complexities,
     },
     calendar: {None: calendar_complexities},
     csv: {None: csv_complexities, DictReader: csv_dictreader_complexities},
