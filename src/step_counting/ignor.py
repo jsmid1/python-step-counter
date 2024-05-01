@@ -49,7 +49,6 @@ ignored_methods = set.union(
 
 ignored_specifics = {
     (dict, '__iter__'),
-    # (memoryview, 'itemsize'),
 }
 
 ignored_classes = {BuiltinImporter, FrozenImporter}
