@@ -1,4 +1,10 @@
-from ..complexities import ComplexitiesDict, constant, linear_to_len, comparison_com
+from ..complexities import (
+    ComplexitiesDict,
+    constant,
+    hash_complexity,
+    linear_to_len,
+    comparison_com,
+)
 
 
 tuple_complexities: ComplexitiesDict = {
@@ -11,6 +17,7 @@ tuple_complexities: ComplexitiesDict = {
     '__ne__': comparison_com,
     '__gt__': comparison_com,
     '__ge__': comparison_com,
+    '__hash__': hash_complexity,
     'count': linear_to_len,
     'index': linear_to_len,
 }

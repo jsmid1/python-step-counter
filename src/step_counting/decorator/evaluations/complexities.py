@@ -1,5 +1,5 @@
 import math
-from typing import Any, Callable, Dict, Sequence, TypeAlias
+from typing import Any, Callable, Dict, Hashable, Sequence, TypeAlias
 from collections.abc import Sequence
 
 ComplexitiesDict: TypeAlias = Dict[str, Callable[[tuple[Any, ...]], int]]
@@ -61,6 +61,23 @@ def comparison_com(args: tuple[Any, ...]) -> int:
             total += comparison_com((s1.get(key, None), s2.get(key, None)))
 
     return total
+
+
+def hash_complexity(obj: Hashable) -> int:
+    if isinstance(obj, (int, float)):
+        return 1
+    elif isinstance(obj, str):
+        return len(obj)
+    elif isinstance(obj, tuple):
+        return sum(hash_complexity(item) for item in obj) + 1
+
+    raise Exception(f"Unhashable type: {type(obj)}!")
+
+
+def hash_complexity_sec(args: tuple[Any, ...]) -> int:
+    obj = args[1]
+
+    return hash_complexity(obj)
 
 
 def linear_to_len(args: tuple[Any, ...]) -> int:

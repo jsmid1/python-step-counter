@@ -2,6 +2,7 @@ from typing import Any
 from ..complexities import (
     ComplexitiesDict,
     constant,
+    hash_complexity_sec,
     linear_to_len,
     comparison_com,
 )
@@ -17,9 +18,9 @@ def dict_update_complexity(args: tuple[dict[Any, Any], dict[Any, Any]]) -> int:
 dict_complexities: ComplexitiesDict = {
     '__contains__': constant,
     '__len__': constant,
-    '__getitem__': constant,
+    '__getitem__': hash_complexity_sec,
     '__iter__': linear_to_len,
-    '__setitem__': constant,
+    '__setitem__': hash_complexity_sec,
     '__le__': comparison_com,
     '__eq__': comparison_com,
     '__ne__': comparison_com,
