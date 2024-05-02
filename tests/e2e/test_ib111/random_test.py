@@ -11,14 +11,14 @@ import random
 
 class TestRandomMethods(unittest.TestCase):
     @classmethod
-    def setUpClass(cls):
-        cls.module = sys.modules[__name__]
-        cls.recorder, _ = setup_recording(cls.module, {sys, unittest, sr})
+    def setUpClass(self):
+        self.module = sys.modules[__name__]
+        self.recorder, _ = setup_recording(self.module, 'DETAIL', {sys, unittest, sr})
 
-        cls.random_instance = random.Random()
+        self.random_instance = random.Random()
 
     @classmethod
-    def tearDownClass(cls):
+    def tearDownClass(self):
         pass
 
     def setUp(self):

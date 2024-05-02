@@ -13,16 +13,16 @@ import http
 
 class TestHttpclientMethods(unittest.TestCase):
     @classmethod
-    def setUpClass(cls):
-        cls.module = sys.modules[__name__]
-        cls.recorder, _ = setup_recording(cls.module, {sys, unittest, sr})
+    def setUpClass(self):
+        self.module = sys.modules[__name__]
+        self.recorder, _ = setup_recording(self.module, 'DETAIL', {sys, unittest, sr})
 
-        cls.host = 'www.example.com'
-        cls.connectionHTTP = http.client.HTTPConnection(cls.host)
-        cls.connectionHTTPS = http.client.HTTPSConnection(cls.host)
+        self.host = 'www.example.com'
+        self.connectionHTTP = http.client.HTTPConnection(self.host)
+        self.connectionHTTPS = http.client.HTTPSConnection(self.host)
 
     @classmethod
-    def tearDownClass(cls):
+    def tearDownClass(self):
         pass
 
     def setUp(self):
