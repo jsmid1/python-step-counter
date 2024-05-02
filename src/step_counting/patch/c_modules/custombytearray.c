@@ -15,7 +15,7 @@ static int patched_bytearray_setitem(PyObject *self, PyObject *key, PyObject *va
     PyObject* result = PyObject_CallFunction(bytearray_setitem_patched_method, "(OOO)", self, key, value);
 
     if (!result) {
-        // If result is NULL, an error occurred. You should set an appropriate error.
+        // If result is NULL, an error occurred. Set an error.
         PyErr_SetString(PyExc_RuntimeError, "Error calling patched __setitem__ method");
         return -1;
     }

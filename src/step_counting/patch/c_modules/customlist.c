@@ -32,7 +32,7 @@ static int patched_list_setitem(PyObject *self, PyObject *key, PyObject *value) 
     PyObject* result = PyObject_CallFunction(list_setitem_patched_method, "(OOO)", self, key, value);
 
     if (!result) {
-        // If result is NULL, an error occurred. You should set an appropriate error.
+        // If result is NULL, an error occurred. Set an error.
         PyErr_SetString(PyExc_RuntimeError, "Error calling patched __setitem__ method");
         return -1;
     }
