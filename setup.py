@@ -44,7 +44,7 @@ setup(
     license='Apache License 2.0',
     packages=find_packages(),
     ext_modules=patch_modules,
-    entry_points={'console_scripts': ['stepcounter = src.step_counter:main']},
+    entry_points={'console_scripts': ['stepcounter = src.step_counting.__main__:main']},
     python_requires='>=3.10, <3.13',
     classifiers=[
         'Programming Language :: Python :: 3.10',
