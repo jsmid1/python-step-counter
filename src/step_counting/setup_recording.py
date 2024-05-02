@@ -2,11 +2,17 @@ import builtins
 import inspect
 import traceback
 from types import ModuleType
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, Union
 
-from .decorator.records.record_classes import DetailCallRecorder
+from parser.parser import MODE_DEFAULT, MODE_SEQUENCE, MODE_DETAIL
+from .decorator.records.record_classes import Recorder
 from .ib111_restrictions import default_types, builtin_methods, ib111_imports
-from .decorator.decorators import create_decorator_detail, Decorator
+from .decorator.decorators import (
+    create_decorator_default,
+    create_decorator_detail,
+    Decorator,
+    create_decorator_sequence,
+)
 
 from .ignor import ignored_methods, is_ignored
 from .patch.patch_imports import import_decorator
@@ -232,8 +238,10 @@ def patch_imported_methods(
 
 
 def setup_recording(
-    module: ModuleType, ignored_modules: set[ModuleType]
-) -> tuple[DetailCallRecorder, set[ModuleType]]:
+    module: ModuleType,
+    mode: str,
+    ignored_modules: set[ModuleType],
+) -> tuple[Recorder, set[ModuleType]]:
     """
     Performs complete setup of all imported modules, callables.
     Also sets up default types and methods and ib111 specific libraries.
@@ -241,12 +249,13 @@ def setup_recording(
     Parameters
     ----------
     module (ModuleType): original module that will be tested
+    mode (str): mode of the recording
     ignored_modules (set): set of modules user wishes to not account for
     while recording
 
     Returns
     -------
-    DetailCallRecorded: detailed recorder
+    Recorder: simple/sequence/detailed recorder
     set: set of modules that will be accounted for in the recording
     """
     setup_modules, _ = get_def_ignored_modules()
@@ -270,7 +279,13 @@ def setup_recording(
         module for module in user_defined_modules if module not in ignored_modules
     }
 
-    decorator, recorder = create_decorator_detail(user_defined_modules)
+    recorder: Recorder
+    if mode == MODE_SEQUENCE:
+        decorator, recorder = create_decorator_sequence(user_defined_modules)
+    elif mode == MODE_DETAIL:
+        decorator, recorder = create_decorator_detail(user_defined_modules)
+    else:
+        decorator, recorder = create_decorator_default(user_defined_modules)
 
     wrap_import(decorator, user_defined_modules)
 

@@ -1,6 +1,7 @@
 from types import ModuleType
-from typing import Any, Callable, Optional, TypeAlias
+from typing import Any, Callable, Optional, TypeAlias, Union
 
+from ..utils import determine_method_info
 from step_counting.utils.module import get_module_by_name
 from ..evaluations.evaluations import evaluate_record
 
@@ -122,8 +123,9 @@ class SimpleCallRecorder:
 
     def add_record(
         self,
-        orig_module: ModuleType,
+        module: ModuleType,
         cls: Optional[type],
+        func: Callable[..., Any],
         func_name: str,
         arguments: Any,
     ) -> None:
@@ -132,16 +134,22 @@ class SimpleCallRecorder:
 
         Parameters
         ----------
-        orig_module (ModuleType): module where the function was used
+        module (ModuleType): module where the function was used
         cls (Optional[type]): class if the function belongs to a class,
         None otherwise
+        func (Function): function which was called
         func_name (str): name of the function
         arguments (Any): arguments with which the function was called
         Returns
         -------
         None
         """
-        self.counter.increase(evaluate_record(orig_module, cls, func_name, arguments))
+
+        fn_module, fn_class = determine_method_info(module, cls, func)
+
+        self.counter.increase(
+            evaluate_record(fn_module, fn_class, func_name, arguments)
+        )
 
     def get_data(self) -> Counter:
         """
@@ -174,7 +182,7 @@ class SimpleCallRecorder:
         self.counter.clear()
 
 
-class SequnceCallRecorder:
+class SequenceCallRecorder:
     """
     A class representing a sequence recorder. This class hold list of
     function calls.
@@ -290,9 +298,7 @@ class DetailCallRecorder:
         -------
         None
         """
-        fn_class = getattr(func, '__objclass__', cls)
-        fn_module_name = getattr(fn_class, '__module__', None)
-        fn_module = get_module_by_name(fn_module_name) if fn_module_name else module
+        fn_module, fn_class = determine_method_info(module, cls, func)
 
         record_eval = evaluate_record(fn_module, fn_class, func_name, arguments)
         module_records = dict_get(self.records, module, None)
@@ -364,3 +370,6 @@ class DetailCallRecorder:
         None
         """
         self.records.clear()
+
+
+Recorder = Union[SimpleCallRecorder, SequenceCallRecorder, DetailCallRecorder]

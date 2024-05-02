@@ -4,7 +4,7 @@ from typing import Any, Callable, Optional, TypeAlias
 
 from .records.record_classes import (
     SimpleCallRecorder,
-    SequnceCallRecorder,
+    SequenceCallRecorder,
     DetailCallRecorder,
 )
 from .utils import (
@@ -70,7 +70,7 @@ def create_decorator_default(
             if module_in_list(module, tracked_modules):
                 assert module
                 recorder.add_record(
-                    module, class_, determine_method(func_name, args), args
+                    module, class_, func, determine_method(func_name, args), args
                 )
             return func_obj(*args, **kwargs)
 
@@ -83,7 +83,7 @@ def create_decorator_default(
 
 def create_decorator_sequence(
     tracked_modules: set[ModuleType],
-) -> tuple[Decorator, SequnceCallRecorder]:
+) -> tuple[Decorator, SequenceCallRecorder]:
     """
     Creates a decorated which uses SequenceCallRecorder.
 
@@ -94,9 +94,9 @@ def create_decorator_sequence(
     Returns
     -------
     Decorator: decorator
-    SequenceCallRecorder:  call recorder for simple call recording
+    SequenceCallRecorder:  call recorder for sequence call recording
     """
-    recorder = SequnceCallRecorder()
+    recorder = SequenceCallRecorder()
 
     def decorator(
         orig_module: ModuleType,

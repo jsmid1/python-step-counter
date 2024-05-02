@@ -1,6 +1,8 @@
 import sys
 from types import BuiltinFunctionType, FunctionType, MethodType, ModuleType
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Optional, Tuple, Union
+
+from step_counting.utils.module import get_module_by_name
 
 
 from ..original_methods import _hash, dict_get
@@ -73,6 +75,35 @@ def determine_method(method_name: str, args: tuple[Any, ...]) -> str:
         return dict.__getitem__(comparison_methods, tuple.__getitem__(args, 2))
 
     return method_name
+
+
+def determine_method_info(
+    module: ModuleType,
+    class_: Optional[type],
+    func: Callable[..., Any],
+) -> Tuple[ModuleType, Optional[type]]:
+    """
+    Evaluates record and increases the counter accordingly.
+
+    Parameters
+    ----------
+    module (ModuleType): module where the function was used
+    class_ (Optional[type]): class if the function belongs to a class,
+    None otherwise
+    func (Function): function which was called
+
+    Returns
+    -------
+    ModuleType: original module of the function
+    Optional[type]: original class of the function if it belongs to a class
+    None otherwise
+    """
+
+    fn_class = getattr(func, '__objclass__', class_)
+    fn_module_name = getattr(fn_class, '__module__', None)
+    fn_module = get_module_by_name(fn_module_name) if fn_module_name else module
+
+    return fn_module, fn_class
 
 
 def get_caller_module_info() -> tuple[Optional[ModuleType], int]:
