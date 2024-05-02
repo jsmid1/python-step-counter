@@ -124,7 +124,7 @@ class SimpleCallRecorder:
     def add_record(
         self,
         module: ModuleType,
-        cls: Optional[type],
+        class_: Optional[type],
         func: Callable[..., Any],
         func_name: str,
         arguments: Any,
@@ -135,7 +135,7 @@ class SimpleCallRecorder:
         Parameters
         ----------
         module (ModuleType): module where the function was used
-        cls (Optional[type]): class if the function belongs to a class,
+        class_ (Optional[type]): class if the function belongs to a class,
         None otherwise
         func (Function): function which was called
         func_name (str): name of the function
@@ -145,7 +145,7 @@ class SimpleCallRecorder:
         None
         """
 
-        fn_module, fn_class = determine_method_info(module, cls, func)
+        fn_module, fn_class = determine_method_info(module, class_, func)
 
         self.counter.increase(
             evaluate_record(fn_module, fn_class, func_name, arguments)
@@ -276,7 +276,7 @@ class DetailCallRecorder:
         module: ModuleType,
         line_number: int,
         orig_module: ModuleType,
-        cls: Optional[type],
+        class_: Optional[type],
         func: Callable[..., Any],
         func_name: str,
         arguments: Any,
@@ -290,7 +290,7 @@ class DetailCallRecorder:
         module (ModuleType): module where the function was used
         line_number (int): line where the function was used
         orig_module (ModuleType): module where the function was created
-        cls (Optional[type]): class if the function belongs to a class,
+        class_ (Optional[type]): class if the function belongs to a class,
         func (Function): function which was called
         func_name (str): name of the function (Some function objects do not
         allow to extract name)
@@ -298,14 +298,14 @@ class DetailCallRecorder:
         -------
         None
         """
-        fn_module, fn_class = determine_method_info(module, cls, func)
+        fn_module, fn_class = determine_method_info(module, class_, func)
 
         record_eval = evaluate_record(fn_module, fn_class, func_name, arguments)
         module_records = dict_get(self.records, module, None)
 
         if module_records is None:
             records: dict[int, dict[RecordKey, Counter]] = {
-                line_number: {(orig_module, cls, func_name): Counter(1, record_eval)}
+                line_number: {(orig_module, class_, func_name): Counter(1, record_eval)}
             }
             dict.__setitem__(
                 # mypy gets confused with dunder method use
@@ -324,16 +324,16 @@ class DetailCallRecorder:
                 module_records,
                 # mypy gets confused with dunder method use
                 line_number,
-                {(orig_module, cls, func_name): Counter(1, record_eval)},
+                {(orig_module, class_, func_name): Counter(1, record_eval)},
             )
             return
 
-        method_counter = dict_get(line_records, (orig_module, cls, func_name), None)  # type: ignore
+        method_counter = dict_get(line_records, (orig_module, class_, func_name), None)  # type: ignore
         if method_counter is None:
             method_counter = Counter()
 
         method_counter.increase(record_eval)
-        dict.__setitem__(line_records, (orig_module, cls, func_name), method_counter)  # type: ignore
+        dict.__setitem__(line_records, (orig_module, class_, func_name), method_counter)  # type: ignore
 
     def get_data(self) -> DetailRecords:
         """
