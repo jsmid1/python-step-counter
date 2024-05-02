@@ -67,9 +67,9 @@ def create_profile_sequence(recorder: SequenceCallRecorder) -> str:
     """
     sequence_profile = []
     for record in recorder.get_data():
-        sequence_profile.append(
-            f'{record[0].__name__} {record[1].__name__} {record[2]}\n'
-        )
+        class_ = record[1]
+        class_name = ' ' + class_.__name__ if class_ else ''
+        sequence_profile.append(f'{record[0].__name__}{class_name} {record[2]}\n')
 
     return ''.join(sequence_profile)
 
