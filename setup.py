@@ -38,7 +38,7 @@ patch_modules = [
 # Run the setup
 setup(
     name='stepcounter',
-    version='1.0.6',
+    version='1.0.7',
     description='Python step counter',
     author='Jan Šmíd',
     license='Apache License 2.0',

@@ -1,5 +1,4 @@
 import argparse
-import types
 
 
 MODE_DEFAULT = 'DEFAULT'

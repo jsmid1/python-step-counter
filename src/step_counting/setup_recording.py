@@ -4,7 +4,7 @@ import traceback
 from types import ModuleType
 from typing import Any, Callable, Optional, Union
 
-from parser.parser import MODE_DEFAULT, MODE_SEQUENCE, MODE_DETAIL
+from .parser.parser import MODE_DEFAULT, MODE_SEQUENCE, MODE_DETAIL
 from .decorator.records.record_classes import Recorder
 from .ib111_restrictions import default_types, builtin_methods, ib111_imports
 from .decorator.decorators import (

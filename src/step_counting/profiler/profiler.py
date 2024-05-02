@@ -2,7 +2,7 @@ import os
 from types import ModuleType
 from typing import Any, Optional, Union
 
-from parser.parser import MODE_DETAIL, MODE_SEQUENCE
+from ..parser.parser import MODE_DETAIL, MODE_SEQUENCE
 
 from step_counting.decorator.records.record_classes import (
     Counter,

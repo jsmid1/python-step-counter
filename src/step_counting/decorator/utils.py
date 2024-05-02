@@ -2,7 +2,7 @@ import sys
 from types import BuiltinFunctionType, FunctionType, MethodType, ModuleType
 from typing import Any, Callable, Optional, Tuple, Union
 
-from step_counting.utils.module import get_module_by_name
+from ..utils.module import get_module_by_name
 
 
 from ..original_methods import _hash, dict_get

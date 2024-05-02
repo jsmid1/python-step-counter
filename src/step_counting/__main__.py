@@ -1,9 +1,9 @@
 from types import ModuleType
 
-from step_counting.setup_recording import setup_recording, RecodingActivated
-from profiler.profiler import output_profile
-from parser.parser import setup_parser, MODE_DEFAULT, MODE_SEQUENCE, MODE_DETAIL
-from utils import import_from_path, insert_module_to_path
+from .setup_recording import setup_recording, RecodingActivated
+from .profiler.profiler import output_profile
+from .parser.parser import setup_parser, MODE_DEFAULT, MODE_SEQUENCE, MODE_DETAIL
+from .utils.module import import_from_path, insert_module_to_path
 
 
 def main() -> None:
@@ -16,8 +16,7 @@ def main() -> None:
         - Import module from input path
         - Setup recording
         - Evaluate function of imported module
-        - [OPTIONAL] Profile module
-        - print overall score
+        - Output profile and overall score
 
     Returns
     -------
