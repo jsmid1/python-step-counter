@@ -53,7 +53,6 @@ class TestDictvaluesMethods(unittest.TestCase):
         with RecodingActivated():
             x = {'a': 1, 'b': 2}.values()
             1 in x
-        print(self.recorder.get_data())
         self.assertTrue(
             is_recorded(self.recorder, builtins, dict_values, '__contains__')
         )

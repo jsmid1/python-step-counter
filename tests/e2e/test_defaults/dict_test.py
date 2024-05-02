@@ -47,7 +47,6 @@ class TestDictMethods(unittest.TestCase):
             x['key']
         self.assertTrue(is_recorded(self.recorder, builtins, dict, '__getitem__'))
 
-    # TODO change after patching fix
     @unittest.skip('Not being patched')
     def test_dict_iter(self):
         with RecodingActivated():

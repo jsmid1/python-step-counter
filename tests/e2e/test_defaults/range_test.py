@@ -58,7 +58,7 @@ class TestRangeMethods(unittest.TestCase):
 
     def test_range_reversed(self):
         with RecodingActivated():
-            list(reversed(range(10)))
+            reversed(range(10))
         self.assertTrue(is_recorded(self.recorder, builtins, range, '__reversed__'))
 
     def test_range_count(self):

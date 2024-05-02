@@ -29,7 +29,6 @@ class TestFrozensetMethods(unittest.TestCase):
             y = x & frozenset([2, 3])
         self.assertTrue(is_recorded(self.recorder, builtins, frozenset, '__and__'))
 
-    # Uses set method
     def test_frozenset_contains(self):
         with RecodingActivated():
             x = frozenset([1, 2, 3])
