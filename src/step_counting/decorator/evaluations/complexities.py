@@ -29,6 +29,11 @@ def quadratic(args: tuple[Any, ...]) -> int:
     return 5
 
 
+def linear_to_bit_len(args: tuple[Any, ...]) -> int:
+    n = args[0]
+    return n.bit_count()
+
+
 def logarithmic_to_len(args: tuple[Any, ...]) -> int:
     n = len(args[0])
     return logarithmic((n,))
@@ -76,7 +81,6 @@ def hash_complexity(obj: Hashable) -> int:
 
 def hash_complexity_sec(args: tuple[Any, ...]) -> int:
     obj = args[1]
-
     return hash_complexity(obj)
 
 
@@ -105,6 +109,11 @@ def linear_to_sec(args: tuple[Any, int]) -> int:
     return linear((n,))
 
 
+def linear_to_len_sec(args: tuple[Any, ...]) -> int:
+    n = len(args[0])
+    return linear((n,))
+
+
 def linearithmic_to_sec(args: tuple[Any, int]) -> int:
     n = args[1]
     return linearithmic((n,))
@@ -115,15 +124,14 @@ def quadratic_to_sec(args: tuple[Any, int]) -> int:
     return quadratic((n,))
 
 
+def linear_to_len_sum(args: tuple[Any, ...]) -> int:
+    return sum([len(s) for s in args])
+
+
 def sequence_mul_complexity(args: tuple[Sequence[Any], int]) -> int:
     sequence = args[0]
     multiplier = args[1]
     return multiplier * len(sequence)
-
-
-def sequence_startswith_complexity(args: tuple[Any, ...]) -> int:
-    prefix = args[1]
-    return len(prefix)
 
 
 def sequence_join_complexity(args: tuple[Any, ...]) -> int:

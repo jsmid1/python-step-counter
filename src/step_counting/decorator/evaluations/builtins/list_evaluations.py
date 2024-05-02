@@ -5,33 +5,17 @@ from ..complexities import (
     constant,
     linear_to_len,
     comparison_com,
+    linear_to_len_sec,
     linearithmic_to_len,
     comparison_com,
+    sequence_mul_complexity,
 )
-
-
-def list_del_complexity(args: tuple[list[Any], int]) -> int:
-    list_ = args[0]
-    index = args[1]
-    return len(list_) - index
-
-
-def list_extend_complexity(args: tuple[list[Any], list[Any]]) -> int:
-    extending_list = args[1]
-
-    return len(extending_list)
 
 
 def list_insert_complexity(args: tuple[list[Any], int]) -> int:
     list_ = args[0]
     index = args[1]
     return len(list_) - index + 1
-
-
-def list_mul_complexity(args: tuple[list[Any], int]) -> int:
-    list_ = args[0]
-    multiplier = args[1]
-    return multiplier * len(list_)
 
 
 def list_pop_complexity(args: tuple[list[Any], int]) -> int:
@@ -46,38 +30,46 @@ def list_pop_complexity(args: tuple[list[Any], int]) -> int:
     return len(list_) - index
 
 
-def list_slice_complexity(args: tuple[list[Any], int]) -> int:
-    list_ = args[0]
-    multiplier = args[1]
-    return multiplier * len(list_)
+def list_getitem_complexity(args: tuple[list[Any], int]) -> int:
+    elem = args[1]
+    if isinstance(elem, slice):
+        return (elem.stop - elem.start) // elem.step
+    return 1
 
 
 list_complexities: ComplexitiesDict = {
-    'append': constant,
-    'clear': constant,
+    # Dunders
+    '__add__': linear_to_len_sec,
+    '__class_getitem__': constant,
+    '__contains__': linear_to_len,
+    '__getitem__': list_getitem_complexity,
+    '__iadd__': linear_to_len_sec,
+    '__imul__': linear_to_len,
+    '__iter__': constant,
+    '__len__': constant,
+    '__mul__': sequence_mul_complexity,
+    '__repr__': linear_to_len,
+    '__reversed__': linear_to_len,
+    '__setattr__': constant,
+    '__setitem__': constant,
+    '__str__': linear_to_len,
+    # Comparisons
     '__lt__': comparison_com,
     '__le__': comparison_com,
     '__eq__': comparison_com,
     '__ne__': comparison_com,
     '__gt__': comparison_com,
     '__ge__': comparison_com,
-    'comparison': linear_to_len,
-    '__contains__': linear_to_len,
+    # PyMethodDef
+    'append': constant,
+    'clear': linear_to_len,
     'copy': linear_to_len,
     'count': linear_to_len,
-    'del': list_del_complexity,
-    'extend': list_extend_complexity,
-    '__getitem__': constant,
+    'extend': linear_to_len_sec,
+    'index': linear_to_len,
     'insert': list_insert_complexity,
-    '__iter__': linear_to_len,
-    '__len__': constant,
-    '__mul__': list_mul_complexity,
-    'min': linear_to_len,
-    'max': linear_to_len,
     'pop': list_pop_complexity,
     'remove': linear_to_len,
     'reverse': linear_to_len,
-    'slice': list_slice_complexity,
     'sort': linearithmic_to_len,
-    'setitem': constant,
 }

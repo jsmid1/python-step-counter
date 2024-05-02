@@ -2,41 +2,31 @@ from typing import Any
 
 from ..complexities import (
     ComplexitiesDict,
+    comparison_com,
     constant,
     linear_to_len,
 )
 
 
 memoryview_complexities: ComplexitiesDict = {
-    '__class__': constant,
-    '__delattr__': constant,
-    '__delitem__': constant,
-    '__dir__': constant,
-    '__doc__': constant,
+    # Dunders
     '__enter__': constant,
-    '__eq__': linear_to_len,
     '__exit__': constant,
-    '__format__': constant,
-    '__ge__': linear_to_len,
-    '__getattribute__': constant,
     '__getitem__': constant,
-    '__gt__': linear_to_len,
-    '__init__': constant,
-    '__init_subclass__': constant,
     '__iter__': constant,
-    '__le__': linear_to_len,
     '__len__': constant,
-    '__lt__': linear_to_len,
-    '__ne__': linear_to_len,
-    '__new__': constant,
-    '__reduce__': constant,
-    '__reduce_ex__': constant,
     '__repr__': constant,
     '__setattr__': constant,
     '__setitem__': constant,
-    '__sizeof__': constant,
     '__str__': linear_to_len,
-    '__subclasshook__': constant,
+    # Comparisons
+    '__lt__': comparison_com,
+    '__le__': comparison_com,
+    '__eq__': comparison_com,
+    '__ne__': comparison_com,
+    '__gt__': comparison_com,
+    '__ge__': comparison_com,
+    # PyMethodDef
     'c_contiguous': constant,
     'cast': constant,
     'contiguous': constant,

@@ -3,8 +3,11 @@ from typing import Any
 from ..complexities import (
     ComplexitiesDict,
     constant,
+    hash_complexity_sec,
     linear_to_len,
     comparison_com,
+    linear_to_len_sec,
+    linear_to_len_sum,
 )
 
 
@@ -38,18 +41,30 @@ def set_difference_complexity(args: tuple[Any, ...]) -> int:
 
 
 set_complexities: ComplexitiesDict = {
-    '__len__': constant,
-    '__contains__': constant,
-    '__sub__': linear_to_len,
-    '__or__': set_or_complexity,
-    '__and__': min_len_complexity,
-    '__xor__': set_or_complexity,
+    # Dunders
+    '__and__': linear_to_len_sec,
+    '__class_getitem__': constant,
+    '__contains__': hash_complexity_sec,
+    '__iand__': linear_to_len_sec,
+    '__ior__': linear_to_len_sum,
+    '__isub__': linear_to_len_sec,
     '__iter__': constant,
+    '__ixor__': linear_to_len_sum,
+    '__len__': constant,
+    '__or__': linear_to_len_sum,
+    '__repr__': linear_to_len,
+    '__setattr__': constant,
+    '__str__': linear_to_len,
+    '__sub__': linear_to_len_sec,
+    '__xor__': linear_to_len_sum,
+    # Comparisons
+    '__lt__': comparison_com,
     '__le__': comparison_com,
     '__eq__': comparison_com,
     '__ne__': comparison_com,
     '__gt__': comparison_com,
     '__ge__': comparison_com,
+    # PyMethodDef
     'add': constant,
     'clear': linear_to_len,
     'copy': linear_to_len,

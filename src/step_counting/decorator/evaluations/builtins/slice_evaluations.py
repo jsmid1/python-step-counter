@@ -1,36 +1,30 @@
 from typing import Any
 from ..complexities import (
     ComplexitiesDict,
+    comparison_com,
     constant,
+    linear_to_len,
 )
 
 
+def slice_size_complexity(args: tuple[slice, ...]) -> int:
+    slice_ = args[0]
+
+    return (slice_.stop - slice_.start) // slice_.step
+
+
 slice_complexities: ComplexitiesDict = {
-    '__class__': constant,
-    '__delattr__': constant,
-    '__dir__': constant,
-    '__doc__': constant,
-    '__eq__': constant,
-    '__format__': constant,
-    '__ge__': constant,
-    '__getattribute__': constant,
-    '__gt__': constant,
-    '__hash__': constant,
-    '__init__': constant,
-    '__init_subclass__': constant,
-    '__le__': constant,
-    '__lt__': constant,
-    '__ne__': constant,
-    '__new__': constant,
-    '__reduce__': constant,
-    '__reduce_ex__': constant,
-    '__repr__': constant,
+    # Dunders
+    '__repr__': slice_size_complexity,
     '__setattr__': constant,
-    '__sizeof__': constant,
-    '__str__': constant,
-    '__subclasshook__': constant,
+    '__str__': slice_size_complexity,
+    # Comparisons
+    '__lt__': comparison_com,
+    '__le__': comparison_com,
+    '__eq__': comparison_com,
+    '__ne__': comparison_com,
+    '__gt__': comparison_com,
+    '__ge__': comparison_com,
+    # PyMethodDef
     'indices': constant,
-    'start': constant,
-    'step': constant,
-    'stop': constant,
 }

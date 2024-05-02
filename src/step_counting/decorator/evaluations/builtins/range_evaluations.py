@@ -1,34 +1,32 @@
 from typing import Any
 from ..complexities import (
     ComplexitiesDict,
+    comparison_com,
     constant,
+    linear_to_len,
 )
 
 
 range_complexities: ComplexitiesDict = {
-    '__class__': constant,
+    # Dunders
+    '__bool__': constant,
     '__contains__': constant,
-    '__delattr__': constant,
-    '__dir__': constant,
-    '__doc__': constant,
-    '__eq__': constant,
-    '__format__': constant,
-    '__ge__': constant,
-    '__getattribute__': constant,
-    '__gt__': constant,
+    '__getitem__': constant,
     '__hash__': constant,
-    '__init__': constant,
-    '__init_subclass__': constant,
-    '__le__': constant,
+    '__iter__': constant,
     '__len__': constant,
-    '__lt__': constant,
-    '__ne__': constant,
-    '__new__': constant,
-    '__reduce__': constant,
-    '__reduce_ex__': constant,
-    '__repr__': constant,
+    '__repr__': linear_to_len,
+    '__reversed__': constant,
     '__setattr__': constant,
-    '__sizeof__': constant,
-    '__str__': constant,
-    '__subclasshook__': constant,
+    '__str__': linear_to_len,
+    # Comparison
+    '__lt__': constant,
+    '__le__': constant,
+    '__eq__': constant,
+    '__ne__': constant,
+    '__gt__': constant,
+    '__ge__': constant,
+    # PyMethodDef
+    'count': constant,
+    'index': linear_to_len,
 }

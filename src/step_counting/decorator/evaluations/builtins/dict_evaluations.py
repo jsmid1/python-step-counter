@@ -14,18 +14,28 @@ def dict_update_complexity(args: tuple[dict[Any, Any], dict[Any, Any]]) -> int:
     return len(dict_one) + len(dict_two)
 
 
-# TODO possible problems due to hash collisions...
+dict.__reversed__
 dict_complexities: ComplexitiesDict = {
-    '__contains__': constant,
-    '__len__': constant,
+    # Dunders
+    '__class_getitem__': constant,
+    '__contains__': hash_complexity_sec,
     '__getitem__': hash_complexity_sec,
-    '__iter__': linear_to_len,
+    '__ior__': linear_to_len,
+    '__len__': constant,
+    '__or__': linear_to_len,
+    '__repr__': linear_to_len,
+    '__reversed__': constant,
+    '__setattr__': constant,
     '__setitem__': hash_complexity_sec,
+    '__str__': linear_to_len,
+    # Comparisons
+    '__lt__': comparison_com,
     '__le__': comparison_com,
     '__eq__': comparison_com,
     '__ne__': comparison_com,
     '__gt__': comparison_com,
     '__ge__': comparison_com,
+    # PyMethodDef
     'clear': linear_to_len,
     'copy': linear_to_len,
     'fromkeys': linear_to_len,
