@@ -33,20 +33,20 @@ class TestHttpclientMethods(unittest.TestCase):
 
     @patch('http.client.HTTPConnection.connect')
     def test_connectHTTP(self, mock_connect):
+        self.connectionHTTP.connect()
         with RecodingActivated():
-            self.connectionHTTP.connect()
+            self.connectionHTTP.close()
         self.assertTrue(
-            is_recorded(
-                self.recorder, http.client, http.client.HTTPConnection, 'connect'
-            )
+            is_recorded(self.recorder, http.client, http.client.HTTPConnection, 'close')
         )
 
     @patch('http.client.HTTPSConnection.connect')
     def test_connectHTTPS(self, mock_connect):
+        self.connectionHTTPS.connect()
         with RecodingActivated():
-            self.connectionHTTPS.connect()
+            self.connectionHTTPS.close()
         self.assertTrue(
             is_recorded(
-                self.recorder, http.client, http.client.HTTPSConnection, 'connect'
+                self.recorder, http.client, http.client.HTTPSConnection, 'close'
             )
         )
