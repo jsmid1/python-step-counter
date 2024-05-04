@@ -10,7 +10,7 @@ from ..utils import is_recorded
 import shutil
 
 
-class TestTurtleMethods(unittest.TestCase):
+class TestShutilMethods(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.module = sys.modules[__name__]

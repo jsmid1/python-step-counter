@@ -1,4 +1,3 @@
-import collections
 from importlib.machinery import BuiltinImporter, FrozenImporter
 from types import ModuleType
 from typing import Any, Callable, Hashable, Optional
@@ -11,18 +10,11 @@ ignored_object_methods = {
     '__getattribute__',
     '__init__',
     '__new__',
-    '__delattr__',
+    '__next__',
     '__doc__',
-    '__getnewargs__',
-    '__init_subclass__',
-    '__reduce__',
-    '__reduce_ex__',
-    '__sizeof__',
-    '__subclasshook__',
-    '__delitem__',
+    '__delitem__',  # Performed by the same function as setitem
     '__alloc__',
-    '__setformat__',
-    '__format__',  # Can be removed after fix in restrict.
+    '__format__',  # Can be removed after fix in restrict
 }
 
 comparison_operations = {'__eq__', '__ge__', '__gt__', '__le__', '__lt__', '__ne__'}

@@ -39,6 +39,7 @@ default_types: dict[ModuleType, set[type]] = {
         tuple,
         slice,
         range,
+        enumerate,
         dict_items_type,
         dict_keys_type,
         dict_values_type,
