@@ -25,7 +25,8 @@ class TestIoMethods(unittest.TestCase):
     def tearDown(self):
         self.recorder.clear_data()
 
-    # def test_io_BytesIO(self):
-    #     with recording_activated():
-    #         io.BytesIO(b'test data')
-    #     self.assertTrue(is_recorded(self.recorder, io, None, 'BytesIO'))
+    def test_io_BytesIO_getbuffer(self):
+        bytesio = io.BytesIO(b'test data')
+        with RecodingActivated():
+            bytesio.getbuffer()
+        self.assertTrue(is_recorded(self.recorder, io, io.BytesIO, 'getbuffer'))
