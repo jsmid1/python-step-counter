@@ -9,7 +9,7 @@ from ..utils import is_recorded
 import re
 
 
-class TestTurtleMethods(unittest.TestCase):
+class TestReMethods(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.module = sys.modules[__name__]

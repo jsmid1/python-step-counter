@@ -9,7 +9,7 @@ from ..utils import is_recorded
 import sqlite3
 
 
-class TestTurtleMethods(unittest.TestCase):
+class TestSqlite3Methods(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.module = sys.modules[__name__]

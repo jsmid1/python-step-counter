@@ -10,7 +10,7 @@ from ..utils import is_recorded
 import csv
 
 
-class TestTurtleMethods(unittest.TestCase):
+class TestCsvMethods(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.module = sys.modules[__name__]

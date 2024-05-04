@@ -7,7 +7,7 @@ from src.step_counting.setup_recording import setup_recording, RecodingActivated
 from ..utils import is_recorded
 
 
-class TestTurtleMethods(unittest.TestCase):
+class TestSysMethods(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.module = sys.modules[__name__]

@@ -10,7 +10,7 @@ from ..utils import is_recorded
 import json
 
 
-class TestTurtleMethods(unittest.TestCase):
+class TestJsonMethods(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.module = sys.modules[__name__]

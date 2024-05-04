@@ -8,7 +8,7 @@ from ..utils import is_recorded
 import builtins
 
 
-class TestDictMethods(unittest.TestCase):
+class TestListMethods(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.module = sys.modules[__name__]
