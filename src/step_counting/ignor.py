@@ -43,8 +43,16 @@ ignored_r_methods = {
     '__rxor__',
 }
 
+ignored_win_methods = {
+    '_LCMapStringEx',
+    '_nt_readlink',
+}
+
 ignored_methods = set.union(
-    ignored_object_methods, comparison_operations, ignored_r_methods
+    ignored_object_methods,
+    comparison_operations,
+    ignored_r_methods,
+    ignored_win_methods,
 )
 
 ignored_specifics = {

@@ -141,13 +141,10 @@ def decorate_all_methods_in_module(module: ModuleType, decorator: Decorator) -> 
     None
     """
     for name, obj in inspect.getmembers(module):
-        if inspect.isclass(obj):
-            if is_ignored(obj, None):
-                continue
-
+        if inspect.isclass(obj) and not is_ignored(obj, name):
             decorate_class(module, obj, decorator)
 
-        elif inspect.isroutine(obj):
+        elif inspect.isroutine(obj) and not is_ignored(None, name):
             create_patch(
                 module,
                 None,
