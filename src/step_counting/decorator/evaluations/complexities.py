@@ -11,7 +11,7 @@ def constant(_: tuple[Any, ...]) -> int:
 
 def logarithmic(args: tuple[int]) -> int:
     n = args[0]
-    return int(math.log(n, 2))
+    return int(math.log(abs(n), 2)) if n != 0 else n
 
 
 def linear(args: tuple[Any, ...]) -> int:
