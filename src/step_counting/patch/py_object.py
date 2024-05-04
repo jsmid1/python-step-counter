@@ -1,7 +1,20 @@
-from typing import Any, Optional
-
-import ctypes
+from typing import Optional
 from collections import deque
+
+from ctypes import (
+    c_uint,
+    c_int,
+    c_char_p,
+    c_void_p,
+    c_ulong,
+    c_ubyte,
+    py_object,
+    c_ssize_t,
+    CFUNCTYPE,
+    POINTER,
+    Structure,
+)
+
 
 from ..non_builtin_types import (
     dict_items_type,
@@ -10,80 +23,66 @@ from ..non_builtin_types import (
 )
 
 
-class PyObject(ctypes.Structure):
+class PyObject(Structure):
     pass
 
 
-class PyTypeObject(ctypes.Structure):
+class PyTypeObject(Structure):
     pass
 
 
-# Data types
-c_pyobject_p = ctypes.py_object
-c_uint = ctypes.c_uint
-c_uchar = ctypes.c_ubyte
-c_int = ctypes.c_int
-c_int32 = ctypes.c_int32
-c_int64 = ctypes.c_int64
-c_char_p = ctypes.c_char_p
-c_void_p = ctypes.c_void_p
-c_long = ctypes.c_long
-c_ulong = ctypes.c_ulong
-
-c_ssize_t = c_int64 if ctypes.sizeof(c_void_p) == 8 else c_int32
-
-c_ptr = ctypes.POINTER
-c_functype = ctypes.CFUNCTYPE
-
-
-# Function types
-unary = (c_pyobject_p, c_pyobject_p)
-binary = (c_pyobject_p, c_pyobject_p, c_pyobject_p)
-ternary = (c_pyobject_p, c_pyobject_p, c_pyobject_p, c_pyobject_p)
-len_f = (c_ssize_t, c_pyobject_p)
-index_f = (c_pyobject_p, c_pyobject_p, c_ssize_t)
-iassign_f = (c_int, c_pyobject_p, c_ssize_t, c_pyobject_p)
-init_f = (c_int, c_pyobject_p, c_pyobject_p, c_void_p)
-
-int_ternary = (c_int, c_pyobject_p, c_pyobject_p, c_pyobject_p)
-
-c_int_ternary = c_functype(*int_ternary)
-c_unary = c_functype(*unary)
-c_binary = c_functype(*binary)
-c_ternary = c_functype(*ternary)
-c_len_f = c_functype(*len_f)
-c_index_f = c_functype(*index_f)
-c_iassign_f = c_functype(*iassign_f)
-c_init_f = c_functype(*init_f)
+# Common function types
+unary = (py_object, py_object)
+binary = (py_object, py_object, py_object)
+ternary = (py_object, py_object, py_object, py_object)
+ssize_unary = (c_ssize_t, py_object)
+index_f = (py_object, py_object, c_ssize_t)
+iassign_f = (c_int, py_object, c_ssize_t, py_object)
+init_f = (c_int, py_object, py_object, c_void_p)
+int_ternary = (c_int, py_object, py_object, py_object)
+ssize_ternary = (c_ssize_t, py_object, py_object, py_object)
 
 # Additional types for type object structure
-c_destructor_type = c_functype(None, c_pyobject_p)
-c_tp_richcompare_type = c_functype(c_pyobject_p, c_pyobject_p, c_pyobject_p, c_int)
-c_setattro_type = c_functype(c_ssize_t, c_pyobject_p, c_pyobject_p, c_pyobject_p)
-c_init_type = c_functype(c_ssize_t, c_pyobject_p, c_pyobject_p, c_pyobject_p)
-c_tp_getattr_type = c_functype(c_pyobject_p, c_pyobject_p, c_char_p)
-c_tp_setattr_type = c_functype(c_int, c_pyobject_p, c_char_p, c_pyobject_p)
-c_tp_hash_type = c_functype(c_ssize_t, c_pyobject_p)
-c_tp_clear_type = c_functype(c_ssize_t, c_pyobject_p)
-c_tp_descr_set_type = c_functype(c_ssize_t, c_pyobject_p, c_pyobject_p, c_pyobject_p)
-c_tp_alloc_type = c_functype(c_pyobject_p, c_pyobject_p, c_ssize_t)
-c_tp_vectorcall = c_functype(
-    c_pyobject_p, c_pyobject_p, c_pyobject_p, c_ssize_t, c_pyobject_p
-)
+destructor_type = (c_void_p, py_object)
+tp_richcompare_type = (py_object, py_object, py_object, c_int)
+tp_getattr_type = (py_object, py_object, c_char_p)
+tp_setattr_type = (c_int, py_object, c_char_p, py_object)
+tp_vectorcall = (py_object, py_object, py_object, c_ssize_t, py_object)
+visitproc = (c_ssize_t, py_object, c_void_p)
+tp_traverse_type = (c_ssize_t, py_object, *visitproc, c_void_p)
+tp_new_type = (py_object, PyTypeObject, py_object, py_object)
+sq_contains_type = (c_ssize_t, py_object, py_object)
+nb_mul_type = (py_object, py_object, c_ssize_t)
+bf_getbuffer_type = (c_int, py_object, c_void_p, c_int)
+bf_releasebuffer_type = (c_void_p, py_object, c_void_p)
 
-c_visitproc = c_functype(c_ssize_t, c_pyobject_p, c_void_p)
-c_tp_traverse_type = c_functype(c_ssize_t, c_pyobject_p, c_visitproc, c_void_p)
+# Common function ctypes
+c_int_ternary = CFUNCTYPE(*int_ternary)
+c_unary = CFUNCTYPE(*unary)
+c_binary = CFUNCTYPE(*binary)
+c_ternary = CFUNCTYPE(*ternary)
+c_ssize_unary = CFUNCTYPE(*ssize_unary)
+c_index_f = CFUNCTYPE(*index_f)
+c_iassign_f = CFUNCTYPE(*iassign_f)
+c_init_f = CFUNCTYPE(*init_f)
 
-c_tp_new_type = c_functype(c_pyobject_p, PyTypeObject, c_pyobject_p, c_pyobject_p)
+# Additional ctypes for type object structure
+c_destructor_type = CFUNCTYPE(*destructor_type)
+c_tp_richcompare_type = CFUNCTYPE(*tp_richcompare_type)
+c_ssize_ternary = CFUNCTYPE(*ssize_ternary)
+c_tp_getattr_type = CFUNCTYPE(*tp_getattr_type)
+c_tp_setattr_type = CFUNCTYPE(*tp_setattr_type)
+c_tp_vectorcall = CFUNCTYPE(*tp_vectorcall)
+c_visitproc = CFUNCTYPE(*visitproc)
+c_tp_traverse_type = CFUNCTYPE(*tp_traverse_type)
+c_tp_new_type = CFUNCTYPE(*tp_new_type)
+c_sq_contains_type = CFUNCTYPE(*sq_contains_type)
+c_nb_mul_type = CFUNCTYPE(*nb_mul_type)
+c_bf_getbuffer_type = CFUNCTYPE(*bf_getbuffer_type)
+c_bf_releasebuffer_type = CFUNCTYPE(*bf_releasebuffer_type)
 
-# Additional types for tp_as_number structure
-c_nb_bool_type = c_functype(c_ssize_t, c_pyobject_p)
 
-# Additional types for tp_as_sequence structure
-c_sq_contains_type = c_functype(c_ssize_t, c_pyobject_p, c_pyobject_p)
-
-
-class PyNumberMethods(ctypes.Structure):
+class PyNumberMethods(Structure):
     _fields_ = [
         ('nb_add', c_binary),
         ('nb_subtract', c_binary),
@@ -94,7 +93,7 @@ class PyNumberMethods(ctypes.Structure):
         ('nb_negative', c_unary),
         ('nb_positive', c_unary),
         ('nb_absolute', c_unary),
-        ('nb_bool', c_nb_bool_type),
+        ('nb_bool', c_ssize_unary),
         ('nb_invert', c_unary),
         ('nb_lshift', c_binary),
         ('nb_rshift', c_binary),
@@ -122,9 +121,9 @@ class PyNumberMethods(ctypes.Structure):
     ]
 
 
-class PySequenceMethods(ctypes.Structure):
+class PySequenceMethods(Structure):
     _fields_ = [
-        ('sq_length', c_len_f),
+        ('sq_length', c_ssize_unary),
         ('sq_concat', c_binary),
         ('sq_repeat', c_index_f),
         ('sq_item', c_index_f),
@@ -137,33 +136,30 @@ class PySequenceMethods(ctypes.Structure):
     ]
 
 
-class PyMappingMethods(ctypes.Structure):
+class PyMappingMethods(Structure):
     _fields_ = [
-        ('mp_length', c_len_f),
+        ('mp_length', c_ssize_unary),
         ('mp_subscript', c_binary),
         ('mp_ass_subscript', c_int_ternary),
     ]
 
 
-class PyAsyncMethods(ctypes.Structure):
+class PyAsyncMethods(Structure):
     _fields_ = [
         ('am_await', c_unary),
         ('am_aiter', c_unary),
         ('am_anext', c_unary),
-        # ('am_send', c_unary), # TODO: typedef PySendResult (*sendfunc)(PyObject *iter, PyObject *value, PyObject **result);
+        (
+            'am_send',
+            c_binary,
+        ),
     ]
 
 
-class PyBufferProcs(ctypes.Structure):
+class PyBufferProcs(Structure):
     _fields_ = [
-        (
-            'bf_getbuffer',
-            c_unary,
-        ),  # TODO: typedef int (*getbufferproc)(PyObject *, Py_buffer *, int);
-        (
-            'bf_releasebuffer',
-            c_unary,
-        ),  # TODO: typedef void (*releasebufferproc)(PyObject *, Py_buffer *); use ctypes.cbuffer
+        ('bf_getbuffer', c_bf_getbuffer_type),
+        ('bf_releasebuffer', c_bf_releasebuffer_type),
     ]
 
 
@@ -175,8 +171,7 @@ py_type_object_structs = {
     'tp_as_buffer': PyBufferProcs,
 }
 
-method_mapping = {
-    '__del__': ('tp_dealloc', None, (None, c_pyobject_p)),
+METHOD_MAPPING: dict[str, tuple[str, Optional[str], tuple[type, ...]]] = {
     '__repr__': ('tp_repr', None, unary),
     '__call__': ('tp_call', None, unary),
     '__str__': ('tp_str', None, unary),
@@ -184,31 +179,31 @@ method_mapping = {
     '__setattr__': (
         'tp_setattro',
         None,
-        (c_ssize_t, c_pyobject_p, c_pyobject_p, c_pyobject_p),
+        ssize_ternary,
     ),
     '__init__': (
         'tp_init',
         None,
-        (c_ssize_t, c_pyobject_p, c_pyobject_p, c_pyobject_p),
+        ssize_ternary,
     ),
     '__new__': (
         'tp_new',
         None,
-        (c_pyobject_p, PyTypeObject, c_pyobject_p, c_pyobject_p),
+        tp_new_type,
     ),
     '__iter__': ('tp_iter', None, unary),
     '__next__': ('tp_iternext', None, unary),
     'comparison': (
         'tp_richcompare',
         None,
-        (c_pyobject_p, c_pyobject_p, c_pyobject_p, c_int),
+        tp_richcompare_type,
     ),
-    '__hash__': ('tp_hash', None, (c_ssize_t, c_pyobject_p)),
-    '__del__': ('tp_finalize', None, (c_void_p, c_pyobject_p)),
+    '__hash__': ('tp_hash', None, ssize_unary),
+    '__del__': ('tp_finalize', None, destructor_type),
     # Asynchronous execution methods mappings
-    '__await__': ('tp_as_async', 'am_await', None),
-    '__aiter__': ('tp_as_async', 'am_aiter', None),
-    '__anext__': ('tp_as_async', 'am_anext', None),
+    '__await__': ('tp_as_async', 'am_await', unary),
+    '__aiter__': ('tp_as_async', 'am_aiter', unary),
+    '__anext__': ('tp_as_async', 'am_anext', unary),
     # Numeric operations mappings
     '__sub__': ('tp_as_number', 'nb_subtract', binary),
     '__mod__': ('tp_as_number', 'nb_remainder', binary),
@@ -217,7 +212,7 @@ method_mapping = {
     '__neg__': ('tp_as_number', 'nb_negative', unary),
     '__pos__': ('tp_as_number', 'nb_positive', unary),
     '__abs__': ('tp_as_number', 'nb_absolute', unary),
-    '__bool__': ('tp_as_number', 'nb_bool', (c_ssize_t, c_pyobject_p)),
+    '__bool__': ('tp_as_number', 'nb_bool', ssize_unary),
     '__invert__': ('tp_as_number', 'nb_invert', unary),
     '__lshift__': ('tp_as_number', 'nb_lshift', binary),
     '__rshift__': ('tp_as_number', 'nb_rshift', binary),
@@ -229,7 +224,6 @@ method_mapping = {
     '__float__': ('tp_as_number', 'nb_float', unary),
     '__iadd__': ('tp_as_number', 'nb_inplace_add', binary),
     '__isub__': ('tp_as_number', 'nb_inplace_subtract', binary),
-    '__imul__': ('tp_as_number', 'nb_inplace_multiply', binary),
     '__imod__': ('tp_as_number', 'nb_inplace_remainder', binary),
     '__ipow__': ('tp_as_number', 'nb_inplace_power', ternary),
     '__ilshift__': ('tp_as_number', 'nb_inplace_lshift', binary),
@@ -246,24 +240,18 @@ method_mapping = {
     '__contains__': (
         'tp_as_sequence',
         'sq_contains',
-        (c_ssize_t, c_pyobject_p, c_pyobject_p),
+        sq_contains_type,
     ),
     '__rmul__': (
         'tp_as_sequence',
         'sq_repeat',
-        (c_pyobject_p, c_pyobject_p, c_ssize_t),
+        index_f,
     ),
-    # Same as __mul__ for sequence types
     '__iadd__': ('tp_as_sequence', 'sq_inplace_concat', binary),
     '__imul__': (
         'tp_as_sequence',
         'sq_inplace_repeat',
-        (c_pyobject_p, c_pyobject_p, c_ssize_t),
-    ),
-    '__delslice__': (
-        'tp_as_sequence',
-        'sq_ass_slice',
-        'ssizessizeobjargproc',
+        index_f,
     ),
 }
 
@@ -285,7 +273,7 @@ sequence_classes = {
 
 def get_function_mapping(
     class_: type, method_name: str
-) -> Optional[tuple[str, Optional[str], Any]]:
+) -> Optional[tuple[str, Optional[str], tuple[type, ...]]]:
     """
     Return information about method which represents given method
     internally.
@@ -316,20 +304,20 @@ def get_function_mapping(
             return (
                 'tp_as_sequence',
                 'sq_repeat',
-                (c_pyobject_p, c_pyobject_p, c_ssize_t),
+                index_f,
             )
 
         case '__len__':
             if class_ in sequence_classes:
-                return ('tp_as_sequence', 'sq_length', (c_ssize_t, c_pyobject_p))
-            return ('tp_as_mapping', 'mp_length', (c_ssize_t, c_pyobject_p))
+                return ('tp_as_sequence', 'sq_length', ssize_unary)
+            return ('tp_as_mapping', 'mp_length', ssize_unary)
 
         case '__getitem__':
             if class_ in [deque]:
                 return (
                     'tp_as_sequence',
                     'sq_item',
-                    (c_pyobject_p, c_pyobject_p, c_ssize_t),
+                    index_f,
                 )
             return ('tp_as_mapping', 'mp_subscript', binary)
 
@@ -347,15 +335,14 @@ def get_function_mapping(
             )
 
         case _:
-            return method_mapping.get(method_name, None)
+            return METHOD_MAPPING.get(method_name, None)
 
 
 PyObject._fields_ = [
     ('ob_refcnt', c_ssize_t),
-    ('ob_type', c_ptr(PyTypeObject)),
+    ('ob_type', POINTER(PyTypeObject)),
 ]
 
-# TODO declare types
 PyTypeObject._fields_ = [
     # varhead
     ('ob_base', PyObject),
@@ -368,46 +355,46 @@ PyTypeObject._fields_ = [
     ('tp_vectorcall_offset', c_ssize_t),
     ('tp_getattr', c_tp_getattr_type),
     ('tp_setattr', c_tp_setattr_type),
-    ('tp_as_async', c_ptr(PyAsyncMethods)),
+    ('tp_as_async', POINTER(PyAsyncMethods)),
     ('tp_repr', c_unary),
-    ('tp_as_number', c_ptr(PyNumberMethods)),
-    ('tp_as_sequence', c_ptr(PySequenceMethods)),
-    ('tp_as_mapping', c_ptr(PyMappingMethods)),
-    ('tp_hash', c_tp_hash_type),
+    ('tp_as_number', POINTER(PyNumberMethods)),
+    ('tp_as_sequence', POINTER(PySequenceMethods)),
+    ('tp_as_mapping', POINTER(PyMappingMethods)),
+    ('tp_hash', c_ssize_unary),
     ('tp_call', c_ternary),
     ('tp_str', c_unary),
     ('tp_getattro', c_binary),
-    ('tp_setattro', c_setattro_type),
-    ('tp_as_buffer', c_ptr(PyBufferProcs)),
+    ('tp_setattro', c_ssize_ternary),
+    ('tp_as_buffer', POINTER(PyBufferProcs)),
     ('tp_flags', c_ulong),
     ('tp_doc', c_char_p),
     ('tp_traverse', c_tp_traverse_type),
-    ('tp_clear', c_tp_clear_type),
+    ('tp_clear', c_ssize_unary),
     ('tp_richcompare', c_tp_richcompare_type),
     ('tp_weaklistoffset', c_ssize_t),
     ('tp_iter', c_unary),
     ('tp_iternext', c_unary),
-    ('tp_methods', c_void_p),  # Type not declared yet
-    ('tp_members', c_void_p),  # Type not declared yet
-    ('tp_getset', c_void_p),  # Type not declared yet
-    ('tp_base', c_void_p),  # Type not declared yet
-    ('tp_dict', c_pyobject_p),
+    ('tp_methods', c_void_p),
+    ('tp_members', c_void_p),
+    ('tp_getset', c_void_p),
+    ('tp_base', c_void_p),
+    ('tp_dict', py_object),
     ('tp_descr_get', c_ternary),
-    ('tp_descr_set', c_tp_descr_set_type),
+    ('tp_descr_set', c_ssize_ternary),
     ('tp_dictoffset', c_ssize_t),
-    ('tp_init', c_init_type),
-    ('tp_alloc', c_tp_alloc_type),
+    ('tp_init', c_ssize_ternary),
+    ('tp_alloc', c_index_f),
     ('tp_new', c_tp_new_type),
     ('tp_free', c_destructor_type),
     ('tp_is_gc', c_destructor_type),
-    ('tp_bases', c_pyobject_p),
-    ('tp_mro', c_pyobject_p),
-    ('tp_cache', c_pyobject_p),
-    ('tp_subclasses', c_pyobject_p),
-    ('tp_weaklist', c_pyobject_p),
+    ('tp_bases', py_object),
+    ('tp_mro', py_object),
+    ('tp_cache', py_object),
+    ('tp_subclasses', py_object),
+    ('tp_weaklist', py_object),
     ('tp_del', c_destructor_type),
     ('tp_version_tag', c_uint),
     ('tp_finalize', c_destructor_type),
     ('tp_vectorcall', c_tp_vectorcall),
-    ('tp_watched', c_uchar),
+    ('tp_watched', c_ubyte),
 ]
