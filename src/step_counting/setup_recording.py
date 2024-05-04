@@ -237,7 +237,7 @@ def patch_imported_methods(
 def setup_recording(
     module: ModuleType,
     mode: str,
-    ignored_modules: set[ModuleType],
+    ignored_modules: set[str],
 ) -> tuple[Recorder, set[ModuleType]]:
     """
     Performs complete setup of all imported modules, callables.
@@ -256,8 +256,7 @@ def setup_recording(
     set: set of modules that will be accounted for in the recording
     """
     setup_modules, _ = get_def_ignored_modules()
-    ignored_modules.update(setup_modules)
-    module_imports, imported_callables = get_module_imports(module, ignored_modules)
+    module_imports, imported_callables = get_module_imports(module, setup_modules)
 
     user_defined_modules = {
         import_ for import_ in module_imports if is_user_defined_module(import_)
@@ -273,7 +272,9 @@ def setup_recording(
 
     # Filter out ignored modules
     user_defined_modules = {
-        module for module in user_defined_modules if module not in ignored_modules
+        module
+        for module in user_defined_modules
+        if module.__name__ not in ignored_modules
     }
 
     recorder: Recorder

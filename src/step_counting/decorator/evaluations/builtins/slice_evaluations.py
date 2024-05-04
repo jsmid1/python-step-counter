@@ -3,14 +3,16 @@ from ..complexities import (
     ComplexitiesDict,
     comparison_com,
     constant,
-    linear_to_len,
 )
 
 
 def slice_size_complexity(args: tuple[slice, ...]) -> int:
     slice_ = args[0]
+    start = slice_.start if slice_.start is not None else 0
+    stop = slice_.stop if slice_.stop is not None else 0
+    step = slice_.step if slice_.step is not None else 1
 
-    return (slice_.stop - slice_.start) // slice_.step
+    return int((stop - start) // step)
 
 
 slice_complexities: ComplexitiesDict = {

@@ -29,7 +29,7 @@ def quadratic(args: tuple[Any, ...]) -> int:
     return 5
 
 
-def linear_to_bit_len(args: tuple[Any, ...]) -> int:
+def linear_to_bit_len(args: tuple[int, ...]) -> int:
     n = args[0]
     return n.bit_count()
 
