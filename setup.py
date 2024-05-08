@@ -9,11 +9,6 @@ patch_modules = [
         extra_compile_args=['-g', '-O0'],
     ),
     Extension(
-        'src.step_counting.patch.bin.patchint',
-        sources=['./src/step_counting/patch/c_modules/customint.c'],
-        extra_compile_args=['-g', '-O0'],
-    ),
-    Extension(
         'src.step_counting.patch.bin.patchtuple',
         sources=['./src/step_counting/patch/c_modules/customtuple.c'],
         extra_compile_args=['-g', '-O0'],
