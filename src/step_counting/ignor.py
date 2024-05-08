@@ -1,8 +1,5 @@
 from importlib.machinery import BuiltinImporter, FrozenImporter
-from types import ModuleType
-from typing import Any, Callable, Hashable, Optional
-from .utils.module import get_module_imports, is_user_defined_module
-from . import setup_recording
+from typing import Hashable, Optional
 
 ignored_object_methods = {
     '__class__',
@@ -55,6 +52,18 @@ ignored_classes = {BuiltinImporter, FrozenImporter}
 
 
 def is_ignored(class_: Optional[type], method_name: Optional[str]) -> bool:
+    """
+    Checks if either class_, method_name or their combination are ignored.
+
+    Parameters
+    ----------
+    class_ (Optional[type]): class
+    method_name (str): name of the method
+
+    Returns
+    -------
+    bool: Infromation if the class_ or method are ignored.
+    """
     return (
         (
             class_
@@ -67,12 +76,3 @@ def is_ignored(class_: Optional[type], method_name: Optional[str]) -> bool:
         or method_name in ignored_methods
         or (class_, method_name) in ignored_specifics
     )
-
-
-def get_def_ignored_modules() -> tuple[set[ModuleType], set[Callable[..., Any]]]:
-    setup_modules, setup_callables = get_module_imports(setup_recording, set())
-    setup_modules = {
-        module for module in setup_modules if is_user_defined_module(module)
-    }
-
-    return setup_modules, setup_callables

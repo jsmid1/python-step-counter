@@ -32,7 +32,7 @@ def main() -> None:
     insert_module_to_path(input_file)
 
     eval_module: ModuleType = import_from_path(input_file)
-    recorder, tracked_modules = setup_recording(eval_module, mode, {'ib111'})
+    recorder, tracked_modules = setup_recording(eval_module, mode, set())
 
     with RecodingActivated():
         eval_module.main()

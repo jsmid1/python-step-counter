@@ -2,9 +2,9 @@ import builtins
 import inspect
 import traceback
 from types import ModuleType
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Optional
 
-from .parser.parser import MODE_DEFAULT, MODE_SEQUENCE, MODE_DETAIL
+from .parser.parser import MODE_SEQUENCE, MODE_DETAIL
 from .decorator.records.record_classes import Recorder
 from .ib111_restrictions import default_types, builtin_methods, ib111_imports
 from .decorator.decorators import (
@@ -14,7 +14,7 @@ from .decorator.decorators import (
     create_decorator_sequence,
 )
 
-from .ignor import ignored_methods, is_ignored
+from .ignor import is_ignored
 from .patch.patch_imports import import_decorator
 from .utils.methods import is_py_method_def
 from .patch.patching import (
@@ -28,12 +28,6 @@ from .utils.module import (
     get_module_by_name,
 )
 from .utils.methods import get_c_method
-
-from .ignor import (
-    get_def_ignored_modules,
-    ignored_specifics,
-    ignored_classes,
-)
 
 
 def decorate_builtins(decorator: Decorator) -> None:
@@ -237,7 +231,7 @@ def patch_imported_methods(
 def setup_recording(
     module: ModuleType,
     mode: str,
-    ignored_modules: set[str],
+    ignored_modules: set[ModuleType],
 ) -> tuple[Recorder, set[ModuleType]]:
     """
     Performs complete setup of all imported modules, callables.
@@ -255,8 +249,7 @@ def setup_recording(
     Recorder: simple/sequence/detailed recorder
     set: set of modules that will be accounted for in the recording
     """
-    setup_modules, _ = get_def_ignored_modules()
-    module_imports, imported_callables = get_module_imports(module, setup_modules)
+    module_imports, imported_callables = get_module_imports(module, ignored_modules)
 
     user_defined_modules = {
         import_ for import_ in module_imports if is_user_defined_module(import_)
@@ -269,13 +262,6 @@ def setup_recording(
             user_defined_callables.add(call)
             user_defined_modules.add(call_module)
     user_defined_modules.add(module)
-
-    # Filter out ignored modules
-    user_defined_modules = {
-        module
-        for module in user_defined_modules
-        if module.__name__ not in ignored_modules
-    }
 
     recorder: Recorder
     if mode == MODE_SEQUENCE:

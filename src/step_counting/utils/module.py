@@ -97,20 +97,19 @@ def get_module_imports(
     set: all modules imported by given module
     set: all callables imported by given module
     """
-    if module in ignored_modules:
-        return set(), set()
-
     imported_modules = set()
     imported_functions = set()
-    for _, obj in vars(module).items():
+    for name, obj in vars(module).items():
         if isinstance(obj, ModuleType):
-            imported_modules.add(obj)
+            if obj not in ignored_modules:
+                imported_modules.add(obj)
         elif (
             callable(obj)
             and hasattr(obj, '__module__')
             and obj.__module__ != module.__name__
         ):
-            imported_functions.add(obj)
+            if get_module_by_name(obj.__module__) not in ignored_modules:
+                imported_functions.add(obj)
 
     subimports = set()
     for module in imported_modules:
