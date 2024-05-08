@@ -37,7 +37,7 @@ deque_complexities: ComplexitiesDict = {
     # PyMethodDef
     'append': constant,
     'appendleft': constant,
-    'clear': linear_to_len,
+    'clear': constant,
     'copy': linear_to_len,
     'count': linear_to_len,
     'extend': linear_to_len,

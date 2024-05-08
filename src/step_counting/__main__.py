@@ -32,6 +32,11 @@ def main() -> None:
     insert_module_to_path(input_file)
 
     eval_module: ModuleType = import_from_path(input_file)
+    if not hasattr(eval_module, 'main'):
+        raise AttributeError(
+            f'Given module with path: {input_file} does not contain a main function!'
+        )
+
     recorder, tracked_modules = setup_recording(eval_module, mode, set())
 
     with RecodingActivated():
