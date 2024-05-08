@@ -2,7 +2,6 @@ from types import ModuleType
 from typing import Any, Callable, Optional, TypeAlias, Union
 
 from ..utils import determine_method_info
-from step_counting.utils.module import get_module_by_name
 from ..evaluations.evaluations import evaluate_record
 
 from ...original_methods import dict_get, list_append

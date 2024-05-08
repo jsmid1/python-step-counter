@@ -11,33 +11,21 @@ from ..complexities import (
 )
 
 
-def set_or_complexity(args: tuple[Any, ...]) -> int:
-    sequence_one = args[0]
-    sequence_two = args[1]
-
-    return len(sequence_one) + len(sequence_two)
-
-
 def min_len_complexity(args: tuple[Any, ...]) -> int:
+    """
+    Returns min of two lenghts.
+
+    Parameters
+    ----------
+    args: function arguments
+
+    Returns
+    -------
+    int: min of two lenghts
+    """
     set_one = args[0]
     set_two = args[1]
     return min(len(set_one), len(set_two))
-
-
-def sum_len_complexity(args: tuple[Any, ...]) -> int:
-    set_one = args[0]
-    set_two = args[1]
-    return len(set_one) + len(set_two)
-
-
-def sum_len_list_complexity(args: tuple[Any, ...]) -> int:
-    set_list = args[0]
-    return sum(len(set_) for set_ in set_list)
-
-
-def set_difference_complexity(args: tuple[Any, ...]) -> int:
-    set_list = args
-    return sum(len(set_) for set_ in set_list)
 
 
 set_complexities: ComplexitiesDict = {
@@ -68,8 +56,8 @@ set_complexities: ComplexitiesDict = {
     'add': constant,
     'clear': linear_to_len,
     'copy': linear_to_len,
-    'difference': set_difference_complexity,
-    'difference_update': set_difference_complexity,
+    'difference': linear_to_len_sum,
+    'difference_update': linear_to_len_sum,
     'discard': constant,
     'intersection': min_len_complexity,
     'intersection_update': min_len_complexity,
@@ -78,8 +66,8 @@ set_complexities: ComplexitiesDict = {
     'issuperset': min_len_complexity,
     'pop': constant,
     'remove': constant,
-    'symmetric_difference': sum_len_complexity,
-    'symmetric_difference_update': sum_len_complexity,
-    'union': sum_len_complexity,
-    'update': sum_len_complexity,
+    'symmetric_difference': linear_to_len_sum,
+    'symmetric_difference_update': linear_to_len_sum,
+    'union': linear_to_len_sum,
+    'update': linear_to_len_sum,
 }

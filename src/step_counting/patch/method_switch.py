@@ -2,6 +2,17 @@ from typing import Any, Callable
 
 
 def is_method(method: Callable[..., Any]) -> bool:
+    """
+    Checks if given object is a method.
+
+    Parameters
+    ----------
+    method(Function): method
+
+    Returns
+    -------
+    bool: information if given object is a method
+    """
     return callable(method) or type(method) in {classmethod, staticmethod}
 
 
@@ -30,7 +41,7 @@ class MethodSwitch:
         None
         """
         if not is_method(repl_method):
-            raise Exception('Given replacement function is not callable')
+            raise TypeError('Given replacement function is not callable')
 
         self.overwrite = overwrite
         self.__original_method = orig_method
@@ -66,7 +77,7 @@ class MethodSwitch:
         None
         """
         if not is_method(repl_method):
-            raise Exception('Given replacement function is not callable')
+            raise TypeError('Given replacement function is not callable')
         self.__replacement_method = repl_method
 
     def get_original_method(self: 'MethodSwitch') -> Callable[..., Any]:

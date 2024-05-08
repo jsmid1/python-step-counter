@@ -1,7 +1,7 @@
 from importlib.machinery import BuiltinImporter, FrozenImporter
 from typing import Hashable, Optional
 
-ignored_object_methods = {
+IGNORED_OBJECT_METHODS = {
     '__class__',
     '__dir__',
     '__getattribute__',
@@ -14,9 +14,9 @@ ignored_object_methods = {
     '__format__',  # Can be removed after fix in restrict
 }
 
-comparison_operations = {'__eq__', '__ge__', '__gt__', '__le__', '__lt__', '__ne__'}
+COMPARISON_METHODS = {'__eq__', '__ge__', '__gt__', '__le__', '__lt__', '__ne__'}
 
-ignored_r_methods = {
+IGNORED_R_METHODS = {
     '__radd__',
     '__rand__',
     '__rdivmod__',
@@ -32,23 +32,23 @@ ignored_r_methods = {
     '__rxor__',
 }
 
-ignored_win_methods = {
+IGNORED_WIN_METHODS = {
     '_LCMapStringEx',
     '_nt_readlink',
 }
 
-ignored_methods = set.union(
-    ignored_object_methods,
-    comparison_operations,
-    ignored_r_methods,
-    ignored_win_methods,
+IGNORED_R_METHODS = set.union(
+    IGNORED_OBJECT_METHODS,
+    COMPARISON_METHODS,
+    IGNORED_R_METHODS,
+    IGNORED_WIN_METHODS,
 )
 
-ignored_specifics = {
+IGNORED_SPECIFICS = {
     (dict, '__iter__'),
 }
 
-ignored_classes = {BuiltinImporter, FrozenImporter}
+IGNORED_CLASSES = {BuiltinImporter, FrozenImporter}
 
 
 def is_ignored(class_: Optional[type], method_name: Optional[str]) -> bool:
@@ -68,11 +68,11 @@ def is_ignored(class_: Optional[type], method_name: Optional[str]) -> bool:
         (
             class_
             and (
-                class_ in ignored_classes
+                class_ in IGNORED_CLASSES
                 or not issubclass(class_, Hashable)
                 and method_name == '__hash__'
             )
         )
-        or method_name in ignored_methods
-        or (class_, method_name) in ignored_specifics
+        or method_name in IGNORED_R_METHODS
+        or (class_, method_name) in IGNORED_SPECIFICS
     )

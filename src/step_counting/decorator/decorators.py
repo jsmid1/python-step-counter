@@ -1,4 +1,4 @@
-from types import FunctionType, ModuleType
+from types import ModuleType
 import functools
 from typing import Any, Callable, Optional, TypeAlias
 
@@ -143,9 +143,6 @@ def create_decorator_sequence(
         return wrapper
 
     return decorator, recorder
-
-
-from ..utils.module import get_module_by_name
 
 
 def create_decorator_detail(

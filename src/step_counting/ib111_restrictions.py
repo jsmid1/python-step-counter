@@ -12,13 +12,8 @@ from .non_builtin_types import (
 
 builtin_methods: list[str] = [
     'print',
-    'AssertionError',
-    #'AttributeError',
-    #'hasattr',
     'sum',
     'enumerate',
-    '__build_class__',
-    # 'isinstance',
     'open',
 ]
 

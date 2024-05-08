@@ -1,6 +1,6 @@
 import sys
 from types import BuiltinFunctionType, FunctionType, MethodType, ModuleType
-from typing import Any, Callable, Optional, Tuple, Union
+from typing import Any, Callable, Optional, Tuple
 
 from ..utils.module import get_module_by_name
 

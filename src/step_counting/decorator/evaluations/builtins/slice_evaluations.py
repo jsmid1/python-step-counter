@@ -1,4 +1,3 @@
-from typing import Any
 from ..complexities import (
     ComplexitiesDict,
     comparison_com,
@@ -7,6 +6,17 @@ from ..complexities import (
 
 
 def slice_size_complexity(args: tuple[slice, ...]) -> int:
+    """
+    Returns complexity of slicing.
+
+    Parameters
+    ----------
+    args: function arguments
+
+    Returns
+    -------
+    int: complexity of slicing
+    """
     slice_ = args[0]
     start = slice_.start if slice_.start is not None else 0
     stop = slice_.stop if slice_.stop is not None else 0

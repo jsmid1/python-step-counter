@@ -7,7 +7,7 @@ from typing import Any, Callable, Optional
 from ..utils.module import is_user_defined_module
 from . import py_object as pyo
 from ..non_builtin_types import non_builtin_types
-from .bin import patchdictionary, patchint, patchtuple, patchstr, patchlist, patchbytearray  # type: ignore
+from .bin import patchdictionary, patchtuple, patchstr, patchlist, patchbytearray  # type: ignore
 from .method_switch import MethodSwitch
 from ..utils.methods import get_c_method, get_class_methods
 from ..utils.module import is_std_module
@@ -118,7 +118,7 @@ def patch_py_object_method(
 
     method_info = pyo.get_function_mapping(class_, method_name)
     if method_info is None:
-        raise Exception(
+        raise AttributeError(
             f'Function {method_name} is not defined in builtins in {class_}!'
         )
 
@@ -217,8 +217,8 @@ def patch_py_std_class_method(
 
     try:
         dikt[method_name] = replacement_method
-    except Exception:
-        raise Exception(f"Unknown method {method_name} of class {class_.__name__}")
+    except KeyError:
+        raise AttributeError(f"Unknown method {method_name} of class {class_.__name__}")
 
     ctypes.pythonapi.PyType_Modified(ctypes.py_object(class_))
 
@@ -248,7 +248,7 @@ def patch_user_defined_method(
         setattr(module, method_name, replacement_method)
     else:
         if method_name not in get_class_methods(class_):
-            raise Exception(
+            raise AttributeError(
                 f'Class {class_.__name__} in module {module.__name__} does not contain method {method_name}!'
             )
         setattr(class_, method_name, replacement_method)
@@ -315,7 +315,7 @@ def create_patch(
                 class_to_patch = getattr(module, class_)
 
             if class_to_patch is None:
-                raise Exception(f'Given class: {class_} is not defined in builtins!')
+                raise ValueError(f'Given class: {class_} is not defined in builtins!')
 
             if (
                 module.__name__ in {'builtins', 'collections'}
@@ -338,7 +338,7 @@ def create_patch(
         patching_method = patch_user_defined_method
 
     else:
-        raise Exception(
+        raise AttributeError(
             f'Unknown method {method_name} of class {class_} in module {module.__name__}'
         )
 
@@ -374,7 +374,7 @@ def apply_one(module: ModuleType, class_: Optional[type], method_name: str) -> N
     """
     ms = method_switches.get((module, class_, method_name))
     if ms is None:
-        raise Exception(
+        raise ValueError(
             f'{module.__name__}, {class_}, {method_name} is not a valid patch'
         )
     assert ms
@@ -399,7 +399,7 @@ def revert_one(module: ModuleType, class_: Optional[type], method_name: str) -> 
     """
     ms = method_switches.get((module, class_, method_name))
     if ms is None:
-        raise Exception(
+        raise ValueError(
             f'{module.__name__}, {class_}, {method_name} is not a valid patch'
         )
     assert ms

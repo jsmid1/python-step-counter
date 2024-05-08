@@ -1,6 +1,6 @@
 import os
 from types import ModuleType
-from typing import Any, Optional, Union
+from typing import Any
 
 from ..parser.parser import MODE_DETAIL, MODE_SEQUENCE
 

@@ -25,8 +25,8 @@ def get_module_by_name(module_name: str) -> ModuleType:
     """
     try:
         return sys.modules[module_name]
-    except:
-        raise Exception(f'Unkown module: {module_name}')
+    except KeyError:
+        raise ImportError(f'Unkown module: {module_name}')
 
 
 def is_std_module(module: ModuleType) -> bool:
@@ -99,7 +99,7 @@ def get_module_imports(
     """
     imported_modules = set()
     imported_functions = set()
-    for name, obj in vars(module).items():
+    for _, obj in vars(module).items():
         if isinstance(obj, ModuleType):
             if obj not in ignored_modules:
                 imported_modules.add(obj)
@@ -144,8 +144,8 @@ def import_from_path(file_path: str) -> ModuleType:
         sys.modules[module_name] = module
         spec.loader.exec_module(module)
         return module
-    else:
-        raise ImportError(f'Could not load module from path: {file_path}')
+
+    raise ImportError(f'Could not load module from path: {file_path}')
 
 
 def insert_module_to_path(input_file: str) -> None:

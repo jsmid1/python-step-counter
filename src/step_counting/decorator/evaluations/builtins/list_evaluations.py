@@ -13,12 +13,34 @@ from ..complexities import (
 
 
 def list_insert_complexity(args: tuple[list[Any], int]) -> int:
+    """
+    Returns complexity of list insert.
+
+    Parameters
+    ----------
+    args: function arguments
+
+    Returns
+    -------
+    int: complexity of list insert
+    """
     list_ = args[0]
     index = args[1]
     return len(list_) - index + 1
 
 
 def list_pop_complexity(args: tuple[list[Any], int]) -> int:
+    """
+    Returns complexity of list pop.
+
+    Parameters
+    ----------
+    args: function arguments
+
+    Returns
+    -------
+    int: complexity of list pop
+    """
     # In this case, pop is used without a second argument
     # therefore we are popping from the end of the list
     # making the time complexity constant.
@@ -31,6 +53,17 @@ def list_pop_complexity(args: tuple[list[Any], int]) -> int:
 
 
 def list_getitem_complexity(args: tuple[list[Any], int]) -> int:
+    """
+    Returns complexity of list getitem.
+
+    Parameters
+    ----------
+    args: function arguments
+
+    Returns
+    -------
+    int: complexity of list getitem
+    """
     elem = args[1]
     if isinstance(elem, slice):
         return (elem.stop - elem.start) // elem.step

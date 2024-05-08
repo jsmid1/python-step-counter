@@ -2,7 +2,7 @@ from types import ModuleType
 
 from .setup_recording import setup_recording, RecodingActivated
 from .profiler.profiler import output_profile
-from .parser.parser import setup_parser, MODE_DEFAULT, MODE_SEQUENCE, MODE_DETAIL
+from .parser.parser import setup_parser
 from .utils.module import import_from_path, insert_module_to_path
 
 

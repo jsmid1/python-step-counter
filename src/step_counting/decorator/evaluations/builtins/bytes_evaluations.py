@@ -1,4 +1,3 @@
-from typing import Any
 from ..complexities import (
     ComplexitiesDict,
     comparison_com,
@@ -8,12 +7,6 @@ from ..complexities import (
     sequence_mul_complexity,
     sequence_join_complexity,
 )
-
-
-def bytes_add_complexity(args: tuple[Any, ...]) -> int:
-    list_one = args[0]
-    list_two = args[1]
-    return len(list_one) + len(list_two)
 
 
 bytes_complexities: ComplexitiesDict = {

@@ -1,7 +1,5 @@
-from typing import Any
 from ..complexities import (
     ComplexitiesDict,
-    comparison_com,
     constant,
     linear_to_len,
 )

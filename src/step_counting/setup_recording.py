@@ -66,26 +66,26 @@ def decorate_defaults(decorator: Decorator) -> None:
     """
     for module, classes in default_types.items():
         for class_ in classes:
-            for n in dir(class_) + ['comparison']:
-                if is_ignored(class_, n):
+            for name in dir(class_) + ['comparison']:
+                if is_ignored(class_, name):
                     continue
 
-                if is_py_method_def(class_, n):
-                    orig_method = getattr(class_, n)
+                if is_py_method_def(class_, name):
+                    orig_method = getattr(class_, name)
                 else:
-                    orig_method = get_c_method(class_, n)
+                    orig_method = get_c_method(class_, name)
 
                 if orig_method is None:
-                    raise Exception(
-                        f'Unknown method {n} of class {class_.__name__} in module {module.__name__}'
+                    raise AttributeError(
+                        f'Unknown method {name} of class {class_.__name__} in module {module.__name__}'
                     )
 
                 if callable(orig_method):
                     create_patch(
                         module,
                         class_.__name__,
-                        n,
-                        decorator(module, class_, orig_method, n),
+                        name,
+                        decorator(module, class_, orig_method, name),
                     )
 
 
@@ -108,7 +108,7 @@ def decorate_class(
     -------
     None
     """
-    for name, fn in inspect.getmembers(class_, predicate=inspect.isroutine):
+    for name, func in inspect.getmembers(class_, predicate=inspect.isroutine):
         if not is_ignored(None, name) and class_ not in set.union(
             *default_types.values()
         ):
@@ -116,7 +116,7 @@ def decorate_class(
                 module,
                 class_.__name__,
                 name,
-                decorator(module, class_, fn, name),
+                decorator(module, class_, func, name),
             )
 
 
@@ -274,8 +274,8 @@ def setup_recording(
     wrap_import(decorator, user_defined_modules)
 
     patch_imported_methods(user_defined_callables, decorator)
-    for module in user_defined_modules:
-        decorate_all_methods_in_module(module, decorator)
+    for user_module in user_defined_modules:
+        decorate_all_methods_in_module(user_module, decorator)
 
     decorate_defaults(decorator)
     decorate_builtins(decorator)

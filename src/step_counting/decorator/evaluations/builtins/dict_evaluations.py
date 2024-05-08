@@ -1,20 +1,13 @@
-from typing import Any
 from ..complexities import (
     ComplexitiesDict,
     constant,
     hash_complexity_sec,
     linear_to_len,
     comparison_com,
+    linear_to_len_sec,
 )
 
 
-def dict_update_complexity(args: tuple[dict[Any, Any], dict[Any, Any]]) -> int:
-    dict_one = args[0]
-    dict_two = args[1]
-    return len(dict_one) + len(dict_two)
-
-
-dict.__reversed__
 dict_complexities: ComplexitiesDict = {
     # Dunders
     '__class_getitem__': constant,
@@ -45,6 +38,6 @@ dict_complexities: ComplexitiesDict = {
     'pop': constant,
     'popitem': constant,
     'setdefault': constant,
-    'update': dict_update_complexity,
+    'update': linear_to_len_sec,
     'values': linear_to_len,
 }

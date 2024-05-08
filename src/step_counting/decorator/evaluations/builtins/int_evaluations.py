@@ -1,23 +1,10 @@
-from typing import Any, Callable, Literal, Sequence
 from ..complexities import (
     ComplexitiesDict,
     constant,
     linear_to_bit_len,
-    logarithmic,
-    linear,
-    linear_to_sec,
+    linear_to_len,
     logarithmic_to_sec,
-    quadratic,
 )
-
-
-def linear_to_len(args: tuple[Sequence[Any]]) -> int:
-    return len(args[0])
-
-
-def quadratic_to_bit_len(args: tuple[int]) -> int:
-    n = args[0]
-    return n.bit_length() ** 2
 
 
 int_complexities: ComplexitiesDict = {

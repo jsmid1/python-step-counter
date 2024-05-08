@@ -1,10 +1,8 @@
-from typing import Any
 
 from ..complexities import (
     ComplexitiesDict,
     comparison_com,
     constant,
-    hash_complexity_sec,
     linear_to_len,
     linear_to_len_sec,
     linear_to_len_sum,

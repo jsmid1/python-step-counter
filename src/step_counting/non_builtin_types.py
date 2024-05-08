@@ -2,11 +2,20 @@ from typing import Any, Generator
 
 
 def make_generator() -> Generator[None, Any, None]:
+    """
+    Creates a generator.
+
+    Returns
+    -------
+    gen: generator
+    """
     yield None
 
 
 async def make_async() -> None:
-    pass
+    """
+    Helper function for getting async type.
+    """
 
 
 dict_keys_type = type({}.keys())  # type: ignore
@@ -31,7 +40,6 @@ non_builtin_types = {
     'bytearray_iter': bytearray_iter_type,
     'list_iterator': list_iter_type,
     'dict_keyiterator': dict_iter_type,
-    'bytes_iter': bytes_iter_type,
     'set_iter': set_iter_type,
     'tuple_iterator': tuple_iter_type,
 }
