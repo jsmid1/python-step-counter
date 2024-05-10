@@ -18,7 +18,7 @@ float_complexities: ComplexitiesDict = {
     '__mul__': constant,
     '__neg__': constant,
     '__pos__': constant,
-    '__pow__': logarithmic_to_sec,
+    '__pow__': constant,
     '__repr__': constant,
     '__round__': constant,
     '__setattr__': constant,
