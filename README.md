@@ -12,32 +12,32 @@ Stepcounter is a performance measurement tool designed to assess the efficiency 
 - pip version 22 or higher
 
 ## Installation
-Clone this repository:
+**Clone this repository:**
 
 ```bash
 git clone https://github.com/jsmid1/python-step-counter.git
 ```
 
-Move to the root folder of the project
-(Replace "/path/to/clone" with the actual path):
+**Move to the root folder of the project
+(Replace "/path/to/clone" with the actual path):**
 
 ```bash
 cd /dir/with/clone/python-step-counter
 ```
 
-Install the package:
+**Install the package:**
 ```bash
 pip install .
 ```
 
 ### Alternatives
-For installation on a Linux system, you may install directly from PyPi:
+**For installation on a Linux system, you may install directly from PyPi:**
 ```bash
 pip install stepcounter
 ```
 
 ## Usage
-After installation, you may use the tool with:
+**After installation, you may use the tool with:**
 ```bash
 stepcounter /path/to/tested/file
 ```
@@ -57,14 +57,24 @@ stepcounter /path/to/tested/file -m=DETAIL -o=/path/to/output/dir
 
 
 ## Testing
-To run all tests, execute this command in the root directory:
+### Prerequisites
+- Python development package for tested version (e.g. ```python3.10-dev```)
+- Setuptools module installed for tested version (can be installed with ```pip install setuptools```)
+
+**To run all tests, execute this command in the root directory
+(Replace version with the Python version you wish to test):**
 ```bash
-bash tests/test_run.sh
+bash tests/test_run.sh version
 ```
 This script sets up the environment and runs all tests.
 
-If you wish to run a specific test use
-(Replace "/path/to/the/testfile" with the actual path):
+**If you wish to run a specific test run the setup:**
+```bash
+python setup.py build_ext --inplace
+```
+
+**and then use (Replace "/path/to/the/testfile" with the actual path):**
+
 ```bash
 python -m unittest /path/to/the/testfile        
 ```
