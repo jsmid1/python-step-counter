@@ -61,7 +61,7 @@ class TestBoolMethods(unittest.TestCase):
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__float__'))
 
     @unittest.skip(
-        ' Would be recorded under operator module but import of operator is nor allowed'
+        ' Would be recorded under operator module but import of operator is not allowed'
     )
     def test_bool_index(self):
         x = True
@@ -154,7 +154,6 @@ class TestBoolMethods(unittest.TestCase):
             x = x ^ True
         self.assertTrue(is_recorded(self.recorder, builtins, bool, '__xor__'))
 
-    # Testing non-dunder methods that make sense for bool
     def test_bool_as_integer_ratio(self):
         x = True
         with RecodingActivated():

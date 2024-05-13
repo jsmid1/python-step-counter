@@ -63,7 +63,6 @@ class TestMemoryviewMethods(unittest.TestCase):
             x[0]
         self.assertTrue(is_recorded(self.recorder, builtins, memoryview, '__getitem__'))
 
-    @unittest.skip('Not recorder')
     def test_memoryview_setitem(self):
         with RecodingActivated():
             x = bytearray(b'Hello World')

@@ -59,7 +59,6 @@ class TestRandomMethods(unittest.TestCase):
         self.assertTrue(is_recorded(self.recorder, random, None, 'sample'))
 
     # Test for Random class
-
     def test_random_betavariate(self):
         with RecodingActivated():
             self.random_instance.betavariate(0.9, 0.1)

@@ -54,6 +54,12 @@ class TestIntMethods(unittest.TestCase):
             x.copy()
         self.assertTrue(is_recorded(self.recorder, collections, deque, 'copy'))
 
+    def test_deque_setitem(self):
+        with RecodingActivated():
+            x = deque([1, 2, 3])
+            x[0] = 1
+        self.assertTrue(is_recorded(self.recorder, collections, deque, '__setitem__'))
+
     @unittest.skip('Setitem internally, banned in restrict')
     def test_deque_delitem(self):
         with RecodingActivated():

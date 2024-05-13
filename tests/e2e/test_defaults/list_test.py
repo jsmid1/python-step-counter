@@ -88,7 +88,6 @@ class TestListMethods(unittest.TestCase):
             x != [1, 2]
         self.assertTrue(is_recorded(self.recorder, builtins, list, '__ne__'))
 
-    @unittest.skip('Not recorder')
     def test_list_setitem(self):
         with RecodingActivated():
             x = [1, 2, 3]

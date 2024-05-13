@@ -5,7 +5,6 @@ from src.step_counting import setup_recording as sr
 from src.step_counting.setup_recording import setup_recording, RecodingActivated
 
 from ..utils import is_recorded
-import math
 import builtins
 
 
@@ -66,7 +65,6 @@ class TestDictMethods(unittest.TestCase):
             x != {'another_key': 'value'}
         self.assertTrue(is_recorded(self.recorder, builtins, dict, '__ne__'))
 
-    @unittest.skip('Not recorder')
     def test_dict_setitem(self):
         with RecodingActivated():
             x = {}

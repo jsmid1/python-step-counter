@@ -12,7 +12,6 @@ def setup_session():
 
 @pytest.fixture(scope='module')
 def setup_module(request):
-    # Your setup code goes here
     recorder, _ = setup_recording.setup_recording(
         request.module, {utils, setup_recording}
     )

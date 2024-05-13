@@ -54,7 +54,7 @@ class TestComplexMethods(unittest.TestCase):
                 pass
         self.assertTrue(
             is_recorded(self.recorder, builtins, complex, '__ge__'),
-            "Complex does not support ordering",
+            'Complex does not support ordering',
         )
 
     def test_complex_gt(self):
@@ -66,7 +66,7 @@ class TestComplexMethods(unittest.TestCase):
                 pass
         self.assertTrue(
             is_recorded(self.recorder, builtins, complex, '__gt__'),
-            "Complex does not support ordering",
+            'Complex does not support ordering',
         )
 
     def test_complex_le(self):
@@ -78,7 +78,7 @@ class TestComplexMethods(unittest.TestCase):
                 pass
         self.assertTrue(
             is_recorded(self.recorder, builtins, complex, '__le__'),
-            "Complex does not support ordering",
+            'Complex does not support ordering',
         )
 
     def test_complex_lt(self):
@@ -90,7 +90,7 @@ class TestComplexMethods(unittest.TestCase):
                 pass
         self.assertTrue(
             is_recorded(self.recorder, builtins, complex, '__lt__'),
-            "Complex does not support ordering",
+            'Complex does not support ordering',
         )
 
     def test_complex_mul(self):

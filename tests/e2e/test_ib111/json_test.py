@@ -36,7 +36,7 @@ class TestJsonMethods(unittest.TestCase):
 
     def test_json_loads(self):
         with RecodingActivated():
-            data = json.loads('{"key": "value"}')
+            data = json.loads('{'key': 'value'}')
         self.assertTrue(is_recorded(self.recorder, json, None, 'loads'))
 
     def test_json_dump(self):

@@ -47,14 +47,12 @@ class TestIntMethods(unittest.TestCase):
             bool(x)
         self.assertTrue(is_recorded(self.recorder, builtins, int, '__bool__'))
 
-    @unittest.skip("Records as math module function")
+    @unittest.skip('Records as math module function')
     def test_int_ceil(self):
         with RecodingActivated():
             x = 1
             math.ceil(x)
         self.assertTrue(is_recorded(self.recorder, math, None, '__ceil__'))
-
-    # Skipping methods like __class__, __delattr__, __dir__, __doc__ as they do not fit the operational testing pattern
 
     def test_int_divmod(self):
         with RecodingActivated():
@@ -74,7 +72,7 @@ class TestIntMethods(unittest.TestCase):
             float(x)
         self.assertTrue(is_recorded(self.recorder, builtins, int, '__float__'))
 
-    @unittest.skip("Records as math module function")
+    @unittest.skip('Records as math module function')
     def test_int_floor(self):
         with RecodingActivated():
             x = 1
@@ -91,7 +89,7 @@ class TestIntMethods(unittest.TestCase):
     def test_int_format(self):
         with RecodingActivated():
             x = 1
-            format(x, "b")
+            format(x, 'b')
         self.assertTrue(is_recorded(self.recorder, builtins, int, '__format__'))
 
     def test_int_ge(self):
@@ -99,15 +97,6 @@ class TestIntMethods(unittest.TestCase):
             x = 1
             x >= 1
         self.assertTrue(is_recorded(self.recorder, builtins, int, '__ge__'))
-
-    @unittest.skip
-    def test_int_getattribute(self):
-        with RecodingActivated():
-            x = 1
-            getattr(x, "__str__")  # Example use case
-        self.assertTrue(is_recorded(self.recorder, builtins, int, '__getattribute__'))
-
-    # __getnewargs__ is typically not invoked directly in operational testing
 
     def test_int_gt(self):
         with RecodingActivated():
@@ -334,7 +323,7 @@ class TestIntMethods(unittest.TestCase):
             x / 2
         self.assertTrue(is_recorded(self.recorder, builtins, int, '__truediv__'))
 
-    @unittest.skip("Records as math module function")
+    @unittest.skip('Records as math module function')
     def test_int_trunc(self):
         with RecodingActivated():
             x = 1

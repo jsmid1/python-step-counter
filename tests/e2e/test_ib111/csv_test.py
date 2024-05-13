@@ -45,5 +45,3 @@ class TestCsvMethods(unittest.TestCase):
             with open('file.csv', 'w', newline='') as csvfile:
                 csv.writer(csvfile)
         self.assertTrue(is_recorded(self.recorder, csv, None, 'writer'))
-
-    # skip csv.DictReader, no methods are being recorder

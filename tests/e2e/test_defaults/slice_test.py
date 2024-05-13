@@ -44,7 +44,7 @@ class TestSliceMethods(unittest.TestCase):
             x = repr(slice(1, 5, 2))
         self.assertTrue(is_recorded(self.recorder, builtins, slice, '__repr__'))
 
-    @unittest.skip('Can not be called directly withou slice.__reduce__')
+    @unittest.skip('Can not be called directly without slice.__reduce__')
     def test_slice_reduce(self):
         with RecodingActivated():
             x = slice(1, 5, 2).__reduce__()
