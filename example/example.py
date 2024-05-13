@@ -28,7 +28,7 @@ def main() -> None:
     list_.pop()
 
     # This line records __contains__ (in) function of a list
-    # Evaluation is equal to the list_ lenght
+    # Evaluation is equal to the list_ length
     5 in list_
 
     # This line records the call of gcd function
