@@ -11,7 +11,7 @@ SequenceRecords: TypeAlias = list[tuple[ModuleType, str, str]]
 ModuleDetailRecords: TypeAlias = dict[int, dict[RecordKey, 'Counter']]
 DetailRecords: TypeAlias = dict[ModuleType, ModuleDetailRecords]
 ########################################################################################
-# These methods are used with patches applied. Even through it is not necessary
+# These methods are used with patches applied. Even though it is not necessary
 # to use original methods, they are used for optimization.
 ########################################################################################
 
