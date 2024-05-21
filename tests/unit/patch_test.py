@@ -3,7 +3,6 @@ import builtins
 import ctypes
 
 from src.step_counting.patch.patching import (
-    patch_imports,
     patch_py_builtin_method,
     patch_py_object_method,
     patch_py_std_class_method,
