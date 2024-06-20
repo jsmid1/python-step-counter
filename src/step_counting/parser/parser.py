@@ -21,6 +21,9 @@ def setup_parser() -> argparse.ArgumentParser:
         '-o', '--output_dir', type=str, help='Output directory', required=False
     )
     parser.add_argument(
+        '-c', '--configuration', type=str, help='Configuration', required=False
+    )
+    parser.add_argument(
         '-m',
         '--mode',
         type=str,

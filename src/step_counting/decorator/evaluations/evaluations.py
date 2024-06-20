@@ -70,7 +70,9 @@ from .ib111.zipfile_evaluations import (
     zipfile_zipfile_complexities,
 )
 
-evaluation_method: Dict[ModuleType, Dict[type | None, ComplexitiesDict]] = {
+EVALUATION_DICT = Dict[ModuleType, Dict[type | None, ComplexitiesDict]]
+
+evaluation_method: EVALUATION_DICT = {
     builtins: {
         None: builtins_complexities,
         bool: bool_complexities,
@@ -125,6 +127,21 @@ evaluation_method: Dict[ModuleType, Dict[type | None, ComplexitiesDict]] = {
     turtle: {None: turtle_complexities},
     zipfile: {None: zipfile_complexities, ZipFile: zipfile_zipfile_complexities},
 }
+
+def set_evaluations(evaluations: EVALUATION_DICT):
+    """
+    Sets evaluations.
+
+    Parameters
+    ----------
+    evaluation (EVALUATION_DICT): dictionary with evaluations
+
+    Returns
+    -------
+    None
+    """
+    global evaluation_method
+    evaluation_method = evaluations
 
 
 def default_evaluation(_: tuple[Any, ...]) -> int:

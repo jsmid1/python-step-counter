@@ -25,19 +25,29 @@ def main() -> None:
     parser = setup_parser()
     args = parser.parse_args()
 
+    configuration_file = args.configuration
     input_file = args.input_file
     output_file = args.output_dir
     mode = args.mode
 
-    insert_module_to_path(input_file)
+    configuration = None
+    if configuration_file is not None:
+        configuration_module: ModuleType = import_from_path(configuration_file)
+        configuration = configuration_module.configuration
 
+        if not hasattr(configuration_module, 'configuration'):
+            raise AttributeError(
+                f'Given configuration with path: {configuration_file} does not contain a \'configuration\'!'
+            )
+
+    insert_module_to_path(input_file)
     eval_module: ModuleType = import_from_path(input_file)
     if not hasattr(eval_module, 'main'):
         raise AttributeError(
             f'Given module with path: {input_file} does not contain a main function!'
         )
 
-    recorder, tracked_modules = setup_recording(eval_module, mode, set())
+    recorder, tracked_modules = setup_recording(configuration, eval_module, mode, set())
 
     with RecodingActivated():
         eval_module.main()

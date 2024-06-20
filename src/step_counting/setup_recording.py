@@ -4,6 +4,7 @@ import traceback
 from types import ModuleType
 from typing import Any, Callable, Optional
 
+from .decorator.evaluations.evaluations import set_evaluations, EVALUATION_DICT
 from .parser.parser import MODE_SEQUENCE, MODE_DETAIL
 from .decorator.records.record_classes import Recorder
 from .ib111_restrictions import default_types, builtin_methods, ib111_imports
@@ -229,6 +230,7 @@ def patch_imported_methods(
 
 
 def setup_recording(
+    configuration: Optional[EVALUATION_DICT],
     module: ModuleType,
     mode: str,
     ignored_modules: set[ModuleType],
@@ -249,6 +251,9 @@ def setup_recording(
     Recorder: simple/sequence/detailed recorder
     set: set of modules that will be accounted for in the recording
     """
+    if configuration is not None:
+        set_evaluations(configuration)
+
     module_imports, imported_callables = get_module_imports(module, ignored_modules)
 
     user_defined_modules = {
