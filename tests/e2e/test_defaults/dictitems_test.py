@@ -15,7 +15,7 @@ class TestDictItemsMethods(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.module = sys.modules[__name__]
-        self.recorder, _ = setup_recording(self.module, 'DETAIL', {sys, unittest, sr})
+        self.recorder, _ = setup_recording(None, self.module, 'DETAIL', {sys, unittest, sr})
         self.items1 = {'a': 1, 'b': 2}.items()
         self.items2 = {'b': 2, 'c': 3}.items()
 

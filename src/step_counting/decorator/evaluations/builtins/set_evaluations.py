@@ -30,12 +30,12 @@ def min_len_complexity(args: tuple[Any, ...]) -> int:
 
 set_complexities: ComplexitiesDict = {
     # Dunders
-    '__and__': linear_to_len_sec,
+    '__and__': linear_to_len_sum,
     '__class_getitem__': constant,
     '__contains__': hash_complexity_sec,
-    '__iand__': linear_to_len_sec,
+    '__iand__': linear_to_len_sum,
     '__ior__': linear_to_len_sum,
-    '__isub__': linear_to_len_sec,
+    '__isub__': linear_to_len_sum,
     '__iter__': constant,
     '__ixor__': linear_to_len_sum,
     '__len__': constant,
@@ -43,7 +43,7 @@ set_complexities: ComplexitiesDict = {
     '__repr__': linear_to_len,
     '__setattr__': constant,
     '__str__': linear_to_len,
-    '__sub__': linear_to_len_sec,
+    '__sub__': linear_to_len_sum,
     '__xor__': linear_to_len_sum,
     # Comparisons
     '__lt__': comparison_com,

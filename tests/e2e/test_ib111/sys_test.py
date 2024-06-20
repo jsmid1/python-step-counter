@@ -11,7 +11,7 @@ class TestSysMethods(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.module = sys.modules[__name__]
-        self.recorder, _ = setup_recording(self.module, 'DETAIL', {sys, unittest, sr})
+        self.recorder, _ = setup_recording(None, self.module, 'DETAIL', {sys, unittest, sr})
 
     @classmethod
     def tearDownClass(self):

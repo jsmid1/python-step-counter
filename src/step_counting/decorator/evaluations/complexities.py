@@ -1,6 +1,7 @@
 import math
 from typing import Any, Callable, Dict, Hashable, Sequence, TypeAlias
 from collections.abc import Sequence
+from ..utils import comparison_methods, Py_EQ, Py_NE
 
 ComplexitiesDict: TypeAlias = Dict[str, Callable[[tuple[Any, ...]], int]]
 
@@ -147,22 +148,25 @@ def comparison_com(args: tuple[Any, ...]) -> int:
     """
     s1 = args[0]
     s2 = args[1]
+    com_type = args[2]
 
     total = 1
     if type(s1) != type(s2):
         return 1
 
     # Catch string to avoid creating substrings
-    if isinstance(s1, str) and len(s1) == len(s2):
+    if isinstance(s1, str) and len(s1) == len(s2) and (com_type != comparison_methods[Py_EQ] 
+                                                       and com_type != comparison_methods[Py_NE]):
         return len(s1)
 
-    if isinstance(s1, Sequence) and len(s1) == len(s2):
+    if isinstance(s1, Sequence) and (len(s1) == len(s2) and (com_type != comparison_methods[Py_EQ] 
+                                                             and com_type != comparison_methods[Py_NE])):
         for i in range(len(s1)):
-            total += comparison_com((s1[i], s2[i]))
+            total += comparison_com((s1[i], s2[i], com_type))
 
     if isinstance(s1, dict) and len(s1) == len(s2):
         for key in s1.keys():
-            total += comparison_com((s1.get(key, None), s2.get(key, None)))
+            total += comparison_com((s1.get(key, None), s2.get(key, None), com_type))
 
     return total
 

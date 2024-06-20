@@ -1,5 +1,7 @@
 from typing import Any
 
+from evaluations.complexities import linear_to_len_sum
+
 from ..complexities import (
     ComplexitiesDict,
     constant,
@@ -72,11 +74,11 @@ def list_getitem_complexity(args: tuple[list[Any], int]) -> int:
 
 list_complexities: ComplexitiesDict = {
     # Dunders
-    '__add__': linear_to_len_sec,
+    '__add__': linear_to_len_sum,
     '__class_getitem__': constant,
     '__contains__': linear_to_len,
     '__getitem__': list_getitem_complexity,
-    '__iadd__': linear_to_len_sec,
+    '__iadd__': linear_to_len_sum,
     '__imul__': linear_to_len,
     '__iter__': constant,
     '__len__': constant,
